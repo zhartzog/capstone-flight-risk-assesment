@@ -1,26 +1,13 @@
-import React, {useEffect, useState } from 'react';
-
 import logo from './logo.svg';
 import './App.css';
 
-import axios from "axios";
-
 function App() {
-  const [quote, setQuote] = useState(null);
-
-  useEffect(() =>{
-      axios.get(`/api/test`)
-          .then(res => {
-              setQuote(res.data);
-          })
-  },[]);
-
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-            {quote}
+          Edit <code>src/App.js</code> and save to reload.
         </p>
         <a
           className="App-link"
@@ -31,7 +18,6 @@ function App() {
           Learn React
         </a>
       </header>
-      <h1>{quote}</h1>
     </div>
   );
 }

@@ -3,6 +3,7 @@ import './App.css';
 import RiskAssessmentForm from "./Components/RiskAssessmentForm";
 import {Jumbotron, Col, Container, Row} from "react-bootstrap";
 import React from "react";
+import AdminPanel from './Components/AdminPanel';
 
 function App() {
   return (

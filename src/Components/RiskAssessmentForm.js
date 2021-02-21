@@ -131,6 +131,7 @@ function RiskAssessmentForm() {
                     </Form.Group>
                 </Form.Row>
 
+                {/*Should only display if prevFlight > 0*/}
                 <FlightDutyFormInput
                     prevFlights={prevFlights}
                     flightDuty={flightDuty}
@@ -148,6 +149,7 @@ function RiskAssessmentForm() {
                     </Form.Group>
                 </Form.Row>
 
+                {/*Should only display if categoryOfFlight is 'normal'*/}
                 <TypeOfFlightFormInput
                     categoryOfFlight={categoryOfFlight}
                     typeOfFlight={typeOfFlight}

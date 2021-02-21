@@ -1,25 +1,36 @@
 import React, { useState } from 'react';
 import FlightDutyFormInput from "./FlightDutyFormInput";
+import TypeOfFlightFormInput from "./TypeOfFlightFormInput";
 import './../stylesheets/RiskAssessmentForm.css';
 import {Button, Row, Col, Form, Jumbotron} from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 
 function RiskAssessmentForm() {
     const [departureTime, setDepartureTime] = useState(new Date());
+    const [departureAirport, setDepartureAirport] = useState();
     const [studentName, setStudentName] = useState("");
     const [studentLevel, setStudentLevel] = useState("private");
+    const [isDualFlight, setIsDualFlight] = useState(false);
     const [prevFlights, setPrevFlights] = useState(0);
     const [flightDuty, setFlightDuty] = useState(new Date());
-    const [typeOfFlight, setTypeOfFlight] = useState("normal");
+    const [categoryOfFlight, setCategoryOfFlight] = useState("normal");
+    const [typeOfFlight, setTypeOfFlight] = useState("local_flight");
+    const [xcDestination, setXcDestination] = useState("");
 
     function logState(e) {
+        /* Remember that setState() is async so console.log my lag behind the state change*/
         e.preventDefault();
+        console.log("-----FlightAssessmentForm State Variables-----")
         console.log("departureTime: "+departureTime);
+        console.log("Departure Airport: "+departureAirport);
         console.log("Student name: "+studentName);
         console.log("Student level: "+studentLevel);
+        console.log("Is Dual flight: "+isDualFlight);
         console.log("previous flights: "+prevFlights);
         console.log("flightDuty: "+flightDuty);
-        console.log("type of flight: "+typeOfFlight);
+        console.log("Category of flight: "+categoryOfFlight);
+        console.log("Type of Flight: "+typeOfFlight);
+        console.log("---------------------------------------------")
     }
     return (
         <>
@@ -42,6 +53,18 @@ function RiskAssessmentForm() {
                             timeFormat="HH:mm"
                             showTimeInput
                             minDate={(new Date())}
+                        />
+                    </Form.Group>
+                </Form.Row>
+
+                <Form.Row>
+                    <Form.Group as={Col} controlId="departureAirport">
+                        <Form.Label>Departure Airport</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="departure_airport"
+                            onChange={e => setDepartureAirport(e.target.value)}
+                            className="departureAirport"
                         />
                     </Form.Group>
                 </Form.Row>
@@ -73,6 +96,18 @@ function RiskAssessmentForm() {
                 </Form.Row>
 
                 <Form.Row>
+                    <Form.Group id="dualFlight" as={Col}>
+                        <Form.Check
+                            type="checkbox" label="This is a dual flight"
+                            onChange={e => setIsDualFlight(e.target.value === "on")}
+                            value={isDualFlight}
+                        />
+                    </Form.Group>
+                </Form.Row>
+
+
+
+                <Form.Row>
                     <Form.Group as={Col} controlId="previousFlights">
                         <Form.Label>Previous Flights that day</Form.Label>
                         <Form.Control
@@ -91,15 +126,23 @@ function RiskAssessmentForm() {
                 />
 
                 <Form.Row>
-                    <Form.Group as={Col} controlId="typeOfFlight">
-                        <Form.Label>Type of Syllabus Flight</Form.Label>
-                        <Form.Control as="select" name="student_level" onChange={e => setTypeOfFlight(e.target.value)} value={typeOfFlight}>
+                    <Form.Group as={Col} controlId="catOfFlight">
+                        <Form.Label>Category of Syllabus Flight</Form.Label>
+                        <Form.Control as="select" name="student_level" onChange={e => setCategoryOfFlight(e.target.value)} value={categoryOfFlight}>
                             <option value="normal">Normal</option>
                             <option value="stage_check">Stage Check</option>
                             <option value="checkride">FAA Practical Test</option>
                         </Form.Control>
                     </Form.Group>
                 </Form.Row>
+
+                <TypeOfFlightFormInput
+                    categoryOfFlight={categoryOfFlight}
+                    typeOfFlight={typeOfFlight}
+                    eventHandler={setTypeOfFlight}
+                    xcDestination={xcDestination}
+                    setXcDestination={setXcDestination}
+                />
 
 
 

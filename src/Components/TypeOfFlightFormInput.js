@@ -1,10 +1,17 @@
 import React from 'react';
 import {Col, Form} from 'react-bootstrap';
+/*
+    This component will allow the user to select the type of flight.
+    These fields should only appear when the user selects "normal".
+    The component will also allow the user to enter the destinations for their cross country.
+    This field should only pop up when the user has selected "cross_country".
+ */
 function TypeOfFlightFormInput(props){
     //stage checks and checkrides are always local flights
     if(props.categoryOfFlight === "stage_check" || props.categoryOfFlight === "checkride")
         return('');
     else if(props.categoryOfFlight === "normal" && props.typeOfFlight !== "cross_country"){
+        /*Return only the Type of Flight dropdown. Keep the cross country destination fields hidden.*/
         return(
             <>
                 <Form.Row>

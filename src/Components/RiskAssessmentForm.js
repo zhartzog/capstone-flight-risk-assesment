@@ -5,18 +5,30 @@ import './../stylesheets/RiskAssessmentForm.css';
 import {Button, Row, Col, Form, Jumbotron} from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 
+/*
+ * This will handle the User input for the risk assessment form.
+ */
 function RiskAssessmentForm() {
+    /* Departure time and date. Format is MM/dd/yyyy h:mm aa*/
     const [departureTime, setDepartureTime] = useState(new Date());
     const [departureAirport, setDepartureAirport] = useState();
     const [studentName, setStudentName] = useState("");
+    /*What license the student is pursing. This will indicate their skill level.*/
     const [studentLevel, setStudentLevel] = useState("private");
+    /*Will there be an instructor on board. Particularly important if 'private' is selected.*/
     const [isDualFlight, setIsDualFlight] = useState(false);
+    /*How Many flights have they flown previously that day*/
     const [prevFlights, setPrevFlights] = useState(0);
+    /*When was their first flight today.*/
     const [flightDuty, setFlightDuty] = useState(new Date());
+    /*What is the category of flight: Normal, Stage Check, FAA checkride*/
     const [categoryOfFlight, setCategoryOfFlight] = useState("normal");
+    /*Where are they going? Staying local or going on a cross country*/
     const [typeOfFlight, setTypeOfFlight] = useState("local_flight");
+    /*If they are going on a cross country, to what airports*/
     const [xcDestination, setXcDestination] = useState("");
 
+    /*Simple logging function. For debugging purposes only.*/
     function logState(e) {
         /* Remember that setState() is async so console.log my lag behind the state change*/
         e.preventDefault();
@@ -146,7 +158,7 @@ function RiskAssessmentForm() {
 
 
 
-
+                {/*TODO: Have button submit the form.*/}
                 <Button variant="primary" onClick={logState}>
                     Submit
                 </Button>

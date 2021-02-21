@@ -1,6 +1,11 @@
 import React from 'react';
 import {Col, Form} from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
+
+/*
+   Allow the user to select the beginning of their flight duty. In other words, how long have they been
+   flying today. This question is only important if they've had more than one flight today.
+ */
 function FlightDutyFormInput(props){
     if(props.prevFlights < 1)
         return('');

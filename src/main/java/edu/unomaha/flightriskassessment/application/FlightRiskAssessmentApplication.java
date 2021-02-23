@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class FlightRiskAssessmentApplication
 {
 
-    //This is a test comment
+   //Minor change to make sure git is working
     public static void main(String[] args)
     {
         SpringApplication.run(FlightRiskAssessmentApplication.class, args);

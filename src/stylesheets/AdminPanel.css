@@ -3,3 +3,9 @@
 	align-items: center;
 	text-align: center;
 }
+
+.btn-default {
+	background-color: #6c757d;
+	color:#FFF;
+	border-color: #6c757d;
+}

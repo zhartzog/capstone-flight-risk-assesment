@@ -1,4 +1,4 @@
-package edu.unomaha.flightriskassessment.database;
+package edu.unomaha.flightriskassessment.models;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

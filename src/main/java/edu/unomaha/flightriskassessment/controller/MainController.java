@@ -1,7 +1,7 @@
 package edu.unomaha.flightriskassessment.controller;
 
-import edu.unomaha.flightriskassessment.database.Professor;
 import edu.unomaha.flightriskassessment.database.ProfessorRepository;
+import edu.unomaha.flightriskassessment.models.Professor;
 import edu.unomaha.flightriskassessment.services.MetarService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class MainController
 {
-    private static final Logger              logger = LogManager.getLogger(MainController.class);
+    private static final Logger logger = LogManager.getLogger(MainController.class);
     @Autowired
-    private              ProfessorRepository professorRepository;
+    private ProfessorRepository professorRepository;
 
-    @PostMapping(path="/add")
+    @PostMapping(path="/addNewProfessor")
     public @ResponseBody String addNewUser (@RequestParam String firstName, @RequestParam String lastName,
                                             @RequestParam String userName, @RequestParam String password) {
         Professor professor = new Professor();
@@ -33,7 +33,7 @@ public class MainController
         return "Saved";
     }
 
-    @GetMapping(path="/all")
+    @GetMapping(path="/allProfessors")
     public @ResponseBody Iterable<Professor> getAllProfessors() {
         return professorRepository.findAll();
     }

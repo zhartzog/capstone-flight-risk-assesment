@@ -1,5 +1,8 @@
 package edu.unomaha.flightriskassessment.services;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -14,19 +17,20 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 @Service
-public class MetarService
+public class AWCServices
 {
-    private static final Logger logger = LogManager.getLogger(MetarService.class);
+    private static final Logger logger = LogManager.getLogger(AWCServices.class);
+
 
     public Metar getMetarData(String airportID)
     {
-       logger.info("Beginning to get Metar Data...");
-       Metar returnValue = new Metar();
-        try {
-            //TODO: Store the base URL in a better place.
+        try
+        {
             String URL = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&mostrecent=true&hoursBeforeNow=1&stationString=" + airportID;
 
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -36,26 +40,30 @@ public class MetarService
             doc.getDocumentElement().normalize();
 
             Node data = doc.getElementsByTagName("data").item(0);
-            System.out.println("data attribute: "+data.getAttributes().item(0));
 
-            //All the metar data is kept in a <METAR> tag, so we are just getting the next layer
-            NodeList children = data.getChildNodes().item(0).getChildNodes();
-
-            System.out.println("children length: "+children.getLength());
-
-            for(int i = 0; i < children.getLength(); i++)
+            if(data.getAttributes().equals("num_results=\"1\""))
             {
-                Node temp = children.item(i);
-                logger.info("Item i: "+temp);
-                if(temp.getLocalName().equals("raw_text")){
-                    returnValue.setRawText(temp.getTextContent());
-                }
+                Node metarData = doc.getElementsByTagName("METAR").item(0);
 
+                JAXBContext jaxbContext = JAXBContext.newInstance(Metar.class);
+                Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+                return (Metar) jaxbUnmarshaller.unmarshal(metarData);
             }
-            //if(doc.getElementsByTagName("data").)
-            //String rawText = doc.getElementsByTagName()
-
-        } catch ( ParserConfigurationException e )
+            else{
+                logger.error("Metar Request did not return a valid result");
+                return null;
+            }
+        }
+        catch ( JAXBException e )
+        {
+            e.printStackTrace();
+        }
+        catch (  MalformedURLException mue )
+        {
+            mue.printStackTrace();
+        }
+        catch ( ParserConfigurationException e )
         {
             e.printStackTrace();
         } catch ( IOException e )
@@ -66,7 +74,8 @@ public class MetarService
             e.printStackTrace();
         }
 
-        return new Metar();
+        return null;
     }
+
 
 }

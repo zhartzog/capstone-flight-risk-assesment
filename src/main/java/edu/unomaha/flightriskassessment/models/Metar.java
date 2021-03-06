@@ -1,22 +1,23 @@
 package edu.unomaha.flightriskassessment.models;
 
-import edu.unomaha.flightriskassessment.services.MetarService;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Entity
+@XmlRootElement(name = "METAR")
 public class Metar
 {
 	@Id
     @GeneratedValue (strategy=GenerationType.AUTO)
 	private Integer id;
-	
+
     private static final Logger logger = LogManager.getLogger(Metar.class);
 
     private String rawText;
@@ -44,7 +45,7 @@ public class Metar
     private String cloudBases;
 
     public Metar(){};
-    
+
     public Metar(String airportID, String time, float temperature, float dewPoint, int windDirection, int windSpeed, int windGust, float visibility, String flightCategory, String skyCoverage, String cloudBases)
     {
         logger.info("Creating METAR entry...");
@@ -65,11 +66,12 @@ public class Metar
     }
 
     public Integer getId() { return id; }
-    
+
     public void setId(Integer id) { this.id = id; }
-    
+
     public String getRawText() { return rawText; }
 
+    @XmlElement(name = "raw_text")
     public void setRawText(String rawText) {
         logger.debug("Setting rawText to : " + rawText);
         this.rawText = rawText;
@@ -77,6 +79,7 @@ public class Metar
 
     public String getAirportID() { return airportID; }
 
+    @XmlElement(name = "station_id")
     public void setAirportID(String airportID) {
         logger.debug("Setting Airport ID to %s", airportID);
         this.airportID = airportID;
@@ -84,6 +87,7 @@ public class Metar
 
     public String getTime() { return time; }
 
+    @XmlElement(name = "observation_time")
     public void setTime(String time)
     {
         logger.debug("Setting time to %s",time);
@@ -92,6 +96,7 @@ public class Metar
 
     public float getTemperature() { return temperature; }
 
+    @XmlElement(name = "temp_c")
     public void setTemperature(float temperature) {
         logger.debug("Setting temperature to %d", temperature);
         this.temperature = temperature;
@@ -99,6 +104,7 @@ public class Metar
 
     public float getDewPoint() { return dewPoint; }
 
+    @XmlElement(name = "dewpoint_c")
     public void setDewPoint(float dewPoint) {
         logger.debug("Setting dew point to %d", dewPoint);
         this.dewPoint = dewPoint;
@@ -106,13 +112,15 @@ public class Metar
 
     public int getWindDirection() { return windDirection; }
 
+    @XmlElement(name = "wind_dir_degrees")
     public void setWindDirection(int windDirection) {
         logger.debug("Setting wind direction to %d", windDirection);
         this.windDirection = windDirection;
     }
-    
+
     public int getWindSpeed() { return windSpeed; }
 
+    @XmlElement(name = "wind_speed_kt")
     public void setWindSpeed(int windSpeed) {
     	logger.debug("Setting wind speed to %d", windSpeed);
         this.windSpeed = windSpeed;
@@ -120,6 +128,7 @@ public class Metar
 
     public int getWindGust() { return windGust; }
 
+    @XmlElement(name = "wind_gust_kt")
     public void setWindGust(int windGust) {
     	logger.debug("Setting wind gust to %d", windGust);
         this.windGust = windGust;
@@ -127,6 +136,7 @@ public class Metar
 
     public float getVisibility() { return visibility; }
 
+    @XmlElement(name = "visibility_statue_mi")
     public void setVisibility(float visibility) {
     	logger.debug("Setting visibility to %f", visibility);
         this.visibility = visibility;
@@ -134,6 +144,7 @@ public class Metar
 
     public String getFlightCategory() { return flightCategory; }
 
+    @XmlElement(name = "flight_category")
     public void setFlightCategory(String flightCategory) {
     	logger.debug("Setting flight category to %s", flightCategory);
         this.flightCategory = flightCategory;
@@ -141,6 +152,7 @@ public class Metar
 
     public String getSkyCoverage() { return skyCoverage; }
 
+    @XmlElement(name = "wx_string")
     public void setSkyCoverage(String skyCoverage) {
     	logger.debug("Setting sky coverage to %s", skyCoverage);
         this.skyCoverage = skyCoverage;
@@ -148,6 +160,7 @@ public class Metar
 
     public String getCloudBases() { return cloudBases; }
 
+    @XmlElement(name = "sky_cover")
     public void setCloudBases(String cloudBases) {
     	logger.debug("Setting cloud bases to %s", cloudBases);
         this.cloudBases = cloudBases;

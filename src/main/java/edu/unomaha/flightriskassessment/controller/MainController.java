@@ -1,8 +1,9 @@
 package edu.unomaha.flightriskassessment.controller;
 
 import edu.unomaha.flightriskassessment.database.ProfessorRepository;
+import edu.unomaha.flightriskassessment.models.Metar;
 import edu.unomaha.flightriskassessment.models.Professor;
-import edu.unomaha.flightriskassessment.services.MetarService;
+import edu.unomaha.flightriskassessment.services.AWCServices;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +43,9 @@ public class MainController
     public @ResponseBody String test()
     {
         logger.info("Beginning Test request function...");
-        MetarService ms = new MetarService();
-        ms.getMetarData("KCBF");
-        return "TEST";
+        AWCServices awcs = new AWCServices();
+        Metar metar = awcs.getMetarData("KCBF");
+        return (metar == null)? "ERROR":metar.getRawText();
     }
 
 }

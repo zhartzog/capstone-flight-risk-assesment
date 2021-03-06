@@ -10,12 +10,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-@Entity
+
+/**
+ * This class is used to unmarshall METAR data recieved from the Aviation Weather Center. The schema for the XML file can
+ * be found at https://aviationweather.gov/docs/dataserver/schema/metar1_2.xsd
+ */
+//@Entity
 @XmlRootElement(name = "METAR")
 public class Metar
 {
-	@Id
-    @GeneratedValue (strategy=GenerationType.AUTO)
+	//@Id
+    //@GeneratedValue (strategy=GenerationType.AUTO)
 	private Integer id;
 
     private static final Logger logger = LogManager.getLogger(Metar.class);
@@ -40,13 +45,20 @@ public class Metar
 
     private String flightCategory;
 
-    private String skyCoverage;
+    private CloudCoveragePair skyCoverage; //TODO: Fix coverage. not always setting info.
 
-    private String cloudBases;
+    //Code for current weather. Legend can be found at https://aviationweather.gov/docs/metar/wxSymbols_anno2.pdf
+    private String presentWeather;
+
+    private float precipitation;
+
+    private float snow;
+
+    private int verticalVis;
 
     public Metar(){};
 
-    public Metar(String airportID, String time, float temperature, float dewPoint, int windDirection, int windSpeed, int windGust, float visibility, String flightCategory, String skyCoverage, String cloudBases)
+    public Metar(String airportID, String time, float temperature, float dewPoint, int windDirection, int windSpeed, int windGust, float visibility, String flightCategory, String skyCoverage, int cloudBases)
     {
         logger.info("Creating METAR entry...");
         logger.debug("Metar[airportID: %s, time: %s, temperature: %d, dewPoint: %d, windDirection: %d, windSpeed: %d, windGust: %d, vis: %d, flightCategory: %d, skyCoverage: %d, cloudBases: %d",
@@ -61,8 +73,7 @@ public class Metar
         this.windGust = windGust;
         this.visibility = visibility;
         this.flightCategory = flightCategory;
-        this.skyCoverage = skyCoverage;
-        this.cloudBases = cloudBases;
+        this.skyCoverage = new CloudCoveragePair(skyCoverage, cloudBases);
     }
 
     public Integer getId() { return id; }
@@ -150,19 +161,58 @@ public class Metar
         this.flightCategory = flightCategory;
     }
 
-    public String getSkyCoverage() { return skyCoverage; }
-
-    @XmlElement(name = "wx_string")
-    public void setSkyCoverage(String skyCoverage) {
-    	logger.debug("Setting sky coverage to %s", skyCoverage);
-        this.skyCoverage = skyCoverage;
+    public CloudCoveragePair getSkyCoverage()
+    {
+        return skyCoverage;
     }
 
-    public String getCloudBases() { return cloudBases; }
+    @XmlElement(name = "sky_condition")
+    public void setSkyCoverage(CloudCoveragePair cloudCoveragePair)
+    {
+        this.skyCoverage = cloudCoveragePair;
+    }
 
-    @XmlElement(name = "sky_cover")
-    public void setCloudBases(String cloudBases) {
-    	logger.debug("Setting cloud bases to %s", cloudBases);
-        this.cloudBases = cloudBases;
+    public float getPrecipitation()
+    {
+        return precipitation;
+    }
+
+    @XmlElement(name = "precip_in")
+    public void setPrecipitation(float precipitation)
+    {
+        this.precipitation = precipitation;
+    }
+
+    public float getSnow()
+    {
+        return snow;
+    }
+
+    @XmlElement(name = "snow_in")
+    public void setSnow(float snow)
+    {
+        this.snow = snow;
+    }
+
+    public int getVerticalVis()
+    {
+        return verticalVis;
+    }
+
+    @XmlElement(name = "vert_vis_ft")
+    public void setVerticalVis(int verticalVis)
+    {
+        this.verticalVis = verticalVis;
+    }
+
+    public String getPresentWeather()
+    {
+        return presentWeather;
+    }
+
+    @XmlElement(name = "wx_string")
+    public void setPresentWeather(String presentWeather)
+    {
+        this.presentWeather = presentWeather;
     }
 }

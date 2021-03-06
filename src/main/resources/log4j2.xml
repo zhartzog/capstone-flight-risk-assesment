@@ -7,16 +7,16 @@
         </Property>
     </Properties>
     <Appenders>
-        <Console name="ConsoleAppender" target="SYSTEM_OUT" level="debug" follow="true">
+        <Console name="ConsoleAppender" target="SYSTEM_OUT" level="DEBUG" follow="true">
             <PatternLayout pattern="${LOG_PATTERN}"/>
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="com.example.log4j2demo" level="debug" additivity="false">
+        <Logger name="edu.unomaha.flightriskassessment" level="DEBUG" additivity="false">
             <AppenderRef ref="ConsoleAppender" />
         </Logger>
 
-        <Root level="debug">
+        <Root level="DEBUG">
             <AppenderRef ref="ConsoleAppender" />
         </Root>
     </Loggers>

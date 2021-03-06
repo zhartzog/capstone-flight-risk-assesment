@@ -46,7 +46,7 @@ public class MainController
     @GetMapping(path="/getMetarData")
     public @ResponseBody Metar getMetarData(String airportID)
     {
-        logger.info("Beginning Test request function...");
+        logger.info("Beginning getMetarData request function...");
         Metar metar = awcServices.getMetarData(airportID);
         return metar;
     }

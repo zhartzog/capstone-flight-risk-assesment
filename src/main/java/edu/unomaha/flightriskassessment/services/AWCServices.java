@@ -45,6 +45,7 @@ public class AWCServices
         try
         {
             doc = builder.parse(URL);
+            doc.getDocumentElement().normalize();
         } catch ( SAXException e )
         {
             e.printStackTrace();
@@ -59,31 +60,29 @@ public class AWCServices
 
     public Metar getMetarData(String airportID)
     {
+        logger.info("Beginning getMetarData( airportID = "+airportID+")");
         try
         {
             String URL = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&mostrecent=true&hoursBeforeNow=1&stationString=" + airportID;
-
+            logger.info("URL: "+URL);
             Document doc = getDocument(URL);
 
             Node data = doc.getElementsByTagName("data").item(0);
+            logger.info("data attributes: "+data.getAttributes().item(0));
+            Node metarData = doc.getElementsByTagName("METAR").item(0);
 
-            if(data.getAttributes().equals("num_results=\"1\""))
-            {
-                Node metarData = doc.getElementsByTagName("METAR").item(0);
+            JAXBContext jaxbContext = JAXBContext.newInstance(Metar.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
-                JAXBContext jaxbContext = JAXBContext.newInstance(Metar.class);
-                Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-
-                return (Metar) jaxbUnmarshaller.unmarshal(metarData);
-            }
-            else{
-                logger.error("Metar Request did not return a valid result");
-                return null;
-            }
+            return (Metar) jaxbUnmarshaller.unmarshal(metarData);
         }
         catch ( JAXBException e )
         {
             e.printStackTrace();
+        }
+        catch ( NullPointerException npe)
+        {
+            logger.error("Unable to retrieve METAR data. Check airportID.");
         }
 
         return null;

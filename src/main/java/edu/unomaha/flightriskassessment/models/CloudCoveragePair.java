@@ -1,7 +1,6 @@
 package edu.unomaha.flightriskassessment.models;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name = "sky_condition")
 public class CloudCoveragePair
@@ -22,7 +21,7 @@ public class CloudCoveragePair
         return coverage;
     }
 
-    @XmlElement(name = "sky_cover")
+    @XmlAttribute(name = "sky_cover")
     public void setCoverage(String coverage)
     {
         this.coverage = coverage;
@@ -33,7 +32,7 @@ public class CloudCoveragePair
         return base;
     }
 
-    @XmlElement(name = "cloud_base_ft_agl")
+    @XmlAttribute(name = "cloud_base_ft_agl")
     public void setBase(int base)
     {
         this.base = base;

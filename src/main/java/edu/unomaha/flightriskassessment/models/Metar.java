@@ -45,7 +45,7 @@ public class Metar
 
     private String flightCategory;
 
-    private CloudCoveragePair skyCoverage; //TODO: Fix coverage. not always setting info.
+    private CloudCoveragePair skyCoverage;
 
     //Code for current weather. Legend can be found at https://aviationweather.gov/docs/metar/wxSymbols_anno2.pdf
     private String presentWeather;

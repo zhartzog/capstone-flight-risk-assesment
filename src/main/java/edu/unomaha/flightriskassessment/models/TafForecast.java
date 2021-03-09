@@ -1,5 +1,6 @@
 package edu.unomaha.flightriskassessment.models;
 
+import edu.unomaha.flightriskassessment.models.components.CloudCoveragePair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -114,5 +115,49 @@ public class TafForecast
     public void setSkyCoverage(List<CloudCoveragePair> skyCoverage)
     {
         this.skyCoverage = skyCoverage;
+    }
+
+    public int getWindShearHeight()
+    {
+        return windShearHeight;
+    }
+
+    @XmlElement( name = "wind_shear_hgt_ft_agl")
+    public void setWindShearHeight(int windShearHeight)
+    {
+        this.windShearHeight = windShearHeight;
+    }
+
+    public int getWindShearDirection()
+    {
+        return windShearDirection;
+    }
+
+    @XmlElement( name = "wind_shear_dir_degrees")
+    public void setWindShearDirection(int windShearDirection)
+    {
+        this.windShearDirection = windShearDirection;
+    }
+
+    public int getGetWindShearSpeed()
+    {
+        return getWindShearSpeed;
+    }
+
+    @XmlElement( name = "wind_shear_speed_kt")
+    public void setGetWindShearSpeed(int getWindShearSpeed)
+    {
+        this.getWindShearSpeed = getWindShearSpeed;
+    }
+
+    public int getForecastProbabilty()
+    {
+        return forecastProbabilty;
+    }
+
+    @XmlElement( name = "probability")
+    public void setForecastProbabilty(int forecastProbabilty)
+    {
+        this.forecastProbabilty = forecastProbabilty;
     }
 }

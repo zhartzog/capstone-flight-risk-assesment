@@ -64,11 +64,11 @@ public class AWCServices
         try
         {
             String URL = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&mostrecent=true&hoursBeforeNow=1&stationString=" + airportID;
-            logger.info("URL: "+URL);
+            logger.debug("URL: "+URL);
             Document doc = getDocument(URL);
 
             Node data = doc.getElementsByTagName("data").item(0);
-            logger.info("data attributes: "+data.getAttributes().item(0));
+            logger.debug("data attributes: "+data.getAttributes().item(0));
             Node metarData = doc.getElementsByTagName("METAR").item(0);
 
             JAXBContext jaxbContext = JAXBContext.newInstance(Metar.class);

@@ -1,18 +1,15 @@
 package edu.unomaha.flightriskassessment.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import edu.unomaha.flightriskassessment.models.components.CloudCoveragePair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
 /**
- * This class is used to unmarshall METAR data recieved from the Aviation Weather Center. The schema for the XML file can
+ * This class is used to unmarshall METAR data received from the Aviation Weather Center. The schema for the XML file can
  * be found at https://aviationweather.gov/docs/dataserver/schema/metar1_2.xsd
  */
 //@Entity

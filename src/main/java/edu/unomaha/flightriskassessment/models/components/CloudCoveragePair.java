@@ -1,4 +1,4 @@
-package edu.unomaha.flightriskassessment.models;
+package edu.unomaha.flightriskassessment.models.components;
 
 import javax.xml.bind.annotation.*;
 

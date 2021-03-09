@@ -1,26 +1,16 @@
 package edu.unomaha.flightriskassessment.models.components;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement(name = "turbulence_condition")
-public class Turbulence
+@XmlRootElement(name = "icing_condition")
+public class Icing
 {
     private String intensity;
 
     private int minAltitude;
 
     private int maxAltitude;
-
-    public Turbulence(){}
-
-    public Turbulence(String intensity, int minAltitude, int maxAltitude)
-    {
-        this.intensity = intensity;
-        this.minAltitude = minAltitude;
-        this.maxAltitude = maxAltitude;
-    }
 
     public String getIntensity()
     {
@@ -38,7 +28,7 @@ public class Turbulence
         return minAltitude;
     }
 
-    @XmlAttribute( name = "turbulence_min_alt_ft_agl")
+    @XmlAttribute(name = "turbulence_min_alt_ft_agl")
     public void setMinAltitude(int minAltitude)
     {
         this.minAltitude = minAltitude;
@@ -49,7 +39,7 @@ public class Turbulence
         return maxAltitude;
     }
 
-    @XmlAttribute( name = "turbulence_max_alt_ft_agl")
+    @XmlAttribute(name = "turbulence_max_alt_ft_agl")
     public void setMaxAltitude(int maxAltitude)
     {
         this.maxAltitude = maxAltitude;

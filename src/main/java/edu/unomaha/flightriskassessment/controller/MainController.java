@@ -43,7 +43,7 @@ public class MainController
         return professorRepository.findAll();
     }
 
-    @GetMapping(path="/getMetarData")
+    @GetMapping(path="/getMetar")
     public @ResponseBody Metar getMetarData(String airportID)
     {
         logger.info("Beginning getMetarData request function...");

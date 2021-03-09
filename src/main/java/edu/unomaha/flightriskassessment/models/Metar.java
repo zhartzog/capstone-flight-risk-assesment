@@ -51,7 +51,7 @@ public class Metar
 
     private float snow;
 
-    private int verticalVis;
+    private int verticalVis; //When the ceilings get low skyCover will be null and the the field will be filled.
 
     public Metar(){};
 

@@ -1,6 +1,8 @@
 package edu.unomaha.flightriskassessment.models;
 
 import edu.unomaha.flightriskassessment.models.components.CloudCoveragePair;
+import edu.unomaha.flightriskassessment.models.components.Icing;
+import edu.unomaha.flightriskassessment.models.components.Turbulence;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,8 +36,9 @@ public class TafForecast
 
     private int forecastProbabilty;
 
-    //TODO: Add XML tags for the wind shear and probabily above
-    //TODO: Add Turbulence and ice. See XML Schema.
+    private Turbulence turbulence;
+
+    private Icing icing;
 
 
     private List<CloudCoveragePair> skyCoverage;
@@ -159,5 +162,27 @@ public class TafForecast
     public void setForecastProbabilty(int forecastProbabilty)
     {
         this.forecastProbabilty = forecastProbabilty;
+    }
+
+    public Turbulence getTurbulence()
+    {
+        return turbulence;
+    }
+
+    @XmlElement(name = "turbulence_condition")
+    public void setTurbulence(Turbulence turbulence)
+    {
+        this.turbulence = turbulence;
+    }
+
+    public Icing getIcing()
+    {
+        return icing;
+    }
+
+    @XmlElement( name = "icing_condition")
+    public void setIcing(Icing icing)
+    {
+        this.icing = icing;
     }
 }

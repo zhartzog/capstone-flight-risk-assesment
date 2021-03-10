@@ -9,6 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import edu.unomaha.flightriskassessment.models.AirSigmet;
 import edu.unomaha.flightriskassessment.models.Metar;
+import edu.unomaha.flightriskassessment.models.Pirep;
 import edu.unomaha.flightriskassessment.models.Taf;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -139,6 +140,39 @@ public class AWCServices
                 Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
                 returnValue.add((AirSigmet) jaxbUnmarshaller.unmarshal(temp));
+            }
+
+            return returnValue;
+
+        }
+        catch ( JAXBException e )
+        {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public List<Pirep> getPireps(int radius, String latLong)
+    {
+        logger.debug("Beginning getPireps...");
+
+        List<Pirep> returnValue = new ArrayList<Pirep>();
+        try
+        {
+            String URL = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=aircraftreports&requestType=retrieve&format=xml&radialDistance="+radius+";"+latLong+"&hoursBeforeNow=3";
+
+            Document doc = getDocument(URL);
+
+            NodeList data = doc.getElementsByTagName("AircraftReport");
+
+            for(int i = 0; i < data.getLength(); i++)
+            {
+                Node temp = data.item(i);
+                JAXBContext jaxbContext = JAXBContext.newInstance(Pirep.class);
+                Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+                returnValue.add((Pirep) jaxbUnmarshaller.unmarshal(temp));
             }
 
             return returnValue;

@@ -1,7 +1,7 @@
 package edu.unomaha.flightriskassessment.models;
 
-import edu.unomaha.flightriskassessment.models.components.CloudCoveragePair;
 import edu.unomaha.flightriskassessment.models.components.Icing;
+import edu.unomaha.flightriskassessment.models.components.SkyCondition;
 import edu.unomaha.flightriskassessment.models.components.Turbulence;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,7 +41,7 @@ public class TafForecast
     private Icing icing;
 
 
-    private List<CloudCoveragePair> skyCoverage;
+    private List<SkyCondition> skyCoverage;
 
     public String getForcast_start()
     {
@@ -109,13 +109,13 @@ public class TafForecast
         this.visibility = visibility;
     }
 
-    public List<CloudCoveragePair> getSkyCoverage()
+    public List<SkyCondition> getSkyCoverage()
     {
         return skyCoverage;
     }
 
     @XmlElement(name = "sky_condition" )
-    public void setSkyCoverage(List<CloudCoveragePair> skyCoverage)
+    public void setSkyCoverage(List<SkyCondition> skyCoverage)
     {
         this.skyCoverage = skyCoverage;
     }

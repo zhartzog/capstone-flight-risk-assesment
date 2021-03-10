@@ -1,10 +1,7 @@
 package edu.unomaha.flightriskassessment.controller;
 
 import edu.unomaha.flightriskassessment.database.ProfessorRepository;
-import edu.unomaha.flightriskassessment.models.AirSigmet;
-import edu.unomaha.flightriskassessment.models.Metar;
-import edu.unomaha.flightriskassessment.models.Professor;
-import edu.unomaha.flightriskassessment.models.Taf;
+import edu.unomaha.flightriskassessment.models.*;
 import edu.unomaha.flightriskassessment.services.AWCServices;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,6 +67,15 @@ public class MainController
     {
         logger.info("Beginning getAirSigmet...");
         return awcServices.getAirSigmet();
+
+    }
+
+    @GetMapping(path="/getPireps")
+    public @ResponseBody
+    List<Pirep> getPireps(@RequestParam int radius, @RequestParam String latLong)
+    {
+        logger.info("Beginning getPirep request...");
+        return awcServices.getPireps(radius,latLong);
 
     }
 

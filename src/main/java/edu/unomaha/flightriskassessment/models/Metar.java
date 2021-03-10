@@ -3,7 +3,7 @@ package edu.unomaha.flightriskassessment.models;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import edu.unomaha.flightriskassessment.models.components.CloudCoveragePair;
+import edu.unomaha.flightriskassessment.models.components.SkyCondition;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,7 +42,7 @@ public class Metar
 
     private String flightCategory;
 
-    private CloudCoveragePair skyCoverage;
+    private SkyCondition skyCoverage;
 
     //Code for current weather. Legend can be found at https://aviationweather.gov/docs/metar/wxSymbols_anno2.pdf
     private String presentWeather;
@@ -53,7 +53,7 @@ public class Metar
 
     private int verticalVis; //When the ceilings get low skyCover will be null and the the field will be filled.
 
-    public Metar(){};
+    public Metar(){}
 
     public Metar(String airportID, String time, float temperature, float dewPoint, int windDirection, int windSpeed, int windGust, float visibility, String flightCategory, String skyCoverage, int cloudBases)
     {
@@ -70,7 +70,7 @@ public class Metar
         this.windGust = windGust;
         this.visibility = visibility;
         this.flightCategory = flightCategory;
-        this.skyCoverage = new CloudCoveragePair(skyCoverage, cloudBases);
+        this.skyCoverage = new SkyCondition(skyCoverage, cloudBases);
     }
 
     public Integer getId() { return id; }
@@ -158,13 +158,13 @@ public class Metar
         this.flightCategory = flightCategory;
     }
 
-    public CloudCoveragePair getSkyCoverage()
+    public SkyCondition getSkyCoverage()
     {
         return skyCoverage;
     }
 
     @XmlElement(name = "sky_condition")
-    public void setSkyCoverage(CloudCoveragePair cloudCoveragePair)
+    public void setSkyCoverage(SkyCondition cloudCoveragePair)
     {
         this.skyCoverage = cloudCoveragePair;
     }

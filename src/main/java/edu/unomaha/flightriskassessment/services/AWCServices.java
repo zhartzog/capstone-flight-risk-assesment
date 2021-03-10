@@ -7,6 +7,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import edu.unomaha.flightriskassessment.models.AirSigmet;
 import edu.unomaha.flightriskassessment.models.Metar;
 import edu.unomaha.flightriskassessment.models.Taf;
 import org.apache.logging.log4j.LogManager;
@@ -14,10 +15,13 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AWCServices
@@ -104,6 +108,41 @@ public class AWCServices
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
             return (Taf) jaxbUnmarshaller.unmarshal(tafData);
+        }
+        catch ( JAXBException e )
+        {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public List<AirSigmet> getAirSigmet()
+    {
+        logger.debug("Beginning getAirSigmet...");
+
+        List<AirSigmet> returnValue = new ArrayList<AirSigmet>();
+        try
+        {
+            //Gets the most recent Airmet/Sigmets. Currently returns all along the country.
+            //TODO: Figure out if its worth specifying what part of the country we want to look at. Only way to do it is to specify a rectangle using LatLongs. There generally arent that many airmets/sigmets.
+            String URL = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=airsigmets&requestType=retrieve&format=xml&hoursBeforeNow=3";
+
+            Document doc = getDocument(URL);
+
+            NodeList data = doc.getElementsByTagName("AIRSIGMET");
+
+            for(int i = 0; i < data.getLength(); i++)
+            {
+                Node temp = data.item(i);
+                JAXBContext jaxbContext = JAXBContext.newInstance(AirSigmet.class);
+                Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+                returnValue.add((AirSigmet) jaxbUnmarshaller.unmarshal(temp));
+            }
+
+            return returnValue;
+
         }
         catch ( JAXBException e )
         {

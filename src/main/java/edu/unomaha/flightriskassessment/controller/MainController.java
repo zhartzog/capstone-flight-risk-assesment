@@ -1,6 +1,7 @@
 package edu.unomaha.flightriskassessment.controller;
 
 import edu.unomaha.flightriskassessment.database.ProfessorRepository;
+import edu.unomaha.flightriskassessment.models.AirSigmet;
 import edu.unomaha.flightriskassessment.models.Metar;
 import edu.unomaha.flightriskassessment.models.Professor;
 import edu.unomaha.flightriskassessment.models.Taf;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 
 @Controller
@@ -60,5 +63,15 @@ public class MainController
          return taf;
 
     }
+
+    @GetMapping(path="/getAirSigmet")
+    public @ResponseBody
+    List<AirSigmet> getAirSigmet()
+    {
+        logger.info("Beginning getAirSigmet...");
+        return awcServices.getAirSigmet();
+
+    }
+
 
 }

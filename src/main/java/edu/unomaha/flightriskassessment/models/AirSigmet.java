@@ -6,11 +6,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Polygon;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 import java.util.List;
 
 @XmlRootElement( name = "AIRSIGMET")
@@ -34,7 +38,6 @@ public class AirSigmet
     private String      type;
     //List of coordinates that define the forecasted region.
     private List<Point> area;
-
 
     public String getRawText()
     {
@@ -123,5 +126,29 @@ public class AirSigmet
     public void setArea(List<Point> area)
     {
         this.area = area;
+    }
+
+    public boolean contains(double latitude, double longitude)
+    {
+        Coordinate[] points = generateCoordinates();
+        GeometryFactory gf = new GeometryFactory();
+        LinearRing ring = gf.createLinearRing(points);
+        Polygon polygon = gf.createPolygon();
+
+        Coordinate tempCoordinate = new Coordinate(latitude, longitude);
+        org.locationtech.jts.geom.Point pt = gf.createPoint(tempCoordinate);
+
+        return polygon.contains(pt);
+
+    }
+
+    private Coordinate[] generateCoordinates()
+    {
+        ArrayList<Coordinate> points = new ArrayList<Coordinate>();
+        for ( Point i: this.area)
+        {
+            points.add( new Coordinate(i.getLongitude(), i.getLatitude()));
+        }
+        return points.toArray(new Coordinate[0]);
     }
 }

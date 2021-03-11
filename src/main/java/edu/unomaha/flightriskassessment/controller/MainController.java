@@ -1,17 +1,16 @@
 package edu.unomaha.flightriskassessment.controller;
 
 import edu.unomaha.flightriskassessment.database.ProfessorRepository;
-import edu.unomaha.flightriskassessment.models.Professor;
-import edu.unomaha.flightriskassessment.services.MetarService;
+import edu.unomaha.flightriskassessment.models.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 
 
 @Controller
@@ -36,15 +35,6 @@ public class MainController
     @GetMapping(path="/allProfessors")
     public @ResponseBody Iterable<Professor> getAllProfessors() {
         return professorRepository.findAll();
-    }
-
-    @GetMapping(path="/test")
-    public @ResponseBody String test()
-    {
-        logger.info("Beginning Test request function...");
-        MetarService ms = new MetarService();
-        ms.getMetarData("KCBF");
-        return "TEST";
     }
 
 }

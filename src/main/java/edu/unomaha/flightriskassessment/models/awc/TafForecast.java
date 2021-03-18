@@ -1,8 +1,8 @@
-package edu.unomaha.flightriskassessment.models;
+package edu.unomaha.flightriskassessment.models.awc;
 
-import edu.unomaha.flightriskassessment.models.components.Icing;
-import edu.unomaha.flightriskassessment.models.components.SkyCondition;
-import edu.unomaha.flightriskassessment.models.components.Turbulence;
+import edu.unomaha.flightriskassessment.models.awc.components.Icing;
+import edu.unomaha.flightriskassessment.models.awc.components.SkyCondition;
+import edu.unomaha.flightriskassessment.models.awc.components.Turbulence;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

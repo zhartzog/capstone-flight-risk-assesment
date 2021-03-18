@@ -1,6 +1,8 @@
-package edu.unomaha.flightriskassessment.models;
+package edu.unomaha.flightriskassessment.models.awc;
 
-import edu.unomaha.flightriskassessment.models.components.*;
+import edu.unomaha.flightriskassessment.models.awc.components.PirepIcing;
+import edu.unomaha.flightriskassessment.models.awc.components.PirepTurbulence;
+import edu.unomaha.flightriskassessment.models.awc.components.SkyCondition;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -19,15 +21,15 @@ public class Pirep
     //Longitude of the observation
     private float longitude;
     //Altitude of report in MSL
-    private int altitude;
+    private int             altitude;
     //Reported sky condition
     private SkyCondition    skyCondition;
     // Reported turbulence conditions.
     private PirepTurbulence turbulence;
     // Reported icing condition.
-    private PirepIcing icing;
+    private PirepIcing      icing;
     // Reported visibility in statute miles
-    private int visibility;
+    private int             visibility;
     // Uncategorized weather
     private String wxString;
     // Temperature reported

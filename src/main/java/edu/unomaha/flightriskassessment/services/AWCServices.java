@@ -7,10 +7,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import edu.unomaha.flightriskassessment.models.AirSigmet;
-import edu.unomaha.flightriskassessment.models.Metar;
-import edu.unomaha.flightriskassessment.models.Pirep;
-import edu.unomaha.flightriskassessment.models.Taf;
+import edu.unomaha.flightriskassessment.models.awc.AirSigmet;
+import edu.unomaha.flightriskassessment.models.awc.Metar;
+import edu.unomaha.flightriskassessment.models.awc.Pirep;
+import edu.unomaha.flightriskassessment.models.awc.Taf;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 

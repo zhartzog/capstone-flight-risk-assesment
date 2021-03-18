@@ -1,9 +1,9 @@
-package edu.unomaha.flightriskassessment.models;
+package edu.unomaha.flightriskassessment.models.awc;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import edu.unomaha.flightriskassessment.models.components.SkyCondition;
+import edu.unomaha.flightriskassessment.models.awc.components.SkyCondition;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

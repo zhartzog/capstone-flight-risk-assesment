@@ -1,13 +1,15 @@
 package edu.unomaha.flightriskassessment.controller;
 
-import edu.unomaha.flightriskassessment.models.*;
+import edu.unomaha.flightriskassessment.models.awc.AirSigmet;
+import edu.unomaha.flightriskassessment.models.awc.Metar;
+import edu.unomaha.flightriskassessment.models.awc.Pirep;
+import edu.unomaha.flightriskassessment.models.awc.Taf;
 import edu.unomaha.flightriskassessment.services.AWCServices;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 

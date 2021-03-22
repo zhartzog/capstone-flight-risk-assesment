@@ -1,7 +1,7 @@
-package edu.unomaha.flightriskassessment.models;
+package edu.unomaha.flightriskassessment.models.awc;
 
-import edu.unomaha.flightriskassessment.models.components.Altitude;
-import edu.unomaha.flightriskassessment.models.components.Point;
+import edu.unomaha.flightriskassessment.models.awc.components.Altitude;
+import edu.unomaha.flightriskassessment.models.awc.components.Point;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -10,7 +10,6 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -27,11 +26,11 @@ public class AirSigmet
     //Start time from when the Airmet/Sigmet is valid from. ISO8601 format
     private String timeStart;
     //End time from when the Airmet/Sigmet is valid from. ISO8601 format
-    private String timeEnd;
+    private String   timeEnd;
     //Altitudes that the forecast is valid for. Measured in feet MSL.
     private Altitude altitude;
     //The magnetic heading the forecasted condition is moving. Generally only applicable to thunderstorms.
-    private int movementHeading;
+    private int      movementHeading;
     //The speed in knots the forecasted condition is moving. Generally only applicable to thunderstorms.
     private int movementSpeed;
     //Type of forecast. 'OUTLOOK', 'AIRMET', or 'SIGMET'

@@ -12,8 +12,8 @@ public class FormController
     @PostMapping( value="/basicFormInfo", consumes = "application/json", produces = "application/json")
     public @ResponseBody BasicFormInput basicFormInput(@RequestBody BasicFormInput input)
     {
-        BasicFormInput bfi = new BasicFormInput();
-        bfi.setDeparture_airport("KOMA");
-        return bfi;
+        System.out.println(input.getDeparture_airport());
+        return input;
     }
+
 }

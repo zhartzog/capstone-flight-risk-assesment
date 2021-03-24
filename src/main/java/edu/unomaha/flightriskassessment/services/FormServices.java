@@ -37,8 +37,10 @@ public class FormServices
     private long deltaTime;
 
 
-    public String getDynamicQuestion(BasicFormInput input)
+    //TODO: Fix errors. Not return correct values.
+    public AdditionalQuestions getDynamicQuestions(BasicFormInput input)
     {
+        System.out.println("Time: "+input.getDeparture_date_time());
         additionalQuestions = new AdditionalQuestions();
 
         //Get required data
@@ -49,13 +51,17 @@ public class FormServices
 
         additionalQuestions.setInstrumentCurrent( isIFR() );
         additionalQuestions.setDepartureWinds(calculateWindComponent(input.getDeparture_airport()));
+        getAirSigmet();
+        additionalQuestions.setPireps( awcServices.getPireps(15, airportInfo.getLatLongAsString() ) );
 
-        return "Not done";
+
+        return additionalQuestions;
     }
 
     private void calculate_delta_time(String time)
     {
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/DD/yyyy HH:mm");
+        String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+        SimpleDateFormat dateFormatter = new SimpleDateFormat(pattern);
 
         try
         {
@@ -121,7 +127,25 @@ public class FormServices
     {
         for ( AirSigmet i: this.airSigmet)
         {
+            if( i.contains(airportInfo.getLatitudeDD(), airportInfo.getLongitudeDD()))
+            {
+                if(i.getAltitude().getMaximum() < 6000)
+                {
+                    this.additionalQuestions.addAirSigmet(i);
+                }
+            }
+        }
+    }
 
+    private void getPireps()
+    {
+        for( Pirep i : this.pireps)
+        {
+            double distance = Pirep.distance(i.getLatitude(),i.getLongitude(),airportInfo.getLatitudeDD(),airportInfo.getLongitudeDD(),"NM");
+            if( distance < 20 )
+            {
+                this.additionalQuestions.addPirep(i);
+            }
         }
     }
 }

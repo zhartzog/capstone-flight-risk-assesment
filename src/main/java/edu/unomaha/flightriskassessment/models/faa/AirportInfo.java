@@ -1,5 +1,6 @@
 package edu.unomaha.flightriskassessment.models.faa;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AirportInfo
@@ -71,6 +72,13 @@ public class AirportInfo
         this.longitude = longitude;
     }
 
+    public String getLatLongAsString()
+    {
+        double lat = getLatitudeDD();
+        double longitude = getLongitudeDD();
+
+        return (lat + "," + longitude);
+    }
 
     public String getGlobal_id()
     {
@@ -114,6 +122,8 @@ public class AirportInfo
 
     public void addRunway(Runway runway)
     {
+        if(this.runways == null)
+            this.runways = new ArrayList<>();
         this.runways.add(runway);
     }
 
@@ -128,4 +138,5 @@ public class AirportInfo
 
         return degree + (minute/60) + (second/3600);
     }
+
 }

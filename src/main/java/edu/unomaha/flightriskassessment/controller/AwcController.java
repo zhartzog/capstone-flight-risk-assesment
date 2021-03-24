@@ -23,17 +23,8 @@ public class AwcController
     private static final Logger              logger = LogManager.getLogger(AwcController.class);
 
     @Autowired
-    private AWCServices awcServices = new AWCServices();
+    private AWCServices awcServices;
 
-    @Autowired
-    private FaaServices faaServices = new FaaServices();
-
-    @GetMapping(path="/test")
-    public @ResponseBody
-    List<Runway> test(String airportID)
-    {
-       return faaServices.getRunways("KCBF");
-    }
 
     @GetMapping(path="/getMetar")
     public @ResponseBody

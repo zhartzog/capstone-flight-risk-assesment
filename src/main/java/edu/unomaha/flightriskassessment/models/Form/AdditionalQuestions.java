@@ -4,6 +4,8 @@ public class AdditionalQuestions
 {
     private boolean isInstrumentCurrent;
 
+    private double headwind;
+    private double crosswind;
 
     public boolean isInstrumentCurrent()
     {
@@ -13,5 +15,11 @@ public class AdditionalQuestions
     public void setInstrumentCurrent(boolean instrumentCurrent)
     {
         isInstrumentCurrent = instrumentCurrent;
+    }
+
+    public void setDepartureWinds(double[] winds)
+    {
+        headwind = winds[0];
+        crosswind = winds[1];
     }
 }

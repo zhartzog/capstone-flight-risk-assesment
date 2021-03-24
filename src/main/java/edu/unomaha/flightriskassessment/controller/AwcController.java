@@ -4,7 +4,9 @@ import edu.unomaha.flightriskassessment.models.awc.AirSigmet;
 import edu.unomaha.flightriskassessment.models.awc.Metar;
 import edu.unomaha.flightriskassessment.models.awc.Pirep;
 import edu.unomaha.flightriskassessment.models.awc.Taf;
+import edu.unomaha.flightriskassessment.models.faa.Runway;
 import edu.unomaha.flightriskassessment.services.AWCServices;
+import edu.unomaha.flightriskassessment.services.FaaServices;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,16 @@ public class AwcController
 
     @Autowired
     private AWCServices awcServices = new AWCServices();
+
+    @Autowired
+    private FaaServices faaServices = new FaaServices();
+
+    @GetMapping(path="/test")
+    public @ResponseBody
+    List<Runway> test(String airportID)
+    {
+       return faaServices.getRunways("KCBF");
+    }
 
     @GetMapping(path="/getMetar")
     public @ResponseBody

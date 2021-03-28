@@ -21,6 +21,11 @@ public class AirportInfo
 
     public AirportInfo(){}
 
+    public AirportInfo(String ID)
+    {
+        this.ID = ID;
+    }
+
 
     public String getID()
     {

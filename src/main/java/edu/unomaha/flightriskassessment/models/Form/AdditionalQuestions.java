@@ -11,6 +11,11 @@ public class AdditionalQuestions
 
     private double headwind;
     private double crosswind;
+    private double headwind_gust;
+    private double crosswind_gust;
+    private String primaryRunway;
+
+    private String metar;
 
     private List<AirSigmet> airSigmetList;
 
@@ -30,6 +35,12 @@ public class AdditionalQuestions
     {
         headwind = winds[0];
         crosswind = winds[1];
+    }
+
+    public void setDeartureWinds_gusts(double[] gusts)
+    {
+        headwind_gust = gusts[0];
+        crosswind_gust = gusts[1];
     }
 
     public List<AirSigmet> getAirSigmetList()
@@ -60,6 +71,47 @@ public class AdditionalQuestions
     public void addPirep(Pirep pirep)
     {
         this.pireps.add(pirep);
+    }
+
+    public double getHeadwind()
+    {
+        return headwind;
+    }
+
+
+    public double getCrosswind()
+    {
+        return crosswind;
+    }
+
+    public String getMetar()
+    {
+        return metar;
+    }
+
+    public void setMetar(String metar)
+    {
+        this.metar = metar;
+    }
+
+    public double getHeadwind_gust()
+    {
+        return headwind_gust;
+    }
+
+    public double getCrosswind_gust()
+    {
+        return crosswind_gust;
+    }
+
+    public String getPrimaryRunway()
+    {
+        return primaryRunway;
+    }
+
+    public void setPrimaryRunway(String primaryRunway)
+    {
+        this.primaryRunway = primaryRunway;
     }
 
     @Override

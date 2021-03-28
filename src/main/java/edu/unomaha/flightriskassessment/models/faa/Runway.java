@@ -10,8 +10,7 @@ public class Runway
 
     public Runway(String designator, int length, int width)
     {
-        System.out.printf("Des: %s, length: %d, width: %d \n", designator, length, width);
-        this.designator = designator;
+       this.designator = designator;
         this.length = length;
         this.width = width;
     }

@@ -1,4 +1,4 @@
-package com.adminTable.model;
+package edu.unomaha.flightriskassessment.models;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;

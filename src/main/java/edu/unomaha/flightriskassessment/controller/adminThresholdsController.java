@@ -1,4 +1,4 @@
-package com.adminTable.controller;
+package edu.unomaha.flightriskassessment.controller;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;  
@@ -7,9 +7,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;  
 import org.springframework.web.bind.annotation.PutMapping;  
 import org.springframework.web.bind.annotation.RequestBody;  
-import org.springframework.web.bind.annotation.RestController;  
-import com.adminTable.model.adminThresholds;
-import com.adminTable.services.adminThresholdsService;
+import org.springframework.web.bind.annotation.RestController;
+
+import edu.unomaha.flightriskassessment.models.adminThresholds;
+import edu.unomaha.flightriskassessment.services.adminThresholdsService;  
 //mark class as Controller
 @RestController
 public class adminThresholdsController
@@ -28,7 +29,7 @@ private List<adminThresholds> getAllThresholds()
 @GetMapping("/adminThresholds/{adminThresholdId}")
 private adminThresholds getAdminThresholds(@PathVariable("adminThresholdId") int adminThresholdId)
 {
-    return adminThresholds_Service.getThresholdById(adminThresholdId);
+    return adminThresholds_Service.getThresholdsById(adminThresholdId);
 }
     //create a delete mapping that deletes by ID.
 @DeleteMapping("/adminThresholds/{adminThresholdId}")

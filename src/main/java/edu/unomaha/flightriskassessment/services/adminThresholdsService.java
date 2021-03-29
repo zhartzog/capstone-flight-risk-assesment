@@ -2,7 +2,8 @@ package edu.unomaha.flightriskassessment.services;
 import java.util.ArrayList;
 import java.util.List;
 import org.graalvm.compiler.serviceprovider.ServiceProvider;
-import org.springframework.beans.factory.annotation.Autowired;  
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 import edu.unomaha.flightriskassessment.database.adminThresholdsRepository;
 import edu.unomaha.flightriskassessment.models.adminThresholds; 
@@ -16,7 +17,7 @@ adminThresholdsRepository adminThresholds_Repository;
 public List<adminThresholds> getAllThresholds()
 {
     List<adminThresholds> adminThresholds = new ArrayList<adminThresholds>();
-    adminThresholds.findAll().forEach(adminThresholds1 -> adminThresholds.add(adminThresholds1));
+    ((CrudRepository<edu.unomaha.flightriskassessment.models.adminThresholds, Integer>) adminThresholds).findAll().forEach(adminThresholds1 -> adminThresholds.add(adminThresholds1));
     return adminThresholds;
 }
 //getting a specific record by using the method findById()

@@ -82,7 +82,38 @@ public class AirportInfo
         double lat = getLatitudeDD();
         double longitude = getLongitudeDD();
 
-        return (lat + "," + longitude);
+        return (longitude + "," + lat);
+    }
+
+    //Converts coordinates from Degrees Minutes Seconds to decimal
+    private double convertDMStoDD( String input)
+    {
+        String[] temp = input.split("-");
+        int sign = 1;
+        double degree = Double.parseDouble(temp[0]);
+        double minute = Double.parseDouble(temp[1]);
+        //Seconds ends with a N/S or E/W, need to remove it to do conversion
+        double second = Double.parseDouble( temp[2].substring(0, temp.length-2));
+        char direction = temp[2].charAt(temp[2].length()-1);
+        if( direction == 'S' || direction == 'W' )
+            sign = -1;
+
+        return sign*(degree + (minute/60) + (second/3600));
+    }
+
+    /*
+    * This method return the a rectangle of latitude/longitude such that the airport's latlong is in the center.
+    */
+    public int[] getMinMaxLatLong()
+    {
+        int[] minMax = new int[4];
+        minMax[0] = (int) (Math.floor(getLatitudeDD())); //Min latitude
+        minMax[1] = (int) (Math.ceil(getLatitudeDD())); //max latitude
+        minMax[2] = (int) (Math.floor(getLongitudeDD())); //Min longitude
+        minMax[3] = (int) (Math.ceil(getLongitudeDD())); //max longitude
+
+        System.out.printf("minMax{%d,%d,%d,%d}\n",minMax[0],minMax[1],minMax[2],minMax[3]);
+        return minMax;
     }
 
     public String getGlobal_id()
@@ -130,18 +161,6 @@ public class AirportInfo
         if(this.runways == null)
             this.runways = new ArrayList<>();
         this.runways.add(runway);
-    }
-
-    //Converts coordinates from Degrees Minutes Seconds to decimal
-    private double convertDMStoDD( String input)
-    {
-        String[] temp = input.split("-");
-        double degree = Double.parseDouble(temp[0]);
-        double minute = Double.parseDouble(temp[1]);
-        //Seconds ends with a N/S or E/W, need to remove it to do conversion
-        double second = Double.parseDouble( temp[2].substring(0, temp.length-2));
-
-        return degree + (minute/60) + (second/3600);
     }
 
 }

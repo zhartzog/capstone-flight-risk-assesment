@@ -43,14 +43,14 @@ public class AwcController
 
     }
 
-    @GetMapping(path="/getAirSigmet")
+   /* @GetMapping(path="/getAirSigmet")
     public @ResponseBody
-    List<AirSigmet> getAirSigmet()
+    List<AirSigmet> getAirSigmet(@RequestParam int minAltitude, @RequestParam int max)
     {
         logger.info("Beginning getAirSigmet...");
         return awcServices.getAirSigmet();
 
-    }
+    }*/
 
     @GetMapping(path="/getPireps")
     public @ResponseBody

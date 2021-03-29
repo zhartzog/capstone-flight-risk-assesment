@@ -25,6 +25,8 @@ public class FormServices
 {
     private static final Logger      logger = LogManager.getLogger(FormServices.class);
 
+    private static final int MAX_ALTITUDE = 6000;
+
     @Autowired
     private              AWCServices awcServices;
 
@@ -37,7 +39,6 @@ public class FormServices
 
     private Metar metar;
     private Taf taf;
-    private List<AirSigmet>   airSigmet;
     private List<Pirep> pireps;
     private long deltaTime;
 
@@ -52,12 +53,12 @@ public class FormServices
         //Get required data
         calculate_delta_time(input.getDeparture_date_time());
         metar = awcServices.getMetarData(input.getDeparture_airport());
-        airSigmet = awcServices.getAirSigmet();
         airportInfo = faaServices.getAirportInfo(input.getDeparture_airport());
 
         additionalQuestions.setInstrumentCurrent( isIFR() );
         calculateWindComponent();
         getAirSigmet();
+        System.out.println("LatLong: "+airportInfo.getLatLongAsString());
         additionalQuestions.setPireps( awcServices.getPireps(20, airportInfo.getLatLongAsString() ) );
         additionalQuestions.setMetar(metar.getRawText());
 
@@ -153,27 +154,11 @@ public class FormServices
 
     private void getAirSigmet()
     {
-        for ( AirSigmet i: this.airSigmet)
-        {
-            if( i.contains(airportInfo.getLatitudeDD(), airportInfo.getLongitudeDD()))
-            {
-                if(i.getAltitude().getMaximum() < 6000)
-                {
-                    this.additionalQuestions.addAirSigmet(i);
-                }
-            }
-        }
+        int[] minMax = airportInfo.getMinMaxLatLong();
+        this.additionalQuestions.setAirSigmetList(
+                awcServices.getAirSigmet(minMax[0], minMax[1], minMax[2], minMax[3], MAX_ALTITUDE )
+        );
     }
 
-    private void getPireps()
-    {
-        for( Pirep i : this.pireps)
-        {
-            double distance = Pirep.distance(i.getLatitude(),i.getLongitude(),airportInfo.getLatitudeDD(),airportInfo.getLongitudeDD(),"NM");
-            if( distance < 20 )
-            {
-                this.additionalQuestions.addPirep(i);
-            }
-        }
-    }
+
 }

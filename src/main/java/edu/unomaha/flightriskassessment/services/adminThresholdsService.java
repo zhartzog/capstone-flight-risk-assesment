@@ -1,11 +1,12 @@
-package com.adminTable.services;
+package edu.unomaha.flightriskassessment.services;
 import java.util.ArrayList;
 import java.util.List;
 import org.graalvm.compiler.serviceprovider.ServiceProvider;
-import org.springframework.beans.factory.annotation.Autowired;  
-import org.springframework.stereotype.Service; 
-import com.adminTable.model.*;
-import com.adminTable.repository.adminThresholdsRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Service;
+import edu.unomaha.flightriskassessment.database.adminThresholdsRepository;
+import edu.unomaha.flightriskassessment.models.adminThresholds; 
 //defining the business logic
 @Service
 public class adminThresholdsService
@@ -15,8 +16,8 @@ adminThresholdsRepository adminThresholds_Repository;
 //get all thresholds recorded using CrudRepository findAll()
 public List<adminThresholds> getAllThresholds()
 {
-    List<adminThresholds> adminThresholds = new arrayList<adminThresholds>();
-    adminThresholds.findAll().forEach(adminThresholds1 -> adminThresholds.add(adminThresholds1));
+    List<adminThresholds> adminThresholds = new ArrayList<adminThresholds>();
+    ((CrudRepository<edu.unomaha.flightriskassessment.models.adminThresholds, Integer>) adminThresholds).findAll().forEach(adminThresholds1 -> adminThresholds.add(adminThresholds1));
     return adminThresholds;
 }
 //getting a specific record by using the method findById()

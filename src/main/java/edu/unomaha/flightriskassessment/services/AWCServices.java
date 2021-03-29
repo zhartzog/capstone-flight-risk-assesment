@@ -156,7 +156,7 @@ public class AWCServices
     {
         logger.debug("Beginning getPireps...");
 
-        List<Pirep> returnValue = new ArrayList<>();
+        List<Pirep> returnValue = new ArrayList<Pirep>();
         try
         {
             String URL = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=aircraftreports&requestType=retrieve&format=xml&radialDistance="+radius+";"+latLong+"&hoursBeforeNow=3";

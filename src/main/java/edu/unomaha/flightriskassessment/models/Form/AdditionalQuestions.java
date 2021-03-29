@@ -9,10 +9,10 @@ public class AdditionalQuestions
 {
     private boolean isInstrumentCurrent;
 
-    private double headwind;
-    private double crosswind;
-    private double headwind_gust;
-    private double crosswind_gust;
+    private int headwind;
+    private int crosswind;
+    private int headwind_gust;
+    private int crosswind_gust;
     private String primaryRunway;
 
     private String metar;
@@ -33,14 +33,14 @@ public class AdditionalQuestions
 
     public void setDepartureWinds(double[] winds)
     {
-        headwind = winds[0];
-        crosswind = winds[1];
+        headwind = (int) Math.ceil(winds[0]);
+        crosswind = (int) Math.ceil(winds[1]);
     }
 
     public void setDeartureWinds_gusts(double[] gusts)
     {
-        headwind_gust = gusts[0];
-        crosswind_gust = gusts[1];
+        headwind_gust = (int) Math.ceil(gusts[0]);
+        crosswind_gust = (int) Math.ceil(gusts[1]);
     }
 
     public List<AirSigmet> getAirSigmetList()

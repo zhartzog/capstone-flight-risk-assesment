@@ -52,7 +52,7 @@ public class FaaServices
             JSONArray data = json.getJSONArray("features");
             JSONObject attributes = data.getJSONObject(0).getJSONObject("attributes");
 
-            System.out.printf("Airport %s attributes: %s\n", airport.getIdent(), attributes.toString());
+            //System.out.printf("Airport %s attributes: %s\n", airport.getIdent(), attributes.toString());
 
             airport.setGlobal_id( attributes.getString("GLOBAL_ID"));
             airport.setLatitude( attributes.getString("LATITUDE"));

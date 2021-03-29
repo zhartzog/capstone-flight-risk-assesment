@@ -105,23 +105,26 @@ public class FormServices
         double[] gusts = new double[]{Double.MAX_VALUE, Double.MAX_VALUE};
         String primaryRunway = "ERROR";
         List<Runway> runways = airportInfo.getRunways();
-        System.out.println("Runway.length"+runways.size());
+        System.out.println("Runway.length: "+runways.size());
         for ( Runway i: runways)
         {
             //You can take off in both directions, need to know which direction gets a headwind.
             String[] headings = i.getDesignator().split("/");
             if(this.deltaTime < 60)
             {
+                System.out.printf("heading[0]: %s, H[1]: %s, metar: %d \n",headings[0],headings[1],this.metar.getWindDirection());
                 //Get the smallest difference between the wind direction and runway heading.
                 int angle_a = Math.abs( Integer.parseInt(headings[0])*10 -  this.metar.getWindDirection());
                 int angle_b = Math.abs( Integer.parseInt(headings[1])*10 -  this.metar.getWindDirection());
                 double angle = Math.toRadians( Math.min(angle_a, angle_b));
 
+                System.out.printf("Angle A: %d, Angle B: %d, angle: %.2f \n",angle_a,angle_b,angle);
+
                 //Calculate the winds
-                double crosswind = Math.cos(angle) * this.metar.getWindSpeed();
-                double crosswind_gusts = Math.cos(angle) * this.metar.getWindGust();
-                double headwind = Math.sin(angle) * this.metar.getWindSpeed();
-                double headwind_gusts = Math.sin(angle) * this.metar.getWindGust();
+                double crosswind = Math.sin(angle) * this.metar.getWindSpeed();
+                double crosswind_gusts = Math.sin(angle) * this.metar.getWindGust();
+                double headwind = Math.cos(angle) * this.metar.getWindSpeed();
+                double headwind_gusts = Math.cos(angle) * this.metar.getWindGust();
 
                 System.out.printf("HW: %.2f, XW: %.2f \n",headwind,crosswind);
 

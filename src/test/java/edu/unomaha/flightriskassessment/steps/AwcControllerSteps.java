@@ -11,15 +11,16 @@ import io.cucumber.java.en.When;
 
 public class AwcControllerSteps {
 	private String airportID;
-	private AwcController awcController = new AwcController();
+	private AwcController awcController;
 	private Metar result;
 	
 	@Given ("a request is made to fetch metar data for {string}")
-	public void givenARequestIsMade(String airportID) {
+	public void givenAWCRequestIsMade(String airportID) {
+		awcController = new AwcController();
 		this.airportID = airportID;
 	}
-	@When ("that request is made")
-	public void whenARequestIsMade() {
+	@When ("that AWC request is made")
+	public void whenAWCRequestIsMade() {
 		result = awcController.getMetarData(airportID);
 	}
 	@Then ("the METAR object is populated")

@@ -4,7 +4,9 @@ import edu.unomaha.flightriskassessment.models.awc.AirSigmet;
 import edu.unomaha.flightriskassessment.models.awc.Metar;
 import edu.unomaha.flightriskassessment.models.awc.Pirep;
 import edu.unomaha.flightriskassessment.models.awc.Taf;
+import edu.unomaha.flightriskassessment.models.faa.Runway;
 import edu.unomaha.flightriskassessment.services.AWCServices;
+import edu.unomaha.flightriskassessment.services.FaaServices;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,8 @@ public class AwcController
     private static final Logger              logger = LogManager.getLogger(AwcController.class);
 
     @Autowired
-    private AWCServices awcServices = new AWCServices();
+    private AWCServices awcServices;
+
 
     @GetMapping(path="/getMetar")
     public @ResponseBody

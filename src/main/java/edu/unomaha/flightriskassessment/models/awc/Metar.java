@@ -89,7 +89,7 @@ public class Metar
 
     @XmlElement(name = "station_id")
     public void setAirportID(String airportID) {
-        logger.debug("Setting Airport ID to %s", airportID);
+        logger.debug("Setting Airport ID to " + airportID);
         this.airportID = airportID;
     }
 
@@ -98,7 +98,7 @@ public class Metar
     @XmlElement(name = "observation_time")
     public void setTime(String time)
     {
-        logger.debug("Setting time to %s",time);
+        logger.debug("Setting time to " + time);
         this.time = time;
     }
 
@@ -106,7 +106,7 @@ public class Metar
 
     @XmlElement(name = "temp_c")
     public void setTemperature(float temperature) {
-        logger.debug("Setting temperature to %d", temperature);
+        logger.debug("Setting temperature to " + temperature);
         this.temperature = temperature;
     }
 
@@ -114,7 +114,7 @@ public class Metar
 
     @XmlElement(name = "dewpoint_c")
     public void setDewPoint(float dewPoint) {
-        logger.debug("Setting dew point to %d", dewPoint);
+        logger.debug("Setting dew point to " + dewPoint);
         this.dewPoint = dewPoint;
     }
 
@@ -122,7 +122,7 @@ public class Metar
 
     @XmlElement(name = "wind_dir_degrees")
     public void setWindDirection(int windDirection) {
-        logger.debug("Setting wind direction to %d", windDirection);
+        logger.debug("Setting wind direction to " + windDirection);
         this.windDirection = windDirection;
     }
 
@@ -130,7 +130,7 @@ public class Metar
 
     @XmlElement(name = "wind_speed_kt")
     public void setWindSpeed(int windSpeed) {
-    	logger.debug("Setting wind speed to %d", windSpeed);
+    	logger.debug("Setting wind speed to " + windSpeed);
         this.windSpeed = windSpeed;
     }
 
@@ -138,7 +138,7 @@ public class Metar
 
     @XmlElement(name = "wind_gust_kt")
     public void setWindGust(int windGust) {
-    	logger.debug("Setting wind gust to %d", windGust);
+    	logger.debug("Setting wind gust to " + windGust);
         this.windGust = windGust;
     }
 
@@ -146,7 +146,7 @@ public class Metar
 
     @XmlElement(name = "visibility_statue_mi")
     public void setVisibility(float visibility) {
-    	logger.debug("Setting visibility to %f", visibility);
+    	logger.debug("Setting visibility to " + visibility);
         this.visibility = visibility;
     }
 
@@ -154,7 +154,7 @@ public class Metar
 
     @XmlElement(name = "flight_category")
     public void setFlightCategory(String flightCategory) {
-    	logger.debug("Setting flight category to %s", flightCategory);
+    	logger.debug("Setting flight category to " + flightCategory);
         this.flightCategory = flightCategory;
     }
 

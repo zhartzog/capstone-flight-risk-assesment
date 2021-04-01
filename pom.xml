@@ -66,6 +66,12 @@
 		    <version>1.18.18</version>
 		    <scope>provided</scope>
 		</dependency>
+		
+		<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <version>20210307</version>
+		</dependency>
         
 
     </dependencies>

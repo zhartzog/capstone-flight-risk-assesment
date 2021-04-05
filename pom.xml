@@ -68,12 +68,12 @@
 		</dependency>
 		
 		<dependency>
-<<<<<<< HEAD
 		    <groupId>org.json</groupId>
 		    <artifactId>json</artifactId>
 		    <version>20210307</version>
 		</dependency>
-=======
+
+		<dependency>
     		<groupId>io.cucumber</groupId>
 		    <artifactId>cucumber-java</artifactId>
 		    <version>6.8.1</version>
@@ -91,7 +91,6 @@
             <artifactId>log4jdbc-log4j2-jdbc4.1</artifactId>
             <version>1.16</version>
         </dependency>
->>>>>>> 7d59ff5b9dda3f4c8a6a8c9e45512f938379dbb2
         
         <dependency>
             <groupId>com.jayway.restassured</groupId>

@@ -11,45 +11,69 @@ import org.springframework.web.bind.annotation.RestController;
 
 import edu.unomaha.flightriskassessment.models.adminThresholds;
 import edu.unomaha.flightriskassessment.services.adminThresholdsService;  
-//mark class as Controller
+/**
+ * This class is the CRUD controller that provides mappings to our database
+ *
+ */
 @RestController
 public class adminThresholdsController
 {
-    //autowire the adminThresholdsService class
-@Autowired
-adminThresholdsService adminThresholds_Service;
-
-    //creating a mapping that retrieves all thresholds from the table
-@GetMapping("/adminThresholds")
-private List<adminThresholds> getAllThresholds()
-{
-    return adminThresholds_Service.getAllThresholds();
-}
-    //create a get mapping that retrieves a threshold associated with a given id
-@GetMapping("/adminThresholds/{adminThresholdId}")
-private adminThresholds getAdminThresholds(@PathVariable("adminThresholdId") int adminThresholdId)
-{
-    return adminThresholds_Service.getThresholdsById(adminThresholdId);
-}
-    //create a delete mapping that deletes by ID.
-@DeleteMapping("/adminThresholds/{adminThresholdId}")
-private void deleteThreshold(@PathVariable("adminThresoldId") int adminThresholdId)
-{
-    adminThresholds_Service.delete(adminThresholdId);
-}
-    //create a post mapping that post the admin threshold into the database
-@PostMapping("/adminThresholds")
-private int saveThreshold(@RequestBody adminThresholds adminThresholds)
-{
-    adminThresholds_Service.saveOrUpdate(adminThresholds);
-    return adminThresholds.getAdminThresholdId();
-}
-    //create a put mapping for udpating the threshold
-@PutMapping("/adminThresholds")
-private adminThresholds update(@RequestBody adminThresholds adminThresholds)
-{
-    adminThresholds_Service.saveOrUpdate(adminThresholds);
-    return adminThresholds;
-
-}
+	    //autowire the adminThresholdsService class
+	@Autowired
+	adminThresholdsService adminThresholds_Service;
+	
+	/**
+	 * Mapping to retrieve all thresholds in the table
+	 * @return a list of all thresholds in the database
+	 */
+	@GetMapping("/adminThresholds")
+	private List<adminThresholds> getAllThresholds()
+	{
+	    return adminThresholds_Service.getAllThresholds();
+	}
+	
+	/**
+	 * Mapping to retrieve a threshold by ID
+	 * @param adminThresholdId - the ID to retrieve by
+	 * @return The threshold for the given ID
+	 */
+	@GetMapping("/adminThresholds/{adminThresholdId}")
+	private adminThresholds getAdminThresholds(@PathVariable("adminThresholdId") int adminThresholdId)
+	{
+	    return adminThresholds_Service.getThresholdsById(adminThresholdId);
+	}
+	
+	/**
+	 * Deletes a threshold from the database by its ID
+	 * @param adminThresholdId - the ID for the threshold to be deleted
+	 */
+	@DeleteMapping("/adminThresholds/{adminThresholdId}")
+	private void deleteThreshold(@PathVariable("adminThresoldId") int adminThresholdId)
+	{
+	    adminThresholds_Service.delete(adminThresholdId);
+	}
+	
+	/**
+	 * Mapping to save a threshold to the database
+	 * @param adminThresholds - The threshold to be saved
+	 * @return - The ID of the new threshold in the database
+	 */
+	@PostMapping("/adminThresholds")
+	private int saveThreshold(@RequestBody adminThresholds adminThresholds)
+	{
+	    adminThresholds_Service.saveOrUpdate(adminThresholds);
+	    return adminThresholds.getAdminThresholdId();
+	}
+	/**
+	 * Mapping to update a threshold
+	 * @param adminThresholds - The updated threshold to be saved
+	 * @return
+	 */
+	@PutMapping("/adminThresholds")
+	private adminThresholds update(@RequestBody adminThresholds adminThresholds)
+	{
+	    adminThresholds_Service.saveOrUpdate(adminThresholds);
+	    return adminThresholds;
+	
+	}
 }

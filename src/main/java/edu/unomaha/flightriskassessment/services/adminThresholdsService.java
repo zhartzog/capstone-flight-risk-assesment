@@ -1,12 +1,12 @@
 package edu.unomaha.flightriskassessment.services;
 import java.util.ArrayList;
 import java.util.List;
-import org.graalvm.compiler.serviceprovider.ServiceProvider;
+//import org.graalvm.compiler.serviceprovider.ServiceProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 import edu.unomaha.flightriskassessment.database.adminThresholdsRepository;
-import edu.unomaha.flightriskassessment.models.adminThresholds; 
+import edu.unomaha.flightriskassessment.models.adminThresholds;
 //defining the business logic
 @Service
 public class adminThresholdsService

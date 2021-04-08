@@ -23,6 +23,16 @@ private String low;
 private String med;
 @Column
 private String high;
+private String category;
+
+public String getCategory() {
+	return category;
+}
+
+public void setCategory(String category) {
+	this.category = category;
+}
+
 public int getAdminThresholdId()
 {
     return adminThresholdId;

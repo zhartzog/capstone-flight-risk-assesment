@@ -1,9 +1,7 @@
 package edu.unomaha.flightriskassessment.services;
-import java.util.ArrayList;
-import java.util.List;
-import org.graalvm.compiler.serviceprovider.ServiceProvider;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Service;
 import edu.unomaha.flightriskassessment.database.adminThresholdsRepository;
 import edu.unomaha.flightriskassessment.models.adminThresholds; 
@@ -14,32 +12,39 @@ public class adminThresholdsService
 @Autowired
 adminThresholdsRepository adminThresholds_Repository;
 //get all thresholds recorded using CrudRepository findAll()
-public List<adminThresholds> getAllThresholds()
+public ResultSet getAllThresholds() throws SQLException
 {
-    List<adminThresholds> adminThresholds = new ArrayList<adminThresholds>();
-    ((CrudRepository<edu.unomaha.flightriskassessment.models.adminThresholds, Integer>) adminThresholds).findAll().forEach(adminThresholds1 -> adminThresholds.add(adminThresholds1));
-    return adminThresholds;
+    return adminThresholds_Repository.getAll();
 }
 //getting a specific record by using the method findById()
-public adminThresholds getThresholdsById(int id)
+public adminThresholds getThresholdsById(int id) throws SQLException
 {
-    return adminThresholds_Repository.findById(id).get();
+    adminThresholds toReturn = new adminThresholds();
+    ResultSet rs = adminThresholds_Repository.getByID(id);
+    toReturn.setAdminThresholdId(id);
+    toReturn.setGroup(rs.getString("groupType"));
+    toReturn.setHigh(rs.getString("high"));
+    toReturn.setMed(rs.getString("med"));
+    toReturn.setLow(rs.getString("low"));
+    toReturn.setName(rs.getString("name"));
+    toReturn.setCategory(rs.getString("category"));
+    return toReturn;
 
 }
 //saving a specific record by using the method save() of CrudRepository
-public void saveOrUpdate(adminThresholds adminThresholds)
+public void saveOrUpdate(adminThresholds adminThresholds) throws SQLException
 {
     adminThresholds_Repository.save(adminThresholds);
 }
 //deleting a specific record by using the method deleteById()
-public void delete(int id)
+public void delete(int id) throws SQLException
 {
     adminThresholds_Repository.deleteById(id);
 }
 //updating a threshold
-public void update(adminThresholds adminThresholds, int adminThresholdsId)
+public void update(adminThresholds adminThresholds, int adminThresholdsId) throws SQLException
 {
-    adminThresholds_Repository.save(adminThresholds);
+    adminThresholds_Repository.updateById(adminThresholdsId, adminThresholds);
 }
 }
 

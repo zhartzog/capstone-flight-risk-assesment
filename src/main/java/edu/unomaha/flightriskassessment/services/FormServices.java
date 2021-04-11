@@ -115,12 +115,20 @@ public class FormServices
             String[] headings = i.getDesignator().split("/");
             if(this.deltaTime < 60)
             {
-                //System.out.printf("heading[0]: %s, H[1]: %s, metar: %d \n",headings[0],headings[1],this.metar.getWindDirection());
+                System.out.printf("heading[0]: %s, H[1]: %s, metar: %d \n",headings[0],headings[1],this.metar.getWindDirection());
                 //Get the smallest difference between the wind direction and runway heading.
-                int angle_a = Math.abs( Integer.parseInt(headings[0])*10 -  this.metar.getWindDirection());
-                int angle_b = Math.abs( Integer.parseInt(headings[1])*10 -  this.metar.getWindDirection());
-                double angle = Math.toRadians( Math.min(angle_a, angle_b));
+                int angleA = Integer.parseInt(headings[0])*10;
+                int angleB = Integer.parseInt(headings[1])*10;
+                int angle_a = Math.abs( angleA -  this.metar.getWindDirection());
+                int angle_b = Math.abs( Integer.parseInt(headings[1])*10 -  this.metar.getWindDirection());;
 
+                //Since 360 degrees is equal to 0 degrees, we have to figure out which way is the smallest.
+                if( angleA == 360)
+                    angle_a = Math.min(angle_a, metar.getWindDirection());
+                else if( angleB == 360)
+                    angle_b = Math.min(angle_b, metar.getWindDirection());
+
+                double angle = Math.toRadians( Math.min(angle_a, angle_b));
                 System.out.printf("Angle A: %d, Angle B: %d, angle: %.2f \n",angle_a,angle_b,angle);
 
                 //Calculate the winds

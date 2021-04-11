@@ -13,8 +13,5 @@ public class Repository {
 	protected Connection connection;
 	protected Statement statement;
 	
-	public Repository() throws SQLException {
-		connection = DriverManager.getConnection(url, user, pass);
-		Statement statement = connection.createStatement();
-	}
+	public Repository() {}
 }

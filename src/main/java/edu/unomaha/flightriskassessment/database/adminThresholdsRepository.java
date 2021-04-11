@@ -4,16 +4,25 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import edu.unomaha.flightriskassessment.models.adminThresholds;
 
 public class adminThresholdsRepository extends Repository {
 	
-	public adminThresholdsRepository() throws SQLException {
+	public adminThresholdsRepository() {
 		super();
 	}
 	
+	public void initialize() throws SQLException {
+		if (!connection.isValid(0)) {
+			connection = DriverManager.getConnection(url, user, pass);
+			Statement statement = connection.createStatement();
+		}
+	}
+	
 	public ResultSet getAll() throws SQLException {
+		initialize();
 		return statement.executeQuery("SELECT * FROM adminThresholds");
 	}
 	
@@ -24,6 +33,7 @@ public class adminThresholdsRepository extends Repository {
 	 * @throws SQLException
 	 */
 	public ResultSet getByID(int id) throws SQLException {
+		initialize();
 		return statement.executeQuery("SELECT * FROM adminThresholds WHERE adminThresholdId = '" + id + "'");
 	}
 	
@@ -33,6 +43,7 @@ public class adminThresholdsRepository extends Repository {
 	 * @throws SQLException 
 	 */
 	public void save(adminThresholds toSave) throws SQLException {
+		initialize();
 		statement.execute("INSERT INTO adminThresholds (groupType, name, low, med, high, category) VALUES ('"
 				+ toSave.getGroup() + "' '" + toSave.getName() + "' '" + toSave.getLow() + "' '" + toSave.getMed() + "' '"
 				+toSave.getHigh() + "' '" + toSave.getCategory() + "'");
@@ -44,12 +55,24 @@ public class adminThresholdsRepository extends Repository {
 	 * @throws SQLException
 	 */
 	public void deleteById(int id) throws SQLException {
+		initialize();
 		statement.execute("DELETE FROM adminThresholds WHERE adminThresholdId = '" + id + "'");
 	}
 	
+	/**
+	 * Updates a threshold by ID
+	 * @param id - the ID of the threshold to update
+	 * @param toSet - the updated values of the threshold to be set
+	 * @throws SQLException
+	 */
 	public void updateById(int id, adminThresholds toSet) throws SQLException {
+		initialize();
 		statement.execute("UPDATE adminThresholds SET groupType = '" + toSet.getGroup() + "', name = '" + toSet.getName() 
 		+ "', low = '" + toSet.getLow() + "', med = '" + toSet.getMed() + "', high = '" + toSet.getHigh() + "', category = '"
 		+ toSet.getCategory() + "' WHERE adminThresholdId = " + id);
+	}
+	
+	public void updateByGroupNameCategory(String group, String name, String category, adminThresholds toSet) {
+		
 	}
 }

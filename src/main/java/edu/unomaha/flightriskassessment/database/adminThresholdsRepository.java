@@ -23,8 +23,8 @@ public class adminThresholdsRepository {
 	}
 	
 	public void initialize() throws SQLException {
-		if (!connection.isValid(0)) {
-			connection = DriverManager.getConnection(url, user, pass);
+		connection = DriverManager.getConnection(url, user, pass);
+		if (connection.isValid(0)) {
 			statement = connection.createStatement();
 		}
 	}
@@ -33,6 +33,7 @@ public class adminThresholdsRepository {
 		initialize();
 		ResultSet rs = statement.executeQuery("SELECT * FROM adminThresholds");
 		if (!rs.next()) {
+			connection.close();
 			return null;
 		}
 		else {
@@ -49,6 +50,7 @@ public class adminThresholdsRepository {
 				toRet.add(toAdd);
 			}
 			while (rs.next());
+			connection.close();
 			return toRet;
 		}
 	}
@@ -61,7 +63,9 @@ public class adminThresholdsRepository {
 	 */
 	public ResultSet getByID(int id) throws SQLException {
 		initialize();
-		return statement.executeQuery("SELECT * FROM adminThresholds WHERE adminThresholdId = '" + id + "'");
+		ResultSet rs = statement.executeQuery("SELECT * FROM adminThresholds WHERE adminThresholdId = '" + id + "'");
+		connection.close();
+		return rs;
 	}
 	
 	/**
@@ -74,6 +78,7 @@ public class adminThresholdsRepository {
 		statement.execute("INSERT INTO adminThresholds (groupType, name, low, med, high, category) VALUES ('"
 				+ toSave.getGroup() + "' '" + toSave.getName() + "' '" + toSave.getLow() + "' '" + toSave.getMed() + "' '"
 				+toSave.getHigh() + "' '" + toSave.getCategory() + "'");
+		connection.close();
 	}
 	
 	/**
@@ -84,6 +89,7 @@ public class adminThresholdsRepository {
 	public void deleteById(int id) throws SQLException {
 		initialize();
 		statement.execute("DELETE FROM adminThresholds WHERE adminThresholdId = '" + id + "'");
+		connection.close();
 	}
 	
 	/**
@@ -97,6 +103,7 @@ public class adminThresholdsRepository {
 		statement.execute("UPDATE adminThresholds SET groupType = '" + toSet.getGroup() + "', name = '" + toSet.getName() 
 		+ "', low = '" + toSet.getLow() + "', med = '" + toSet.getMed() + "', high = '" + toSet.getHigh() + "', category = '"
 		+ toSet.getCategory() + "' WHERE adminThresholdId = " + id);
+		connection.close();
 	}
 	
 	public void updateByGroupNameCategory(String group, String name, String category, adminThresholds toSet) {

@@ -10,10 +10,10 @@ import edu.unomaha.flightriskassessment.models.adminThresholds;
 public class adminThresholdsService
 {
 
-adminThresholdsRepository adminThresholds_Repository;
-//get all thresholds recorded using CrudRepository findAll()
-public ResultSet getAllThresholds() throws SQLException
-{
+	adminThresholdsRepository adminThresholds_Repository = new adminThresholdsRepository();
+	//get all thresholds recorded using CrudRepository findAll()
+	public ResultSet getAllThresholds() throws SQLException
+	{
 	    return adminThresholds_Repository.getAll();
 	}
 	//getting a specific record by using the method findById()

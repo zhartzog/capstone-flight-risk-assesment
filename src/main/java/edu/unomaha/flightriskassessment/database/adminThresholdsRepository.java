@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import edu.unomaha.flightriskassessment.models.adminThresholds;
 
@@ -21,9 +23,28 @@ public class adminThresholdsRepository extends Repository {
 		}
 	}
 	
-	public ResultSet getAll() throws SQLException {
+	public ArrayList<adminThresholds> getAll() throws SQLException {
 		initialize();
-		return statement.executeQuery("SELECT * FROM adminThresholds");
+		ResultSet rs = statement.executeQuery("SELECT * FROM adminThresholds");
+		if (!rs.next()) {
+			return null;
+		}
+		else {
+			ArrayList<adminThresholds> toRet = new ArrayList<adminThresholds>();
+			do {
+				adminThresholds toAdd = new adminThresholds();
+				toAdd.setAdminThresholdId(rs.getInt(1));
+				toAdd.setGroup(rs.getString(2));
+				toAdd.setName(rs.getString(3));
+				toAdd.setLow(rs.getString(4));
+				toAdd.setMed(rs.getString(5));
+				toAdd.setHigh(rs.getString(6));
+				toAdd.setCategory(rs.getString(7));
+				toRet.add(toAdd);
+			}
+			while (rs.next());
+			return toRet;
+		}
 	}
 	
 	/**

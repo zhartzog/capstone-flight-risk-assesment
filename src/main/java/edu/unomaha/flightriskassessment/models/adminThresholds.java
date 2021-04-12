@@ -14,7 +14,7 @@ public class adminThresholds
 @Column
 private int adminThresholdId;
 @Column
-private String group;
+private String groupType;
 @Column
 private String name;
 @Column
@@ -23,6 +23,7 @@ private String low;
 private String med;
 @Column
 private String high;
+  
 private String category;
 
 public String getCategory() {
@@ -43,11 +44,11 @@ public void setAdminThresholdId(int adminThresholdId)
 }
 public String getGroup()
 {
-    return group;
+    return groupType;
 }
-public void setGroup(String group)
+public void setGroup(String groupType)
 {
-    this.group = group;
+    this.groupType = groupType;
 }
 public String getName()
 {
@@ -81,7 +82,8 @@ public void setHigh(String high)
 {
     this.high = high;
 }
-
+public String getCategory() { return category; }
+public void setCategory(String category) { this.category = category; }
 }
 
 

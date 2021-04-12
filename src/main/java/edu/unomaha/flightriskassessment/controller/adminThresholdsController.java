@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import edu.unomaha.flightriskassessment.models.adminThresholds;
 import edu.unomaha.flightriskassessment.services.adminThresholdsService;  
-//mark class as Controller
+/**
+ * This class is the CRUD controller that provides mappings to our database
+ *
+ */
 @RestController
 public class adminThresholdsController
 {

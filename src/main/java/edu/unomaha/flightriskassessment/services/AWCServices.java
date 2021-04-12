@@ -117,17 +117,16 @@ public class AWCServices
         return null;
     }
 
-    public List<AirSigmet> getAirSigmet()
+    public List<AirSigmet> getAirSigmet(int minLat, int maxLat, int minLon,int maxLon, int maxAltitude)
     {
         logger.debug("Beginning getAirSigmet...");
 
         List<AirSigmet> returnValue = new ArrayList<AirSigmet>();
         try
         {
-            //Gets the most recent Airmet/Sigmets. Currently returns all along the country.
-            //TODO: Figure out if its worth specifying what part of the country we want to look at. Only way to do it is to specify a rectangle using LatLongs. There generally arent that many airmets/sigmets.
-            String URL = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=airsigmets&requestType=retrieve&format=xml&hoursBeforeNow=3";
-
+            //Gets the most recent Airmet/Sigmets
+            String URL = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=airsigmets&requestType=retrieve&format=xml&minLat="+minLat+"&minLon="+minLon+"&maxLat="+maxLat+"&maxLon="+maxLon+"&hoursBeforeNow=3&minAltitudeFt=0&maxAltitudeFt="+maxAltitude;
+            System.out.println(URL);
             Document doc = getDocument(URL);
 
             NodeList data = doc.getElementsByTagName("AIRSIGMET");

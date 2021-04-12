@@ -1,6 +1,8 @@
 package edu.unomaha.flightriskassessment.services;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import edu.unomaha.flightriskassessment.database.adminThresholdsRepository;
@@ -12,7 +14,7 @@ public class adminThresholdsService
 
 	adminThresholdsRepository adminThresholds_Repository = new adminThresholdsRepository();
 	//get all thresholds recorded using CrudRepository findAll()
-	public ResultSet getAllThresholds() throws SQLException
+	public ArrayList<adminThresholds> getAllThresholds() throws SQLException
 	{
 	    return adminThresholds_Repository.getAll();
 	}

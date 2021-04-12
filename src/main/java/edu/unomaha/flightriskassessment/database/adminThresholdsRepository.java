@@ -61,11 +61,19 @@ public class adminThresholdsRepository {
 	 * @return - the adminThreshold whose ID was passed
 	 * @throws SQLException
 	 */
-	public ResultSet getByID(int id) throws SQLException {
+	public adminThresholds getByID(int id) throws SQLException {
 		initialize();
 		ResultSet rs = statement.executeQuery("SELECT * FROM adminThresholds WHERE adminThresholdId = '" + id + "'");
+		adminThresholds toRet = new adminThresholds();
+		toRet.setAdminThresholdId(rs.getInt(1));
+		toRet.setGroup(rs.getString(2));
+		toRet.setName(rs.getString(3));
+		toRet.setLow(rs.getString(4));
+		toRet.setMed(rs.getString(5));
+		toRet.setHigh(rs.getString(6));
+		toRet.setCategory(rs.getString(7));
 		connection.close();
-		return rs;
+		return toRet;
 	}
 	
 	/**

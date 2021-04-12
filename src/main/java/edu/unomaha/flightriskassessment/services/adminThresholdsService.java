@@ -21,16 +21,7 @@ public class adminThresholdsService
 	//getting a specific record by using the method findById()
 	public adminThresholds getThresholdsById(int id) throws SQLException
 	{
-	    adminThresholds toReturn = new adminThresholds();
-	    ResultSet rs = adminThresholds_Repository.getByID(id);
-	    toReturn.setAdminThresholdId(id);
-	    toReturn.setGroup(rs.getString("groupType"));
-	    toReturn.setHigh(rs.getString("high"));
-	    toReturn.setMed(rs.getString("med"));
-	    toReturn.setLow(rs.getString("low"));
-	    toReturn.setName(rs.getString("name"));
-	    toReturn.setCategory(rs.getString("category"));
-	    return toReturn;
+	    return adminThresholds_Repository.getByID(id);
 	
 	}
 	//saving a specific record by using the method save() of CrudRepository

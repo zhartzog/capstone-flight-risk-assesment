@@ -10,7 +10,13 @@ import java.util.List;
 
 import edu.unomaha.flightriskassessment.models.adminThresholds;
 
-public class adminThresholdsRepository extends Repository {
+public class adminThresholdsRepository {
+	
+	protected String url = "jdbc:mysql://ec2-3-139-100-26.us-east-2.compute.amazonaws.com/RiskAssessmentForm";
+	protected String user = "root";
+	protected String pass = "rootpass";
+	protected Connection connection;
+	protected Statement statement;
 	
 	public adminThresholdsRepository() {
 		super();
@@ -19,7 +25,7 @@ public class adminThresholdsRepository extends Repository {
 	public void initialize() throws SQLException {
 		if (!connection.isValid(0)) {
 			connection = DriverManager.getConnection(url, user, pass);
-			Statement statement = connection.createStatement();
+			statement = connection.createStatement();
 		}
 	}
 	

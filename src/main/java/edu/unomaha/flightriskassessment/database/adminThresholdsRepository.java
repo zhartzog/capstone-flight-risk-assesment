@@ -18,9 +18,10 @@ public class adminThresholdsRepository {
 	protected Connection connection;
 	protected Statement statement;
 	
-	public adminThresholdsRepository() {
-		super();
-	}
+	/**
+	 * Constructor for the repository
+	 */
+	public adminThresholdsRepository() {}
 	
 	public void initialize() throws SQLException {
 		connection = DriverManager.getConnection(url, user, pass);
@@ -29,6 +30,11 @@ public class adminThresholdsRepository {
 		}
 	}
 	
+	/**
+	 * Returns the full list of all thresholds in the database
+	 * @return - The full list of all thresholds in the database
+	 * @throws SQLException
+	 */
 	public ArrayList<adminThresholds> getAll() throws SQLException {
 		initialize();
 		ResultSet rs = statement.executeQuery("SELECT * FROM adminThresholds");

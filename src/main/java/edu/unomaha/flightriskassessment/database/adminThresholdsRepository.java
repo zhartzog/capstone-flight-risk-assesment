@@ -120,7 +120,42 @@ public class adminThresholdsRepository {
 		connection.close();
 	}
 	
-	public void updateByGroupNameCategory(String group, String name, String category, adminThresholds toSet) {
-		
+	/**
+	 * Gets a threshold by its group, name, and category
+	 * @param group - The group of the threshold
+	 * @param name - The name of the threshold
+	 * @param category - The category of the threshold
+	 * @return - The specific threshold to be gotten
+	 * @throws SQLException
+	 */
+	public adminThresholds getByGroupNameCategory(String group, String name, String category) throws SQLException {
+		initialize();
+		ResultSet rs = statement.executeQuery("SELECT * FROM adminThresholds WHERE groupType = '" + group + "' AND name = '" + name + "' AND "
+				+ "category = '" + category + "'");
+		adminThresholds toRet = new adminThresholds();
+		toRet.setAdminThresholdId(rs.getInt(1));
+		toRet.setGroup(rs.getString(2));
+		toRet.setName(rs.getString(3));
+		toRet.setLow(rs.getString(4));
+		toRet.setMed(rs.getString(5));
+		toRet.setHigh(rs.getString(6));
+		toRet.setCategory(rs.getString(7));
+		return toRet;
+	}
+	
+	/**
+	 * Updates a threshold by its group, name, and category
+	 * @param group - the group to search for
+	 * @param name - the name to search for
+	 * @param category - the category to search for
+	 * @param toSet - The adminThreshold object to update the threshold with
+	 * @throws SQLException
+	 */
+	public void setByGroupNameCategory(String group, String name, String category, adminThresholds toSet) throws SQLException {
+		initialize();
+		statement.execute("UPDATE adminThresholds at SET groupType = '" + toSet.getGroup() + "', name = '" + toSet.getName() +
+				"', low = '" + toSet.getLow() + "', med = '" + toSet.getMed() + "', high = '" + toSet.getHigh() + "', category = '" +
+				toSet.getCategory() + "' WHERE at.groupType = '" + group + "' AND at.name = '" + name + "' AND "
+						+ "at.category = '" + category + "'");
 	}
 }

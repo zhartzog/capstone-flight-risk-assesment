@@ -3,29 +3,49 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-//mark class as an Entity
-@Entity
-//defining class name as Table Name
-@Table
+
 public class adminThresholds
 {
-//Defining id as primary key
-@Id
-@Column
+
+/**
+ * The ID of the threshold
+ */
 private int adminThresholdId;
-@Column
+
+/**
+ * The group type of the threshold
+ */
 private String groupType;
-@Column
+
+/**
+ * The name of the threshold
+ */
 private String name;
-@Column
+
+/**
+ * The low value of the threshold
+ */
 private String low;
-@Column
+
+/**
+ * The med value of the threshold
+ */
 private String med;
-@Column
+
+/**
+ * The high value of the threshold
+ */
 private String high;
   
+/**
+ * The category of the threshold
+ */
 private String category;
 
+/**
+ * 
+ * @return
+ */
 public String getCategory() {
 	return category;
 }
@@ -82,5 +102,5 @@ public void setHigh(String high)
 {
     this.high = high;
 }
-
+}
 

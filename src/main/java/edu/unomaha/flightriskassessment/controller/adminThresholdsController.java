@@ -1,6 +1,7 @@
 package edu.unomaha.flightriskassessment.controller;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;  
@@ -23,7 +24,7 @@ adminThresholdsService adminThresholds_Service;
 
     //creating a mapping that retrieves all thresholds from the table
 @GetMapping("/adminThresholds")
-private ResultSet getAllThresholds() throws SQLException
+private ArrayList<adminThresholds> getAllThresholds() throws SQLException
 {
     return adminThresholds_Service.getAllThresholds();
 }

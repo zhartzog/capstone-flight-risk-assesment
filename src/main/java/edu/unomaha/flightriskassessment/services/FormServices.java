@@ -117,6 +117,11 @@ public class FormServices
             {
                 System.out.printf("heading[0]: %s, H[1]: %s, metar: %d \n",headings[0],headings[1],this.metar.getWindDirection());
                 //Get the smallest difference between the wind direction and runway heading.
+                if(headings[0].charAt(headings[0].length() - 1) == 'L' || headings[0].charAt(headings[0].length() - 1) == 'R' || headings[0].charAt(headings[0].length() - 1) == 'C')
+                {
+                    headings[0] = headings[0].substring(0,headings[0].length() - 1);
+                    headings[1] = headings[1].substring(0,headings[1].length() - 1);
+                }
                 int angleA = Integer.parseInt(headings[0])*10;
                 int angleB = Integer.parseInt(headings[1])*10;
                 int angle_a = Math.abs( angleA -  this.metar.getWindDirection());

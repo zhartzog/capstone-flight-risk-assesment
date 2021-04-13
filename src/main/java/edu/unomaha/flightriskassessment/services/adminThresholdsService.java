@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import edu.unomaha.flightriskassessment.database.adminThresholdsRepository;
-import edu.unomaha.flightriskassessment.models.adminThresholds; 
+import edu.unomaha.flightriskassessment.models.adminThresholds;
 //defining the business logic
 @Service
 public class adminThresholdsService

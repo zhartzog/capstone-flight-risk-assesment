@@ -42,7 +42,10 @@ public class AirportInfo
     {
         if(this.ID.length() > 0)
         {
-            return this.ID.substring(1);
+            if(this.ID.charAt(0) == 'K')
+                return this.ID.substring(1);
+            else
+                return this.ID;
         }
         return "";
     }

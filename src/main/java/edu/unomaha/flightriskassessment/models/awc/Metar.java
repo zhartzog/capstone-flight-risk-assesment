@@ -212,4 +212,37 @@ public class Metar
     {
         this.presentWeather = presentWeather;
     }
+
+    /*Returns winds as a string. For example it will return the winds 180@12G20 or 030@04*/
+    public String getWindsAsString()
+    {
+        System.out.println(toString());
+        String winds = this.windDirection+"@"+this.windSpeed;
+        if(this.windGust > 0)
+            winds = winds + "G" + this.windGust;
+        System.out.println(winds);
+        return winds;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Metar{" +
+                "rawText='" + rawText + '\'' +
+                ", airportID='" + airportID + '\'' +
+                ", time='" + time + '\'' +
+                ", temperature=" + temperature +
+                ", dewPoint=" + dewPoint +
+                ", windDirection=" + windDirection +
+                ", windSpeed=" + windSpeed +
+                ", windGust=" + windGust +
+                ", visibility=" + visibility +
+                ", flightCategory='" + flightCategory + '\'' +
+                ", skyCoverage=" + skyCoverage +
+                ", presentWeather='" + presentWeather + '\'' +
+                ", precipitation=" + precipitation +
+                ", snow=" + snow +
+                ", verticalVis=" + verticalVis +
+                '}';
+    }
 }

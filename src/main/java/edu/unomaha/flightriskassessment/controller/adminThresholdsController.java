@@ -47,14 +47,14 @@ private void deleteThreshold(@PathVariable("adminThresoldId") int adminThreshold
 @PostMapping("/adminThresholds")
 private int saveThreshold(@RequestBody adminThresholds adminThresholds) throws SQLException
 {
-    adminThresholds_Service.saveOrUpdate(adminThresholds);
+    adminThresholds_Service.save(adminThresholds);
     return adminThresholds.getAdminThresholdId();
 }
     //create a put mapping for udpating the threshold
 @PutMapping("/adminThresholds")
-private adminThresholds update(@RequestBody adminThresholds adminThresholds) throws SQLException
+private adminThresholds update(@RequestBody adminThresholds adminThresholds, @RequestBody int id) throws SQLException
 {
-    adminThresholds_Service.saveOrUpdate(adminThresholds);
+    adminThresholds_Service.update(adminThresholds, id);
     return adminThresholds;
 
 }

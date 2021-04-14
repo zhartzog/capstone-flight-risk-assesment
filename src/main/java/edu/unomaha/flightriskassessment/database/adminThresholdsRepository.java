@@ -69,9 +69,13 @@ public class adminThresholdsRepository {
 	 */
 	public adminThresholds getByID(int id) throws SQLException {
 		initialize();
-		ResultSet rs = statement.executeQuery("SELECT * FROM adminThresholds WHERE adminThresholdId = '" + id + "'");
+		ResultSet rs = statement.executeQuery("SELECT * FROM adminThresholds WHERE adminThresholdId = " + Integer.toString(id));
 		adminThresholds toRet = new adminThresholds();
-		toRet.setAdminThresholdId(rs.getInt(1));
+		if (!rs.next()) {
+			connection.close();
+			return null;
+		}
+		toRet.setAdminThresholdId(id);
 		toRet.setGroup(rs.getString(2));
 		toRet.setName(rs.getString(3));
 		toRet.setLow(rs.getString(4));
@@ -90,8 +94,8 @@ public class adminThresholdsRepository {
 	public void save(adminThresholds toSave) throws SQLException {
 		initialize();
 		statement.execute("INSERT INTO adminThresholds (groupType, name, low, med, high, category) VALUES ('"
-				+ toSave.getGroup() + "' '" + toSave.getName() + "' '" + toSave.getLow() + "' '" + toSave.getMed() + "' '"
-				+toSave.getHigh() + "' '" + toSave.getCategory() + "'");
+				+ toSave.getGroup() + "', '" + toSave.getName() + "', '" + toSave.getLow() + "', '" + toSave.getMed() + "', '"
+				+toSave.getHigh() + "', '" + toSave.getCategory() + "')");
 		connection.close();
 	}
 	
@@ -132,6 +136,10 @@ public class adminThresholdsRepository {
 		initialize();
 		ResultSet rs = statement.executeQuery("SELECT * FROM adminThresholds WHERE groupType = '" + group + "' AND name = '" + name + "' AND "
 				+ "category = '" + category + "'");
+		if (!rs.next()) {
+			connection.close();
+			return null;
+		}
 		adminThresholds toRet = new adminThresholds();
 		toRet.setAdminThresholdId(rs.getInt(1));
 		toRet.setGroup(rs.getString(2));
@@ -157,5 +165,23 @@ public class adminThresholdsRepository {
 				"', low = '" + toSet.getLow() + "', med = '" + toSet.getMed() + "', high = '" + toSet.getHigh() + "', category = '" +
 				toSet.getCategory() + "' WHERE at.groupType = '" + group + "' AND at.name = '" + name + "' AND "
 						+ "at.category = '" + category + "'");
+	}
+	
+	public adminThresholds getByName(String name) throws SQLException {
+		initialize();
+		ResultSet rs = statement.executeQuery("SELECT * FROM adminThresholds WHERE name = '" + name + "'");
+		if (!rs.next()) {
+			connection.close();
+			return null;
+		}
+		adminThresholds toRet = new adminThresholds();
+		toRet.setAdminThresholdId(rs.getInt(1));
+		toRet.setGroup(rs.getString(2));
+		toRet.setName(rs.getString(3));
+		toRet.setLow(rs.getString(4));
+		toRet.setMed(rs.getString(5));
+		toRet.setHigh(rs.getString(6));
+		toRet.setCategory(rs.getString(7));
+		return toRet;
 	}
 }

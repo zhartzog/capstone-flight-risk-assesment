@@ -25,7 +25,7 @@ public class adminThresholdsService
 	
 	}
 	//saving a specific record by using the method save() of CrudRepository
-	public void saveOrUpdate(adminThresholds adminThresholds) throws SQLException
+	public void save(adminThresholds adminThresholds) throws SQLException
 	{
 	    adminThresholds_Repository.save(adminThresholds);
 	}
@@ -38,6 +38,10 @@ public class adminThresholdsService
 	public void update(adminThresholds adminThresholds, int adminThresholdsId) throws SQLException
 	{
 	    adminThresholds_Repository.updateById(adminThresholdsId, adminThresholds);
+	}
+	
+	public adminThresholds getByName(String name) throws SQLException {
+		return adminThresholds_Repository.getByName(name);
 	}
 }
 

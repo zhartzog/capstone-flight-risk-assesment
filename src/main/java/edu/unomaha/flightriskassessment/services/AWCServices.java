@@ -65,6 +65,8 @@ public class AWCServices
     public Metar getMetarData(String airportID)
     {
         logger.info("Beginning getMetarData( airportID = "+airportID+")");
+        if(airportID.charAt(0) != 'K')
+            airportID = "K" + airportID;
         try
         {
             String URL = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&mostrecent=true&hoursBeforeNow=1&stationString=" + airportID;

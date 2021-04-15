@@ -69,7 +69,7 @@ public class FormServices
     private void calculate_delta_time(String time)
     {
         logger.info("Beginning calculate_delta_time(time: "+time+")...");
-        String pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+        String pattern = "MM/dd/yyyy HH:mm";
         SimpleDateFormat dateFormatter = new SimpleDateFormat(pattern);
         dateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -77,6 +77,7 @@ public class FormServices
         {
             Date input = dateFormatter.parse(time);
             Date now = new Date();
+            System.out.printf("Current time: %d, input time: %d\n",now.getTime(),input.getTime());
             this.deltaTime = TimeUnit.MINUTES.convert(Math.abs(input.getTime() - now.getTime()), TimeUnit.MILLISECONDS);
 
         } catch ( ParseException e )
@@ -90,7 +91,7 @@ public class FormServices
     {
         if(this.deltaTime < 60) //Departure time is within an hour, use METAR data
             {
-                return metar.getFlightCategory().equals("IFR");
+                return metar.getFlightCategory().equals("IFR") || metar.getFlightCategory().equals("LIFR");
             }
             else
             {
@@ -99,25 +100,41 @@ public class FormServices
             }
     }
 
+    //TODO: ADD ability to caluclate winds with TAF/MOS data
     private void calculateWindComponent()
     {
+        this.additionalQuestions.setWinds(metar.getWindsAsString());
         double[] wind = new double[]{Double.MAX_VALUE, Double.MAX_VALUE};
         double[] gusts = new double[]{Double.MAX_VALUE, Double.MAX_VALUE};
         String primaryRunway = "ERROR";
         List<Runway> runways = airportInfo.getRunways();
-        System.out.println("Runway.length: "+runways.size());
+        //System.out.println("Runway.length: "+runways.size());
         for ( Runway i: runways)
         {
             //You can take off in both directions, need to know which direction gets a headwind.
             String[] headings = i.getDesignator().split("/");
             if(this.deltaTime < 60)
             {
-                System.out.printf("heading[0]: %s, H[1]: %s, metar: %d \n",headings[0],headings[1],this.metar.getWindDirection());
+                //System.out.printf("heading[0]: %s, H[1]: %s, metar: %d \n",headings[0],headings[1],this.metar.getWindDirection());
+                //Parallel Runways will end with a 'L', 'R', or 'C' (RWY 36L). Removes this.
+                if(headings[0].charAt(headings[0].length() - 1) == 'L' || headings[0].charAt(headings[0].length() - 1) == 'R' || headings[0].charAt(headings[0].length() - 1) == 'C')
+                {
+                    headings[0] = headings[0].substring(0,headings[0].length() - 1);
+                    headings[1] = headings[1].substring(0,headings[1].length() - 1);
+                }
                 //Get the smallest difference between the wind direction and runway heading.
-                int angle_a = Math.abs( Integer.parseInt(headings[0])*10 -  this.metar.getWindDirection());
-                int angle_b = Math.abs( Integer.parseInt(headings[1])*10 -  this.metar.getWindDirection());
-                double angle = Math.toRadians( Math.min(angle_a, angle_b));
+                int angleA = Integer.parseInt(headings[0])*10;
+                int angleB = Integer.parseInt(headings[1])*10;
+                int angle_a = Math.abs( angleA -  this.metar.getWindDirection());
+                int angle_b = Math.abs( Integer.parseInt(headings[1])*10 -  this.metar.getWindDirection());;
 
+                //Since 360 degrees is equal to 0 degrees, we have to figure out which way is the smallest.
+                if( angleA == 360)
+                    angle_a = Math.min(angle_a, metar.getWindDirection());
+                else if( angleB == 360)
+                    angle_b = Math.min(angle_b, metar.getWindDirection());
+
+                double angle = Math.toRadians( Math.min(angle_a, angle_b));
                 System.out.printf("Angle A: %d, Angle B: %d, angle: %.2f \n",angle_a,angle_b,angle);
 
                 //Calculate the winds
@@ -140,7 +157,7 @@ public class FormServices
                     else
                         primaryRunway = "Runway "+headings[1];
 
-                    System.out.printf("Set winds to %s, HW: %.2f, HWG: %.2f, XW: %.2f, XWG: %.2f\n",primaryRunway,wind[0],gusts[0],wind[1],gusts[1]);
+                   // System.out.printf("Set winds to %s, HW: %.2f, HWG: %.2f, XW: %.2f, XWG: %.2f\n",primaryRunway,wind[0],gusts[0],wind[1],gusts[1]);
                 }
             }
             else

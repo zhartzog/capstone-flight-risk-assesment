@@ -1,6 +1,7 @@
 package edu.unomaha.flightriskassessment.models.Form;
 
 import edu.unomaha.flightriskassessment.models.awc.AirSigmet;
+import edu.unomaha.flightriskassessment.models.awc.Metar;
 import edu.unomaha.flightriskassessment.models.awc.Pirep;
 
 import java.util.List;
@@ -16,21 +17,11 @@ public class AdditionalQuestions
     private int crosswind_gust;
     private String primaryRunway;
 
-    private String metar;
+    private Metar metar;
 
     private List<AirSigmet> airSigmetList;
 
     private List<Pirep> pireps;
-
-    public boolean isInstrumentCurrent()
-    {
-        return isInstrumentCurrent;
-    }
-
-    public void setInstrumentCurrent(boolean instrumentCurrent)
-    {
-        isInstrumentCurrent = instrumentCurrent;
-    }
 
     public void setDepartureWinds(double[] winds)
     {
@@ -95,12 +86,12 @@ public class AdditionalQuestions
         return crosswind;
     }
 
-    public String getMetar()
+    public Metar getMetar()
     {
         return metar;
     }
 
-    public void setMetar(String metar)
+    public void setMetar(Metar metar)
     {
         this.metar = metar;
     }

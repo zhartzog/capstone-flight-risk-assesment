@@ -55,12 +55,11 @@ public class FormServices
         metar = awcServices.getMetarData(input.getDeparture_airport());
         airportInfo = faaServices.getAirportInfo(input.getDeparture_airport());
 
-        additionalQuestions.setInstrumentCurrent( isIFR() );
         calculateWindComponent();
         getAirSigmet();
         System.out.println("LatLong: "+airportInfo.getLatLongAsString());
         additionalQuestions.setPireps( awcServices.getPireps(20, airportInfo.getLatLongAsString() ) );
-        additionalQuestions.setMetar(metar.getRawText());
+        additionalQuestions.setMetar(metar);
 
 
         return additionalQuestions;
@@ -87,18 +86,6 @@ public class FormServices
         logger.info("Delta time: "+this.deltaTime);
     }
 
-    private boolean isIFR()
-    {
-        if(this.deltaTime < 60) //Departure time is within an hour, use METAR data
-            {
-                return metar.getFlightCategory().equals("IFR") || metar.getFlightCategory().equals("LIFR");
-            }
-            else
-            {
-                return false;
-                //TODO: Check IFR with TAF data
-            }
-    }
 
     //TODO: ADD ability to caluclate winds with TAF/MOS data
     private void calculateWindComponent()
@@ -135,7 +122,7 @@ public class FormServices
                     angle_b = Math.min(angle_b, metar.getWindDirection());
 
                 double angle = Math.toRadians( Math.min(angle_a, angle_b));
-                System.out.printf("Angle A: %d, Angle B: %d, angle: %.2f \n",angle_a,angle_b,angle);
+                //System.out.printf("Angle A: %d, Angle B: %d, angle: %.2f \n",angle_a,angle_b,angle);
 
                 //Calculate the winds
                 double crosswind = Math.sin(angle) * this.metar.getWindSpeed();

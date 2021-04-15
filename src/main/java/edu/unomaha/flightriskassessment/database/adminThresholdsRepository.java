@@ -27,7 +27,7 @@ public class adminThresholdsRepository {
 	 * Initializes the database connection
 	 * @throws SQLException
 	 */
-	public void initialize() {
+	private void initialize() {
 		try {
 			connection = DriverManager.getConnection(url, user, pass);
 			if (connection.isValid(0)) {

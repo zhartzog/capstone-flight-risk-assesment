@@ -22,17 +22,16 @@ public class professorRepository {
 	public professorRepository() {}
 	
 	/**
-	 * Intializes the database connection
-	 * @throws SQLException
+	 * Saves a professor object to the database
+	 * @param toSave - The professor object to be saved
 	 */
-	public void initialize() throws SQLException {
+	public void save(Professor toSave) {
 		try {
-			connection = DriverManager.getConnection(url, user, pass);
-			if (connection.isValid(0)) {
-				statement = connection.createStatement();
-			}
-		}
-		catch (SQLException e) {
+			initialize();
+			statement.execute("INSERT INTO professorInfo (LastName, FirstName, Username, Password) "
+					+ "VALUES = ('" + toSave.getLastName() + "', '" + toSave.getFirstName() + 
+					"', '" + toSave.getUserName() + "', '" + toSave.getPassword() + "')");
+		} catch(SQLException e) {
 			e.printStackTrace();
 		}
 	}
@@ -45,6 +44,161 @@ public class professorRepository {
 		try {
 			initialize();
 			ResultSet rs = statement.executeQuery("SELECT * FROM professorInfo");
+			return mapToListOfProfessors(rs);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets a professor from the database by ID
+	 * @param id - the ID of the professor to be gotten
+	 * @return - a professor object populated with data from the database
+	 */
+	public Professor getById(int id) {
+		try {
+			initialize();
+			ResultSet rs = statement.executeQuery("SELECT * FROM professorInfo WHERE ID = " + id);
+			return mapToSingleProfessor(rs);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets a professor from the database by their first and last name
+	 * @param firstname - The first name of the professor
+	 * @param lastname - The last name of the professor
+	 * @return - a professor object populated with data from the database
+	 */
+	public Professor getByFirstNameLastName(String firstname, String lastname) {
+		try {
+			initialize();
+			ResultSet rs = statement.executeQuery("SELECT * FROM professorInfo WHERE LastName = '" 
+			+ lastname + "', FirstName = '" + firstname + "'");
+			return mapToSingleProfessor(rs);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets a professor from the database by their username
+	 * @param username - The username of the professor
+	 * @return - a professor object populated with data from the database
+	 */
+	public Professor getByUserName(String username) {
+		try {
+			initialize();
+			ResultSet rs = statement.executeQuery("SELECT * FROM professorInfo WHERE Username = '" +
+			username + "'");
+			return mapToSingleProfessor(rs);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	/**
+	 * Updates a row in the database by ID
+	 * @param id - The id of the row to update
+	 * @param toSet - The updated professor object to be inserted
+	 */
+	public void updateById(int id, Professor toSet) {
+		try {
+			initialize();
+			statement.execute("UPDATE professorInfo SET ID = '" + toSet.getId() + "', LastName = '" 
+					+ toSet.getLastName() + "', FirstName = '" + toSet.getFirstName() + "', Username = '"
+					+ toSet.getUserName() + "', Password = '" + toSet.getPassword() + "' WHERE ID = " + id);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Updates a row in the database by username
+	 * @param username - The username corresponding to the row to update
+	 * @param toSet - The professor object to update the row with
+	 */
+	public void updateByUsername(String username, Professor toSet) {
+		try {
+			initialize();
+			statement.execute("UPDATE professorInfo SET ID = '" + toSet.getId() + "', LastName = '" 
+					+ toSet.getLastName() + "', FirstName = '" + toSet.getFirstName() + "', Username = '"
+					+ toSet.getUserName() + "', Password = '" + toSet.getPassword() + "' WHERE Username = '" 
+					+ username + "'");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Updates a row in the database by firstname and lastname
+	 * @param firstname - The first name to update by
+	 * @param lastname - The last name to update by
+	 * @param toSet - The professor object to update the row with
+	 */
+	public void updateByFirstnameLastname(String firstname, String lastname, Professor toSet) {
+		try {
+			initialize();
+			statement.execute("UPDATE professorInfo SET ID = '" + toSet.getId() + "', LastName = '" 
+					+ toSet.getLastName() + "', FirstName = '" + toSet.getFirstName() + "', Username = '"
+					+ toSet.getUserName() + "', Password = '" + toSet.getPassword() + "' WHERE LastName = '" 
+					+ lastname + "' AND FirstName = '" + firstname + "'");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Initializes the database connection
+	 * @throws SQLException
+	 */
+	private void initialize() throws SQLException {
+		try {
+			connection = DriverManager.getConnection(url, user, pass);
+			if (connection.isValid(0)) {
+				statement = connection.createStatement();
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Given a result set, maps the corresponding row to a professor object
+	 * @param rs - The result set to be mapped
+	 * @return - The java Professor object mapped with database values
+	 */
+	private Professor mapToSingleProfessor(ResultSet rs) {
+		try {
+			if (!rs.next()) {
+				connection.close();
+				return null;
+			}
+			else {
+				Professor toRet = new Professor();
+				toRet.setId(rs.getInt(1));
+				toRet.setLastName(rs.getString(2));
+				toRet.setFirstName(rs.getString(3));
+				toRet.setUserName(rs.getString(4));
+				toRet.setPassword(rs.getString(5));
+				connection.close();
+				return toRet;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private ArrayList<Professor> mapToListOfProfessors(ResultSet rs) {
+		try {
 			if (!rs.next()) {
 				connection.close();
 				return null;
@@ -64,38 +218,7 @@ public class professorRepository {
 				connection.close();
 				return toRet;
 			}
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	/**
-	 * Gets a professor from the database by ID
-	 * @param id - the ID of the professor to be gotten
-	 * @return - a professor object populated with data from the database
-	 */
-	public Professor getById(int id) {
-		try {
-			initialize();
-			ResultSet rs = statement.executeQuery("SELECT * FROM professorInfo WHERE ID = " + id);
-			if (!rs.next()) {
-				connection.close();
-				return null;
-			}
-			else {
-				Professor toRet = new Professor();
-				toRet.setId(rs.getInt(1));
-				toRet.setLastName(rs.getString(2));
-				toRet.setFirstName(rs.getString(3));
-				toRet.setUserName(rs.getString(4));
-				toRet.setPassword(rs.getString(5));
-				connection.close();
-				return toRet;
-			}
-		}
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return null;

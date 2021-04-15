@@ -23,10 +23,19 @@ public class adminThresholdsRepository {
 	 */
 	public adminThresholdsRepository() {}
 	
-	public void initialize() throws SQLException {
-		connection = DriverManager.getConnection(url, user, pass);
-		if (connection.isValid(0)) {
-			statement = connection.createStatement();
+	/**
+	 * Initializes the database connection
+	 * @throws SQLException
+	 */
+	public void initialize() {
+		try {
+			connection = DriverManager.getConnection(url, user, pass);
+			if (connection.isValid(0)) {
+				statement = connection.createStatement();
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -35,30 +44,36 @@ public class adminThresholdsRepository {
 	 * @return - The full list of all thresholds in the database
 	 * @throws SQLException
 	 */
-	public ArrayList<adminThresholds> getAll() throws SQLException {
-		initialize();
-		ResultSet rs = statement.executeQuery("SELECT * FROM adminThresholds");
-		if (!rs.next()) {
-			connection.close();
-			return null;
-		}
-		else {
-			ArrayList<adminThresholds> toRet = new ArrayList<adminThresholds>();
-			do {
-				adminThresholds toAdd = new adminThresholds();
-				toAdd.setAdminThresholdId(rs.getInt(1));
-				toAdd.setGroup(rs.getString(2));
-				toAdd.setName(rs.getString(3));
-				toAdd.setLow(rs.getString(4));
-				toAdd.setMed(rs.getString(5));
-				toAdd.setHigh(rs.getString(6));
-				toAdd.setCategory(rs.getString(7));
-				toRet.add(toAdd);
+	public ArrayList<adminThresholds> getAll() {
+		try {
+			initialize();
+			ResultSet rs = statement.executeQuery("SELECT * FROM adminThresholds");
+			if (!rs.next()) {
+				connection.close();
+				return null;
 			}
-			while (rs.next());
-			connection.close();
-			return toRet;
+			else {
+				ArrayList<adminThresholds> toRet = new ArrayList<adminThresholds>();
+				do {
+					adminThresholds toAdd = new adminThresholds();
+					toAdd.setAdminThresholdId(rs.getInt(1));
+					toAdd.setGroup(rs.getString(2));
+					toAdd.setName(rs.getString(3));
+					toAdd.setLow(rs.getString(4));
+					toAdd.setMed(rs.getString(5));
+					toAdd.setHigh(rs.getString(6));
+					toAdd.setCategory(rs.getString(7));
+					toRet.add(toAdd);
+				}
+				while (rs.next());
+				connection.close();
+				return toRet;
+			}
 		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	/**

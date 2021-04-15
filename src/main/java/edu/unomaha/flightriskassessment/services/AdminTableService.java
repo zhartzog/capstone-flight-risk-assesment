@@ -1,13 +1,9 @@
 package edu.unomaha.flightriskassessment.services;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import edu.unomaha.flightriskassessment.database.AdminTableRepository;
 import edu.unomaha.flightriskassessment.models.AdminTable; 
-//defining the business logic
+
 @Service
 public class AdminTableService
 {
@@ -37,7 +33,7 @@ public class AdminTableService
 	 * @param id - the ID of the row to be gotten
 	 * @return - the corresponding row data
 	 */
-	public AdminTable getThresholdsById(int id) throws SQLException
+	public AdminTable getThresholdsById(int id)
 	{
 	    return adminThresholds_Repository.getByID(id);
 	}
@@ -74,8 +70,11 @@ public class AdminTableService
 		adminThresholds_Repository.updateByGroupNameCategory(group, name, category, toSet);
 	}
 	
-	//deleting a specific record by using the method deleteById()
-	public void deleteById(int id) throws SQLException
+	/**
+	 * Deletes a row by its ID
+	 * @param id - The ID of the row to delete
+	 */
+	public void deleteById(int id)
 	{
 	    adminThresholds_Repository.deleteById(id);
 	}

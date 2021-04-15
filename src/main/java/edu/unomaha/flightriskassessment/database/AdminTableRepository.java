@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.List;
 
 import edu.unomaha.flightriskassessment.models.AdminTable;
 
@@ -63,10 +62,15 @@ public class AdminTableRepository {
 	 * @return - the adminThreshold whose ID was passed
 	 * @throws SQLException
 	 */
-	public AdminTable getByID(int id) throws SQLException {
-		initialize();
-		ResultSet rs = statement.executeQuery("SELECT * FROM adminThresholds WHERE adminThresholdId = " + Integer.toString(id));
-		return mapToSingleThreshold(rs);
+	public AdminTable getByID(int id) {
+		try {
+			initialize();
+			ResultSet rs = statement.executeQuery("SELECT * FROM adminThresholds WHERE adminThresholdId = " + Integer.toString(id));
+			return mapToSingleThreshold(rs);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	/**

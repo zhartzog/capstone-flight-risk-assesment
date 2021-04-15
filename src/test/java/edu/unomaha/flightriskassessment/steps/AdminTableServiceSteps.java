@@ -2,10 +2,7 @@ package edu.unomaha.flightriskassessment.steps;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-
-import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import edu.unomaha.flightriskassessment.models.AdminTable;
 import edu.unomaha.flightriskassessment.services.AdminTableService;
@@ -82,11 +79,7 @@ public class AdminTableServiceSteps {
 
 	@When("the request is made to get a threshold by its ID")
 	public void the_request_is_made_to_get_a_threshold_by_its_id() {
-	    try {
-			toCheckByID = svc.getThresholdsById(7);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		toCheckByID = svc.getThresholdsById(7);
 	}
 
 	@Then("The threshold returned is the correct one")
@@ -134,19 +127,15 @@ public class AdminTableServiceSteps {
 		toUpdate.setLow("987");
 		toUpdate.setMed("654");
 		toUpdate.setHigh("789");
-		try {
-			svc.updateById(toUpdate, toCheckByName.getAdminThresholdId());
-			AdminTable localCheck = svc.getThresholdByGroupNameCategory("testUpdatedIfr", "testUpdatedThreshold", "testUpdatedDeparture");
-			assertEquals("testUpdatedThreshold", localCheck.getName());
-			assertEquals("testUpdatedIfr", localCheck.getGroup());
-			assertEquals("testUpdatedDeparture", localCheck.getCategory());
-			assertEquals("987", localCheck.getLow());
-			assertEquals("654", localCheck.getMed());
-			assertEquals("789", localCheck.getHigh());
-			svc.deleteById(localCheck.getAdminThresholdId());
-			assertNull(svc.getThresholdsById(localCheck.getAdminThresholdId()));
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		svc.updateById(toUpdate, toCheckByName.getAdminThresholdId());
+		AdminTable localCheck = svc.getThresholdByGroupNameCategory("testUpdatedIfr", "testUpdatedThreshold", "testUpdatedDeparture");
+		assertEquals("testUpdatedThreshold", localCheck.getName());
+		assertEquals("testUpdatedIfr", localCheck.getGroup());
+		assertEquals("testUpdatedDeparture", localCheck.getCategory());
+		assertEquals("987", localCheck.getLow());
+		assertEquals("654", localCheck.getMed());
+		assertEquals("789", localCheck.getHigh());
+		svc.deleteById(localCheck.getAdminThresholdId());
+		assertNull(svc.getThresholdsById(localCheck.getAdminThresholdId()));
 	}
 }

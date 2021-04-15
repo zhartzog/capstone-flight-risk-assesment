@@ -28,11 +28,7 @@ public class AdminTableServiceSteps {
 
 	@When("the request to get all thresholds is made")
 	public void the_request_is_made_to_get_all() {
-		try {
-			list = svc.getAllThresholds();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		list = svc.getAllThresholds();
 	}
 
 	@Then("all of the admin thresholds are returned")
@@ -118,34 +114,37 @@ public class AdminTableServiceSteps {
 		toSave.setMed("test213");
 		toSave.setLow("test321");
 		toSave.setName("testThreshold");
-	    try {
-			svc.save(toSave);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		svc.save(toSave);
 	}
 
 	@Then("the threshold is created, validated, updated, and deleted")
 	public void the_threshold_is_created_validated_and_deleted() {
 		
-		try {
-			toCheckByName = svc.getByName("testThreshold");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		toCheckByName = svc.getThresholdByGroupNameCategory("testIfr", "testThreshold", "testDeparture");
 		assertEquals("testDeparture", toCheckByName.getCategory());
 		assertEquals("testIfr", toCheckByName.getGroup());
 		assertEquals("test123", toCheckByName.getHigh());
 		assertEquals("test213", toCheckByName.getMed());
 		assertEquals("test321", toCheckByName.getLow());
 		assertEquals("testThreshold", toCheckByName.getName());
-		toCheckByName.setName("testUpdated");
+		adminThresholds toUpdate = new adminThresholds();
+		toUpdate.setCategory("testUpdatedDeparture");
+		toUpdate.setGroup("testUpdatedIfr");
+		toUpdate.setName("testUpdatedThreshold");
+		toUpdate.setLow("987");
+		toUpdate.setMed("654");
+		toUpdate.setHigh("789");
 		try {
-			svc.update(toCheckByName, toCheckByName.getAdminThresholdId());
-			adminThresholds localCheck = svc.getByName("testUpdated");
-			assertEquals("testUpdated", localCheck.getName());
+			svc.updateById(toUpdate, toCheckByName.getAdminThresholdId());
+			adminThresholds localCheck = svc.getThresholdByGroupNameCategory("testUpdatedIfr", "testUpdatedThreshold", "testUpdatedDeparture");
+			assertEquals("testUpdatedThreshold", localCheck.getName());
+			assertEquals("testUpdatedIfr", localCheck.getGroup());
+			assertEquals("testUpdatedDeparture", localCheck.getCategory());
+			assertEquals("987", localCheck.getLow());
+			assertEquals("654", localCheck.getMed());
+			assertEquals("789", localCheck.getHigh());
 			svc.delete(localCheck.getAdminThresholdId());
-			assertNull(svc.getThresholdsById(toCheckByName.getAdminThresholdId()));
+			assertNull(svc.getThresholdsById(localCheck.getAdminThresholdId()));
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

@@ -114,6 +114,7 @@ public class professorRepository {
 			statement.execute("UPDATE professorInfo SET ID = '" + toSet.getId() + "', LastName = '" 
 					+ toSet.getLastName() + "', FirstName = '" + toSet.getFirstName() + "', Username = '"
 					+ toSet.getUserName() + "', Password = '" + toSet.getPassword() + "' WHERE ID = " + id);
+			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -131,6 +132,7 @@ public class professorRepository {
 					+ toSet.getLastName() + "', FirstName = '" + toSet.getFirstName() + "', Username = '"
 					+ toSet.getUserName() + "', Password = '" + toSet.getPassword() + "' WHERE Username = '" 
 					+ username + "'");
+			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -149,6 +151,51 @@ public class professorRepository {
 					+ toSet.getLastName() + "', FirstName = '" + toSet.getFirstName() + "', Username = '"
 					+ toSet.getUserName() + "', Password = '" + toSet.getPassword() + "' WHERE LastName = '" 
 					+ lastname + "' AND FirstName = '" + firstname + "'");
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Deletes a database row by ID
+	 * @param id - the id of the row to be deleted
+	 */
+	public void deleteById(int id) {
+		try {
+			initialize();
+			statement.execute("DELETE FROM professorInfo WHERE ID = " + id);
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Deletes a row by the username
+	 * @param username - The username corresponding to the row to be deleted
+	 */
+	public void deleteByUsername(String username) {
+		try {
+			initialize();
+			statement.execute("DELETE FROM professorInfo WHERE Username = '" + username + "'");
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Deletes a database row by the first and last name
+	 * @param firstname - The first name of the corresponding database row to be deleted
+	 * @param lastname - The last name of the corresponding database row to be deleted
+	 */
+	public void deleteByFirstnameLastname(String firstname, String lastname) {
+		try {
+			initialize();
+			statement.execute("DELETE FROM professorInfo WHERE FirstName = '" + firstname 
+					+ "' AND LastName = '" + lastname + "'");
+			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -156,9 +203,8 @@ public class professorRepository {
 	
 	/**
 	 * Initializes the database connection
-	 * @throws SQLException
 	 */
-	private void initialize() throws SQLException {
+	private void initialize() {
 		try {
 			connection = DriverManager.getConnection(url, user, pass);
 			if (connection.isValid(0)) {
@@ -197,6 +243,11 @@ public class professorRepository {
 		return null;
 	}
 	
+	/**
+	 * Maps a result set to a list of professors
+	 * @param rs - The result set to be mapped
+	 * @return - a list of professor from the result set from the query this method was called after
+	 */
 	private ArrayList<Professor> mapToListOfProfessors(ResultSet rs) {
 		try {
 			if (!rs.next()) {

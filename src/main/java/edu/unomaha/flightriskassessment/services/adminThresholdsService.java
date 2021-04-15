@@ -13,35 +13,60 @@ public class adminThresholdsService
 {
 
 	adminThresholdsRepository adminThresholds_Repository = new adminThresholdsRepository();
-	//get all thresholds recorded using CrudRepository findAll()
-	public ArrayList<adminThresholds> getAllThresholds() throws SQLException
-	{
-	    return adminThresholds_Repository.getAll();
-	}
-	//getting a specific record by using the method findById()
-	public adminThresholds getThresholdsById(int id) throws SQLException
-	{
-	    return adminThresholds_Repository.getByID(id);
 	
-	}
-	//saving a specific record by using the method save() of CrudRepository
-	public void save(adminThresholds adminThresholds) throws SQLException
+	/**
+	 * In between method that calls the repository to save a threshold value
+	 * @param adminThresholds - The threshold to save
+	 */
+	public void save(adminThresholds adminThresholds)
 	{
 	    adminThresholds_Repository.save(adminThresholds);
 	}
-	//deleting a specific record by using the method deleteById()
-	public void delete(int id) throws SQLException
+
+	/**
+	 * In between method that calls the repository to get all thresholds
+	 * @return - A list of all thresholds in the database
+	 */
+	public ArrayList<adminThresholds> getAllThresholds()
 	{
-	    adminThresholds_Repository.deleteById(id);
+	    return adminThresholds_Repository.getAll();
 	}
-	//updating a threshold
-	public void update(adminThresholds adminThresholds, int adminThresholdsId) throws SQLException
+
+	/**
+	 * In between method that calls the repository to get a threshold by ID
+	 * @param id - the ID of the row to be gotten
+	 * @return - the corresponding row data
+	 */
+	public adminThresholds getThresholdsById(int id) throws SQLException
+	{
+	    return adminThresholds_Repository.getByID(id);
+	}
+	
+	/**
+	 * Gets a row by the group, name, and category values
+	 * @param group - The group of the row
+	 * @param name - The name of the row
+	 * @param category - The category of the row
+	 * @return - A populated threshold object
+	 */
+	public adminThresholds getThresholdByGroupNameCategory(String group, String name, String category) {
+		return adminThresholds_Repository.getByGroupNameCategory(group, name, category);
+	}
+	
+	/**
+	 * Updates a row by its unique id value
+	 * @param adminThresholds - The threshold to update with
+	 * @param adminThresholdsId - The ID of the threshold in the database to be updated
+	 */
+	public void updateById(adminThresholds adminThresholds, int adminThresholdsId) throws SQLException
 	{
 	    adminThresholds_Repository.updateById(adminThresholdsId, adminThresholds);
 	}
 	
-	public adminThresholds getByName(String name) throws SQLException {
-		return adminThresholds_Repository.getByName(name);
+	//deleting a specific record by using the method deleteById()
+	public void delete(int id) throws SQLException
+	{
+	    adminThresholds_Repository.deleteById(id);
 	}
 }
 

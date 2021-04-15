@@ -54,7 +54,7 @@ private int saveThreshold(@RequestBody adminThresholds adminThresholds) throws S
 @PutMapping("/adminThresholds")
 private adminThresholds update(@RequestBody adminThresholds adminThresholds, @RequestBody int id) throws SQLException
 {
-    adminThresholds_Service.update(adminThresholds, id);
+    adminThresholds_Service.updateById(adminThresholds, id);
     return adminThresholds;
 
 }

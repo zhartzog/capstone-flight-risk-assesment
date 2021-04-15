@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import edu.unomaha.flightriskassessment.models.Professor;
 
-public class professorRepository {
+public class ProfessorRepository {
 	protected String url = "jdbc:mysql://ec2-3-139-100-26.us-east-2.compute.amazonaws.com/RiskAssessmentForm";
 	protected String user = "root";
 	protected String pass = "rootpass";
@@ -19,7 +19,7 @@ public class professorRepository {
 	/**
 	 * Default Constructor
 	 */
-	public professorRepository() {}
+	public ProfessorRepository() {}
 	
 	/**
 	 * Saves a professor object to the database

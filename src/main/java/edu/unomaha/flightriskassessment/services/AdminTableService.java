@@ -5,20 +5,20 @@ import java.util.ArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import edu.unomaha.flightriskassessment.database.adminThresholdsRepository;
-import edu.unomaha.flightriskassessment.models.adminThresholds; 
+import edu.unomaha.flightriskassessment.database.AdminTableRepository;
+import edu.unomaha.flightriskassessment.models.AdminTable; 
 //defining the business logic
 @Service
-public class adminThresholdsService
+public class AdminTableService
 {
 
-	adminThresholdsRepository adminThresholds_Repository = new adminThresholdsRepository();
+	AdminTableRepository adminThresholds_Repository = new AdminTableRepository();
 	
 	/**
 	 * In between method that calls the repository to save a threshold value
 	 * @param adminThresholds - The threshold to save
 	 */
-	public void save(adminThresholds adminThresholds)
+	public void save(AdminTable adminThresholds)
 	{
 	    adminThresholds_Repository.save(adminThresholds);
 	}
@@ -27,7 +27,7 @@ public class adminThresholdsService
 	 * In between method that calls the repository to get all thresholds
 	 * @return - A list of all thresholds in the database
 	 */
-	public ArrayList<adminThresholds> getAllThresholds()
+	public ArrayList<AdminTable> getAllThresholds()
 	{
 	    return adminThresholds_Repository.getAll();
 	}
@@ -37,7 +37,7 @@ public class adminThresholdsService
 	 * @param id - the ID of the row to be gotten
 	 * @return - the corresponding row data
 	 */
-	public adminThresholds getThresholdsById(int id) throws SQLException
+	public AdminTable getThresholdsById(int id) throws SQLException
 	{
 	    return adminThresholds_Repository.getByID(id);
 	}
@@ -49,22 +49,33 @@ public class adminThresholdsService
 	 * @param category - The category of the row
 	 * @return - A populated threshold object
 	 */
-	public adminThresholds getThresholdByGroupNameCategory(String group, String name, String category) {
+	public AdminTable getThresholdByGroupNameCategory(String group, String name, String category) {
 		return adminThresholds_Repository.getByGroupNameCategory(group, name, category);
 	}
 	
 	/**
 	 * Updates a row by its unique id value
-	 * @param adminThresholds - The threshold to update with
+	 * @param AdminTable - The threshold to update with
 	 * @param adminThresholdsId - The ID of the threshold in the database to be updated
 	 */
-	public void updateById(adminThresholds adminThresholds, int adminThresholdsId) throws SQLException
+	public void updateById(AdminTable toSet, int adminThresholdsId)
 	{
-	    adminThresholds_Repository.updateById(adminThresholdsId, adminThresholds);
+	    adminThresholds_Repository.updateById(adminThresholdsId, toSet);
+	}
+	
+	/**
+	 * Updates a row by the unique grouping of the 3 string parameters
+	 * @param toSet - The threshold values to use to update
+	 * @param group - The group of the threshold to update
+	 * @param name - The name of the threshold to update
+	 * @param category - The category of the threshold to update
+	 */
+	public void updateByGroupNameCategory(AdminTable toSet, String group, String name, String category) {
+		adminThresholds_Repository.updateByGroupNameCategory(group, name, category, toSet);
 	}
 	
 	//deleting a specific record by using the method deleteById()
-	public void delete(int id) throws SQLException
+	public void deleteById(int id) throws SQLException
 	{
 	    adminThresholds_Repository.deleteById(id);
 	}

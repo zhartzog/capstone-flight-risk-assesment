@@ -8,9 +8,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.unomaha.flightriskassessment.models.adminThresholds;
+import edu.unomaha.flightriskassessment.models.AdminTable;
 
-public class adminThresholdsRepository {
+public class AdminTableRepository {
 	
 	protected String url = "jdbc:mysql://ec2-3-139-100-26.us-east-2.compute.amazonaws.com/RiskAssessmentForm";
 	protected String user = "root";
@@ -21,14 +21,14 @@ public class adminThresholdsRepository {
 	/**
 	 * Constructor for the repository
 	 */
-	public adminThresholdsRepository() {}
+	public AdminTableRepository() {}
 	
 	/**
 	 * Saves a new threshold to the table
 	 * @param toSave - The threshold to save
 	 * @throws SQLException 
 	 */
-	public void save(adminThresholds toSave) {
+	public void save(AdminTable toSave) {
 		try {
 			initialize();
 			statement.execute("INSERT INTO adminThresholds (groupType, name, low, med, high, category) VALUES ('"
@@ -45,7 +45,7 @@ public class adminThresholdsRepository {
 	 * @return - The full list of all thresholds in the database
 	 * @throws SQLException
 	 */
-	public ArrayList<adminThresholds> getAll() {
+	public ArrayList<AdminTable> getAll() {
 		try {
 			initialize();
 			ResultSet rs = statement.executeQuery("SELECT * FROM adminThresholds");
@@ -63,7 +63,7 @@ public class adminThresholdsRepository {
 	 * @return - the adminThreshold whose ID was passed
 	 * @throws SQLException
 	 */
-	public adminThresholds getByID(int id) throws SQLException {
+	public AdminTable getByID(int id) throws SQLException {
 		initialize();
 		ResultSet rs = statement.executeQuery("SELECT * FROM adminThresholds WHERE adminThresholdId = " + Integer.toString(id));
 		return mapToSingleThreshold(rs);
@@ -77,7 +77,7 @@ public class adminThresholdsRepository {
 	 * @return - The specific threshold to be gotten
 	 * @throws SQLException
 	 */
-	public adminThresholds getByGroupNameCategory(String group, String name, String category) {
+	public AdminTable getByGroupNameCategory(String group, String name, String category) {
 		try {
 			initialize();
 			ResultSet rs = statement.executeQuery("SELECT * FROM adminThresholds WHERE groupType = '" + group + "' AND name = '" + name + "' AND "
@@ -95,7 +95,7 @@ public class adminThresholdsRepository {
 	 * @param toSet - the updated values of the threshold to be set
 	 * @throws SQLException
 	 */
-	public void updateById(int id, adminThresholds toSet) {
+	public void updateById(int id, AdminTable toSet) {
 		try {
 			initialize();
 			statement.execute("UPDATE adminThresholds SET groupType = '" + toSet.getGroup() + "', name = '" + toSet.getName() 
@@ -116,7 +116,7 @@ public class adminThresholdsRepository {
 	 * @param toSet - The adminThreshold object to update the threshold with
 	 * @throws SQLException
 	 */
-	public void updateByGroupNameCategory(String group, String name, String category, adminThresholds toSet) {
+	public void updateByGroupNameCategory(String group, String name, String category, AdminTable toSet) {
 		try {
 			initialize();
 			statement.execute("UPDATE adminThresholds at SET groupType = '" + toSet.getGroup() + "', name = '" + toSet.getName() +
@@ -181,8 +181,8 @@ public class adminThresholdsRepository {
 	 * @param rs - The result set to be mapped
 	 * @return - A mapped threshold object
 	 */
-	private adminThresholds mapToSingleThreshold(ResultSet rs) {
-		adminThresholds toRet = new adminThresholds();
+	private AdminTable mapToSingleThreshold(ResultSet rs) {
+		AdminTable toRet = new AdminTable();
 		try {
 			if (!rs.next()) {
 				return null;
@@ -209,16 +209,16 @@ public class adminThresholdsRepository {
 	 * @param rs - The result set to map
 	 * @return - A list of mapped threshold values
 	 */
-	private ArrayList<adminThresholds> mapToListOfThresholds(ResultSet rs) {
+	private ArrayList<AdminTable> mapToListOfThresholds(ResultSet rs) {
 		try {
 			if (!rs.next()) {
 				connection.close();
 				return null;
 			}
 			else {
-				ArrayList<adminThresholds> toRet = new ArrayList<adminThresholds>();
+				ArrayList<AdminTable> toRet = new ArrayList<AdminTable>();
 				do {
-					adminThresholds toAdd = new adminThresholds();
+					AdminTable toAdd = new AdminTable();
 					toAdd.setAdminThresholdId(rs.getInt(1));
 					toAdd.setGroup(rs.getString(2));
 					toAdd.setName(rs.getString(3));

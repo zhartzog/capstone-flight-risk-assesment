@@ -7,23 +7,23 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import edu.unomaha.flightriskassessment.models.adminThresholds;
-import edu.unomaha.flightriskassessment.services.adminThresholdsService;
+import edu.unomaha.flightriskassessment.models.AdminTable;
+import edu.unomaha.flightriskassessment.services.AdminTableService;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 public class AdminTableServiceSteps {
 	
-	private adminThresholdsService svc;
-	private ArrayList<adminThresholds> list;
-	private adminThresholds toCheckByID;
-	private adminThresholds toCheckByName;
+	private AdminTableService svc;
+	private ArrayList<AdminTable> list;
+	private AdminTable toCheckByID;
+	private AdminTable toCheckByName;
 	String validate;
 	
 	@Given("a call is made to the service class to get all thresholds")
 	public void a_call_is_made_to_the_service_class_to_get_all_thresholds() {
-		svc = new adminThresholdsService();
+		svc = new AdminTableService();
 	}
 
 	@When("the request to get all thresholds is made")
@@ -39,7 +39,7 @@ public class AdminTableServiceSteps {
 	@Then("the first element is correct")
 	public void the_first_element_is_correct() {
 		// First element
-				adminThresholds toCheck = list.get(0);
+				AdminTable toCheck = list.get(0);
 				assertEquals(2, toCheck.getAdminThresholdId());
 				assertEquals("ifr", toCheck.getGroup());
 				assertEquals("ceilingDay", toCheck.getName());
@@ -52,7 +52,7 @@ public class AdminTableServiceSteps {
 	@Then("the middle element is correct")
 	public void the_middle_element_is_correct() {
 		// Element in the middle
-				adminThresholds toCheck = list.get(28);
+				AdminTable toCheck = list.get(28);
 				assertEquals(30, toCheck.getAdminThresholdId());
 				assertEquals("vfr", toCheck.getGroup());
 				assertEquals("ceilingNight", toCheck.getName());
@@ -65,7 +65,7 @@ public class AdminTableServiceSteps {
 	@Then("the last element is correct")
 	public void the_last_element_is_correct() {
 		// Last element
-				adminThresholds toCheck = list.get(58);
+				AdminTable toCheck = list.get(58);
 				assertEquals(60, toCheck.getAdminThresholdId());
 				assertEquals("vfr", toCheck.getGroup());
 				assertEquals("lastLandingComm", toCheck.getName());
@@ -77,7 +77,7 @@ public class AdminTableServiceSteps {
 	
 	@Given("a call is made to the service class to get a threshold by id")
 	public void a_call_is_made_to_the_service_class_to_get_a_threshold_by_the_id() {
-	    svc = new adminThresholdsService();
+	    svc = new AdminTableService();
 	}
 
 	@When("the request is made to get a threshold by its ID")
@@ -102,12 +102,12 @@ public class AdminTableServiceSteps {
 	
 	@Given("a call is made to the service class to create a threshold")
 	public void a_call_is_made_to_the_service_class_to_create_a_threshold() {
-	    svc = new adminThresholdsService();
+	    svc = new AdminTableService();
 	}
 
 	@When("the request is made to create a threshold")
 	public void the_request_is_made_to_create_a_threshold() {
-		adminThresholds toSave = new adminThresholds();
+		AdminTable toSave = new AdminTable();
 		toSave.setCategory("testDeparture");
 		toSave.setGroup("testIfr");
 		toSave.setHigh("test123");
@@ -127,7 +127,7 @@ public class AdminTableServiceSteps {
 		assertEquals("test213", toCheckByName.getMed());
 		assertEquals("test321", toCheckByName.getLow());
 		assertEquals("testThreshold", toCheckByName.getName());
-		adminThresholds toUpdate = new adminThresholds();
+		AdminTable toUpdate = new AdminTable();
 		toUpdate.setCategory("testUpdatedDeparture");
 		toUpdate.setGroup("testUpdatedIfr");
 		toUpdate.setName("testUpdatedThreshold");
@@ -136,14 +136,14 @@ public class AdminTableServiceSteps {
 		toUpdate.setHigh("789");
 		try {
 			svc.updateById(toUpdate, toCheckByName.getAdminThresholdId());
-			adminThresholds localCheck = svc.getThresholdByGroupNameCategory("testUpdatedIfr", "testUpdatedThreshold", "testUpdatedDeparture");
+			AdminTable localCheck = svc.getThresholdByGroupNameCategory("testUpdatedIfr", "testUpdatedThreshold", "testUpdatedDeparture");
 			assertEquals("testUpdatedThreshold", localCheck.getName());
 			assertEquals("testUpdatedIfr", localCheck.getGroup());
 			assertEquals("testUpdatedDeparture", localCheck.getCategory());
 			assertEquals("987", localCheck.getLow());
 			assertEquals("654", localCheck.getMed());
 			assertEquals("789", localCheck.getHigh());
-			svc.delete(localCheck.getAdminThresholdId());
+			svc.deleteById(localCheck.getAdminThresholdId());
 			assertNull(svc.getThresholdsById(localCheck.getAdminThresholdId()));
 		} catch (SQLException e) {
 			e.printStackTrace();

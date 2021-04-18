@@ -47,7 +47,7 @@ public class AdminTableController
 	    return adminThresholds.getAdminThresholdId();
 	}
 	    //create a put mapping for udpating the threshold
-	@PutMapping("/adminThresholds")
+	@PutMapping("/adminThresholds/{adminThresholdId}")
 	private AdminTable update(@RequestBody AdminTable adminThresholds, @RequestBody int id) {
 	    adminThresholds_Service.updateById(adminThresholds, id);
 	    return adminThresholds;

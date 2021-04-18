@@ -30,9 +30,9 @@ public class AdminTableRepository {
 	public void save(AdminTable toSave) {
 		try {
 			initialize();
-			statement.execute("INSERT INTO adminThresholds (groupType, name, low, med, high, category) VALUES ('"
+			statement.execute("INSERT INTO adminThresholds (groupType, name, low, med, high, category, ranges) VALUES ('"
 					+ toSave.getGroup() + "', '" + toSave.getName() + "', '" + toSave.getLow() + "', '" + toSave.getMed() + "', '"
-					+toSave.getHigh() + "', '" + toSave.getCategory() + "')");
+					+toSave.getHigh() + "', '" + toSave.getCategory() + "', '" + toSave.getRanges() + "')");
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -104,7 +104,7 @@ public class AdminTableRepository {
 			initialize();
 			statement.execute("UPDATE adminThresholds SET groupType = '" + toSet.getGroup() + "', name = '" + toSet.getName() 
 			+ "', low = '" + toSet.getLow() + "', med = '" + toSet.getMed() + "', high = '" + toSet.getHigh() + "', category = '"
-			+ toSet.getCategory() + "' WHERE adminThresholdId = " + id);
+			+ toSet.getCategory() + "', ranges = '" + toSet.getRanges() + "' WHERE adminThresholdId = " + id);
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -125,7 +125,7 @@ public class AdminTableRepository {
 			initialize();
 			statement.execute("UPDATE adminThresholds at SET groupType = '" + toSet.getGroup() + "', name = '" + toSet.getName() +
 					"', low = '" + toSet.getLow() + "', med = '" + toSet.getMed() + "', high = '" + toSet.getHigh() + "', category = '" +
-					toSet.getCategory() + "' WHERE at.groupType = '" + group + "' AND at.name = '" + name + "' AND "
+					toSet.getCategory() + "', ranges = '" + toSet.getRanges() + "' WHERE at.groupType = '" + group + "' AND at.name = '" + name + "' AND "
 							+ "at.category = '" + category + "'");
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -199,6 +199,7 @@ public class AdminTableRepository {
 				toRet.setMed(rs.getString(5));
 				toRet.setHigh(rs.getString(6));
 				toRet.setCategory(rs.getString(7));
+				toRet.setRanges(rs.getString(8));
 				connection.close();
 				return toRet;
 			}
@@ -230,6 +231,7 @@ public class AdminTableRepository {
 					toAdd.setMed(rs.getString(5));
 					toAdd.setHigh(rs.getString(6));
 					toAdd.setCategory(rs.getString(7));
+					toAdd.setRanges(rs.getString(8));
 					toRet.add(toAdd);
 				}
 				while (rs.next());

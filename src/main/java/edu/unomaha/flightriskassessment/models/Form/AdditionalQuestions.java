@@ -9,6 +9,7 @@ public class AdditionalQuestions
 {
     private boolean isInstrumentCurrent;
 
+    private String winds;
     private int headwind;
     private int crosswind;
     private int headwind_gust;
@@ -41,6 +42,16 @@ public class AdditionalQuestions
     {
         headwind_gust = (int) Math.ceil(gusts[0]);
         crosswind_gust = (int) Math.ceil(gusts[1]);
+    }
+
+    public String getWinds()
+    {
+        return winds;
+    }
+
+    public void setWinds(String winds)
+    {
+        this.winds = winds;
     }
 
     public List<AirSigmet> getAirSigmetList()

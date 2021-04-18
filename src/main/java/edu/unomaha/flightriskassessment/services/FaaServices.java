@@ -45,6 +45,7 @@ public class FaaServices
         try
         {
             String globalID_url = "https://services6.arcgis.com/ssFJjBXIUyZDrSYZ/arcgis/rest/services/US_Airport/FeatureServer/0/query?where=IDENT=%27"+airport.getIdent()+"%27&outFields=GLOBAL_ID,LATITUDE,LONGITUDE,ELEVATION,IAPEXISTS&outSR=4326&f=json";
+            System.out.println(globalID_url);
             InputStream is = new URL(globalID_url).openStream();
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
             String jsonText = readAll(rd);

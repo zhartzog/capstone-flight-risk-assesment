@@ -4,13 +4,13 @@ import edu.unomaha.flightriskassessment.models.awc.AirSigmet;
 import edu.unomaha.flightriskassessment.models.awc.Metar;
 import edu.unomaha.flightriskassessment.models.awc.Pirep;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdditionalQuestions
 {
     private boolean isInstrumentCurrent;
 
-    private String winds;
     private int headwind;
     private int crosswind;
     private int headwind_gust;
@@ -18,6 +18,8 @@ public class AdditionalQuestions
     private String primaryRunway;
 
     private Metar metar;
+
+    private List<Metar> destinationMetar = new ArrayList<>();
 
     private List<AirSigmet> airSigmetList;
 
@@ -33,16 +35,6 @@ public class AdditionalQuestions
     {
         headwind_gust = (int) Math.ceil(gusts[0]);
         crosswind_gust = (int) Math.ceil(gusts[1]);
-    }
-
-    public String getWinds()
-    {
-        return winds;
-    }
-
-    public void setWinds(String winds)
-    {
-        this.winds = winds;
     }
 
     public List<AirSigmet> getAirSigmetList()
@@ -114,6 +106,20 @@ public class AdditionalQuestions
     public void setPrimaryRunway(String primaryRunway)
     {
         this.primaryRunway = primaryRunway;
+    }
+
+    public List<Metar> getDestinationMetar()
+    {
+        return destinationMetar;
+    }
+
+    public void setDestinationMetar(List<Metar> destinationMetar)
+    {
+        this.destinationMetar = destinationMetar;
+    }
+
+    public void addDestinationMetar(Metar metar){
+        this.destinationMetar.add(metar);
     }
 
     @Override

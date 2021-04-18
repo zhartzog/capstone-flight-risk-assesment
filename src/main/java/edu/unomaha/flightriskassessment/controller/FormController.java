@@ -16,7 +16,7 @@ public class FormController
     @Autowired
     FormServices formServices;
 
-    @PostMapping( value="/basicFormInfo", consumes = "application/json", produces = "application/json")
+    @PostMapping( value="/basicFormInfo", produces = "application/json")
     public @ResponseBody
     AdditionalQuestions basicFormInput(@RequestBody BasicFormInput input)
     {

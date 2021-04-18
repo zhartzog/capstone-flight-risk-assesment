@@ -57,6 +57,9 @@ public class FormServices
 
         calculateWindComponent();
         getAirSigmet();
+        getDestinationMetars(input.getFlight_category(), input.getFlight_type(), input.getXc_destination());
+
+
         System.out.println("LatLong: "+airportInfo.getLatLongAsString());
         additionalQuestions.setPireps( awcServices.getPireps(20, airportInfo.getLatLongAsString() ) );
         additionalQuestions.setMetar(metar);
@@ -90,7 +93,6 @@ public class FormServices
     //TODO: ADD ability to caluclate winds with TAF/MOS data
     private void calculateWindComponent()
     {
-        this.additionalQuestions.setWinds(metar.getWindsAsString());
         double[] wind = new double[]{Double.MAX_VALUE, Double.MAX_VALUE};
         double[] gusts = new double[]{Double.MAX_VALUE, Double.MAX_VALUE};
         String primaryRunway = "ERROR";
@@ -165,6 +167,59 @@ public class FormServices
         this.additionalQuestions.setAirSigmetList(
                 awcServices.getAirSigmet(minMax[0], minMax[1], minMax[2], minMax[3], MAX_ALTITUDE )
         );
+    }
+
+    private void getDestinationMetars(String category, String type, String destinations)
+    {
+        if(category.equals("normal"))
+        {
+            if(type.equals("aux_field"))
+            {
+                if(this.metar.getAirportID().equals("KCBF"))
+                {
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KOMA"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KTQE"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KBTA"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KFET"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KAHQ"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KMLE"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KPMV"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KAFK"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KSDA"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KICL"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KRDK"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KAIO"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KADU"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KDNS"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KOFF"));
+                }
+                else if(this.metar.getAirportID().equals("KMLE"))
+                {
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KOMA"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KTQE"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KBTA"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KFET"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KAHQ"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KLNK"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KPMV"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KAFK"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KSDA"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KRDK"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KAIO"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KCBF"));
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData("KOFF"));
+                }
+            }
+            else if(type.equals("cross_country"))
+            {
+                String[] dests = destinations.split(",");
+
+                for ( String i : dests)
+                {
+                    this.additionalQuestions.addDestinationMetar(awcServices.getMetarData(i));
+                }
+            }
+        }
     }
 
 

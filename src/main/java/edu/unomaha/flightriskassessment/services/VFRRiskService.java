@@ -1,376 +1,794 @@
 package edu.unomaha.flightriskassessment.services;
 
+import java.security.spec.EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.lang.model.util.ElementScanner14;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import edu.unomaha.flightriskassessment.models.IFRRiskModel;;
+import edu.unomaha.flightriskassessment.models.VFRRiskModel;
+import edu.unomaha.flightriskassessment.database.AdminTableRepository;
+import edu.unomaha.flightriskassessment.models.AdminTable; 
+import edu.unomaha.flightriskassessment.services.AdminTableService;
 
 @Service
 public class VFRRiskService {
 
 	//Calculate Risk for VFR Categories
-	public int VFRRiskCalc(String mainCategory, String category, String subcategory, String categoryValue)
+	//UPDATE VALUES WITH getThresholdByGroupNameCategory(String group, String name, String category)
+	public int VFRRiskCalc(VFRRiskModel riskModel)
 	{
 		int totalRiskLocal = 0;
 		int totalRiskCCAF = 0;
 		int totalRiskHF = 0;
 		int totalRiskHFSolo = 0;
-		if(mainCategory == "VFR: Local Pattern")
+		if(riskModel.getMainCategory() == "VFR: Local Pattern")
 		{
-			totalRiskLocal += VFRRiskCalcLocal(category, categoryValue);
+			totalRiskLocal += VFRRiskCalcLocal(riskModel);
 			return totalRiskLocal;
 		}
-		if(mainCategory == "VFR Cross Country or Auxilary Field (Day or Night)")
+		if(riskModel.getMainCategory() == "VFR Cross Country or Auxilary Field (Day or Night)")
 		{
-			totalRiskCCAF += VFRRiskCalcCCAF(category, subcategory, categoryValue);
+			totalRiskCCAF += VFRRiskCalcCCAF(riskmodel);
 			return totalRiskCCAF;
 		}
-		if(mainCategory == "Physiology/Psychology")
+		if(riskModel.getMainCategory() == "Physiology/Psychology")
 		{
-			totalRiskHF += VFRRiskCalcHF(category, categoryValue);
+			totalRiskHF += VFRRiskCalcHF(riskModel);
 			return totalRiskHF;
 		}
-		if(mainCategory == "Solo Factors")
+		if(riskModel.getMainCategory() == "Solo Factors")
 		{
-			totalRiskHFSolo += VFRRiskCalcHFSolo(category, categoryValue);
+			totalRiskHFSolo += VFRRiskCalcHFSolo(riskModel);
 			return totalRiskHFSolo;
 		}
 	}
 
 	//Calculate VFR Local Pattern Risk
-	public int VFRRiskCalcLocal(String category, String categoryValue)
+	public int VFRRiskCalcLocal(VFRRiskModel riskModel)
 	{
 		int risk = 0;
 		int categoryValueNum;
 		categoryValueNum = Integer.parseInt(categoryValue);
-		if(category == "Ceiling(Day Dual)")
+		AdminTable tempThreshold;
+		int low, med, high;
+		if(riskModel.getCategory() == "Ceiling (Day Dual)")
 		{
-			if(categoryValueNum >= 2500)
+			tempThreshold = getThresholdByGroupName("vfr", "Ceiling (Day Dual)", "localPattern");
+			low = Integer.parseInt(tempThreshold.getLow());
+			med = Integer.parseInt(tempThreshold.getMed());
+			high = Integer.parseInt(tempThreshold.getHigh());
+			if(categoryValueNum >= low)
 			{
 				//risk is low (0)
 			}
-			else if(categoryValueNum < 2500 && categoryValueNum > 1999)
+			else if(categoryValueNum >= med)
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValueNum < 2000 && categoryValueNum > 1499)
+			else if(categoryValueNum >= high)
 			{
 				//risk is high(3)
 				risk += 3;
+			}
+			else if(categoryValueNum < high)
+			{
+				//Not Allowed, Automatically No Go
+				risk += 15;
 			}
 		}
-		if(category == "Ceiling(Day Solo)")
+		if(riskModel.getCategory() == "Ceiling (Day Solo)")
 		{
-			if(categoryValueNum >= 3000)
+			tempThreshold = getThresholdByGroupName("vfr", "Ceiling (Day Solo)", "localPattern");
+			low = Integer.parseInt(tempThreshold.getLow());
+			med = Integer.parseInt(tempThreshold.getMed());
+			high = Integer.parseInt(tempThreshold.getHigh());
+			if(categoryValueNum >= low)
 			{
 				//risk is low (0)
 			}
-			else if(categoryValueNum < 3000 && categoryValueNum > 2499)
+			else if(categoryValueNum >= med)
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValueNum < 2500 && categoryValueNum > 1999)
+			else if(categoryValueNum >= high)
 			{
 				//risk is high(3)
 				risk += 3;
+			}
+			else if(categoryValueNum < high)
+			{
+				//Not Allowed, Automatically No Go
+				risk += 15;
 			}
 		}
-		if(category == "Ceiling(Night Dual)")
+		if(riskModel.getCategory() == "Ceiling (Night Dual)")
 		{
-			if(categoryValueNum >= 4000)
+			tempThreshold = getThresholdByGroupName("vfr", "Ceiling (Night Dual)", "localPattern");
+			low = Integer.parseInt(tempThreshold.getLow());
+			med = Integer.parseInt(tempThreshold.getMed());
+			high = Integer.parseInt(tempThreshold.getHigh());
+			if(categoryValueNum >= low)
 			{
 				//risk is low (0)
 			}
-			else if(categoryValueNum < 4000 && categoryValueNum > 3499)
+			else if(categoryValueNum >= med)
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValueNum < 3500 && categoryValueNum > 2999)
+			else if(categoryValueNum >= high)
 			{
 				//risk is high(3)
 				risk += 3;
+			}
+			else if(categoryValueNum < high)
+			{
+				//Not Allowed, Automatically No Go
+				risk += 15;
 			}
 		}
-		if(category == "Visibility (Day)")
+		if(riskModel.getCategory() == "Visibility (Day)")
 		{
-			if(categoryValueNum >= 5)
+			tempThreshold = getThresholdByGroupName("vfr", "Visibility (Day)", "localPattern");
+			low = Integer.parseInt(tempThreshold.getLow());
+			med = Integer.parseInt(tempThreshold.getMed());
+			high = Integer.parseInt(tempThreshold.getHigh());
+			if(categoryValueNum >= low)
 			{
 				//risk is low (0)
 			}
-			else if(categoryValueNum == 4)
+			else if(categoryValueNum == med)
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValueNum == 3)
+			else if(categoryValueNum == high)
 			{
 				//risk is high(3)
 				risk += 3;
+			}
+			else if(categoryValueNum < high)
+			{
+				//Not Allowed, Automatically No Go
+				risk += 15;
 			}
 		}
-		if(category == "Visibility (Night)")
+		if(riskModel.getCategory() == "Visibility (Night)")
 		{
-			if(categoryValueNum >= 7)
+			tempThreshold = getThresholdByGroupName("vfr", "Visibility (Night)", "localPattern");
+			low = Integer.parseInt(tempThreshold.getLow());
+			med = Integer.parseInt(tempThreshold.getMed());
+			high = Integer.parseInt(tempThreshold.getHigh());
+			if(categoryValueNum >= low)
 			{
 				//risk is low (0)
 			}
-			else if(categoryValueNum == 6)
+			else if(categoryValueNum == med)
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValueNum == 5)
+			else if(categoryValueNum == high)
 			{
 				//risk is high(3)
 				risk += 3;
+			}
+			else if(categoryValueNum < high)
+			{
+				//Not Allowed, Automatically No Go
+				risk += 15;
 			}
 		}
-		if(category == "Total Wind")
+		if(riskModel.getCategory() == "Total Wind")
 		{
-			if(categoryValueNum >= 0 && categoryValueNum <= 15)
+			tempThreshold = getThresholdByGroupName("vfr", "Total Wind", "localPattern");
+			low = Integer.parseInt(tempThreshold.getLow());
+			med = Integer.parseInt(tempThreshold.getMed());
+			high = Integer.parseInt(tempThreshold.getHigh());
+			if(categoryValueNum <= low)
 			{
 				//risk is low (0)
 			}
-			else if(categoryValueNum >= 16 && categoryValueNum <= 20)
+			else if(categoryValueNum <= med)
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValueNum >= 21 && categoryValueNum <= 25)
+			else if(categoryValueNum <= high)
 			{
 				//risk is high(3)
 				risk += 3;
+			}
+			else if(categoryValueNum > high)
+			{
+				//Not Allowed, Automatically No Go
+				risk += 15;
 			}
 		}
-		if(category == "Gust Increment")
+		if(riskModel.getCategory() == "Gust Increment")
 		{
-			if(categoryValueNum >= 0 && categoryValueNum <= 5)
+			tempThreshold = getThresholdByGroupName("vfr", "Gust Increment", "localPattern");
+			low = Integer.parseInt(tempThreshold.getLow());
+			med = Integer.parseInt(tempThreshold.getMed());
+			high = Integer.parseInt(tempThreshold.getHigh());
+			if(categoryValueNum <= low)
 			{
 				//risk is low (0)
 			}
-			else if(categoryValueNum >= 6 && categoryValueNum <= 8)
+			else if(categoryValueNum <= med)
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValueNum >= 9 && categoryValueNum <= 10)
+			else if(categoryValueNum <= high)
 			{
 				//risk is high(3)
 				risk += 3;
+			}
+			else if(categoryValueNum > high)
+			{
+				//Not Allowed, Automatically No Go
+				risk += 15;
 			}
 		}
-		if(category == "Crosswind")
+		if(riskModel.getCategory() == "Crosswind")
 		{
-			if(categoryValueNum >= 0 && categoryValueNum <= 5)
+			tempThreshold = getThresholdByGroupName("vfr", "Crosswind", "localPattern");
+			low = Integer.parseInt(tempThreshold.getLow());
+			med = Integer.parseInt(tempThreshold.getMed());
+			high = Integer.parseInt(tempThreshold.getHigh());
+			if(categoryValueNum <= low)
 			{
 				//risk is low (0)
 			}
-			else if(categoryValueNum >= 6 && categoryValueNum <= 10)
+			else if(categoryValueNum <= med)
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValueNum >= 11 && categoryValueNum <= 15)
+			else if(categoryValueNum <= high)
 			{
 				//risk is high(3)
 				risk += 3;
+			}
+			else if(categoryValueNum > high)
+			{
+				//Not Allowed, Automatically No Go
+				risk += 15;
 			}
 		}
 		return risk;
 	}
 
 	//Calculate VFR Risk for CCAF
-	public int VFRRiskCalcCCAF(String category, String subcategory,String categoryValue)
+	public int VFRRiskCalcCCAF(VFRRiskModel riskModel)
 	{
 		int risk = 0;
-		if(subcategory == "Departure" || subcategory == "Destination" ||
-		 subcategory == "Alternate")
+		AdminTable tempThreshold;
+		int low, med, high;
+		if(riskModel.getCategory() != "VFR Checkpoints")
 		{
 			int categoryValueNum;
 			categoryValueNum = Integer.parseInt(categoryValue);
-			if(category == "Ceiling")
+			if(riskModel.getCategory() == "Ceiling" && riskModel.getSubcategory() == "departure")
 			{
-				if(categoryValueNum >= 4000)
+				tempThreshold = getThresholdByGroupName("vfr", "Ceiling", "departure");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				high = Integer.parseInt(tempThreshold.getHigh());
+				if(categoryValueNum >= low)
 				{
 					//risk is low (0)
 				}
-				else if(categoryValueNum >= 3500 && categoryValueNum <= 3999)
+				else if(categoryValueNum >= med)
 				{
 					//risk is med(1)
 					risk++;
 				}
-				else if(categoryValueNum >= 3000 && categoryValueNum <= 3499)
+				else if(categoryValueNum >= high)
 				{
 					//risk is high(3)
 					risk += 3;
+				}
+				else if(categoryValueNum < high)
+				{
+					//Not Allowed, Automatically No Go
+					risk += 15;
 				}
 			}
-			if(category == "Visibility")
+			if(riskModel.getCategory() == "Ceiling" && riskModel.getSubcategory() == "destination")
 			{
-				if(categoryValueNum >= 7)
+				tempThreshold = getThresholdByGroupName("vfr", "Ceiling", "destination");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				high = Integer.parseInt(tempThreshold.getHigh());
+				if(categoryValueNum >= low)
 				{
 					//risk is low (0)
 				}
-				else if(categoryValueNum == 6)
+				else if(categoryValueNum >= med)
 				{
 					//risk is med(1)
 					risk++;
 				}
-				else if(categoryValueNum == 5)
+				else if(categoryValueNum >= high)
 				{
 					//risk is high(3)
 					risk += 3;
+				}
+				else if(categoryValueNum < high)
+				{
+					//Not Allowed, Automatically No Go
+					risk += 15;
 				}
 			}
-			if(category == "Total Wind")
+			if(riskModel.getCategory() == "Ceiling" && riskModel.getSubcategory() == "alternate")
 			{
-				if(categoryValueNum >= 0 && categoryValueNum <= 15)
+				tempThreshold = getThresholdByGroupName("vfr", "Ceiling", "alternate");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				high = Integer.parseInt(tempThreshold.getHigh());
+				if(categoryValueNum >= low)
 				{
 					//risk is low (0)
 				}
-				else if(categoryValueNum >= 16 && categoryValueNum <= 20)
+				else if(categoryValueNum >= med)
 				{
 					//risk is med(1)
 					risk++;
 				}
-				else if(categoryValueNum >= 21 && categoryValueNum <= 25)
+				else if(categoryValueNum >= high)
 				{
 					//risk is high(3)
 					risk += 3;
+				}
+				else if(categoryValueNum < high)
+				{
+					//Not Allowed, Automatically No Go
+					risk += 15;
 				}
 			}
-			if(category == "Gust Increment")
+			if(riskModel.getCategory() == "Visibility" && riskModel.getSubcategory() == "departure")
 			{
-				if(categoryValueNum >= 0 && categoryValueNum <= 5)
+				tempThreshold = getThresholdByGroupName("vfr", "Visibility", "departure");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				high = Integer.parseInt(tempThreshold.getHigh());
+				if(categoryValueNum >= low)
 				{
 					//risk is low (0)
 				}
-				else if(categoryValueNum >= 6 && categoryValueNum <= 8)
+				else if(categoryValueNum == med)
 				{
 					//risk is med(1)
 					risk++;
 				}
-				else if(categoryValueNum >= 9 && categoryValueNum <= 10)
+				else if(categoryValueNum == high)
 				{
 					//risk is high(3)
 					risk += 3;
+				}
+				else if(categoryValueNum < high)
+				{
+					//Not Allowed, Automatically No Go
+					risk += 15;
 				}
 			}
-			if(category == "Crosswind")
+			if(riskModel.getCategory() == "Visibility" && riskModel.getSubcategory() == "destination")
 			{
-				if(categoryValueNum >= 0 && categoryValueNum <= 5)
+				tempThreshold = getThresholdByGroupName("vfr", "Visibility", "destination");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				high = Integer.parseInt(tempThreshold.getHigh());
+				if(categoryValueNum >= low)
 				{
 					//risk is low (0)
 				}
-				else if(categoryValueNum >= 6 && categoryValueNum <= 10)
+				else if(categoryValueNum == med)
 				{
 					//risk is med(1)
 					risk++;
 				}
-				else if(categoryValueNum >= 11 && categoryValueNum <= 15)
+				else if(categoryValueNum == high)
 				{
 					//risk is high(3)
 					risk += 3;
+				}
+				else if(categoryValueNum < high)
+				{
+					//Not Allowed, Automatically No Go
+					risk += 15;
+				}
+			}
+			if(riskModel.getCategory() == "Visibility" && riskModel.getSubcategory() == "alternate")
+			{
+				tempThreshold = getThresholdByGroupName("vfr", "Visibility", "alternate");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				high = Integer.parseInt(tempThreshold.getHigh());
+				if(categoryValueNum >= low)
+				{
+					//risk is low (0)
+				}
+				else if(categoryValueNum == med)
+				{
+					//risk is med(1)
+					risk++;
+				}
+				else if(categoryValueNum == high)
+				{
+					//risk is high(3)
+					risk += 3;
+				}
+				else if(categoryValueNum < high)
+				{
+					//Not Allowed, Automatically No Go
+					risk += 15;
+				}
+			}
+			if(riskModel.getCategory() == "Total Wind" && riskModel.getSubcategory() == "departure")
+			{
+				tempThreshold = getThresholdByGroupName("vfr", "Total Wind", "departure");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				high = Integer.parseInt(tempThreshold.getHigh());
+				if(categoryValueNum <= low)
+				{
+					//risk is low (0)
+				}
+				else if(categoryValueNum <= med)
+				{
+					//risk is med(1)
+					risk++;
+				}
+				else if(categoryValueNum <= high)
+				{
+					//risk is high(3)
+					risk += 3;
+				}
+				else if(categoryValueNum > high)
+				{
+					//Not Allowed, Automatically No Go
+					risk += 15;
+				}
+			}
+			if(riskModel.getCategory() == "Total Wind" && riskModel.getSubcategory() == "destination")
+			{
+				tempThreshold = getThresholdByGroupName("vfr", "Total Wind", "destination");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				high = Integer.parseInt(tempThreshold.getHigh());
+				if(categoryValueNum <= low)
+				{
+					//risk is low (0)
+				}
+				else if(categoryValueNum <= med)
+				{
+					//risk is med(1)
+					risk++;
+				}
+				else if(categoryValueNum <= high)
+				{
+					//risk is high(3)
+					risk += 3;
+				}
+				else if(categoryValueNum > high)
+				{
+					//Not Allowed, Automatically No Go
+					risk += 15;
+				}
+			}
+			if(riskModel.getCategory() == "Total Wind" && riskModel.getSubcategory() == "alternate")
+			{
+				tempThreshold = getThresholdByGroupName("vfr", "Total Wind", "alternate");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				high = Integer.parseInt(tempThreshold.getHigh());
+				if(categoryValueNum <= low)
+				{
+					//risk is low (0)
+				}
+				else if(categoryValueNum <= med)
+				{
+					//risk is med(1)
+					risk++;
+				}
+				else if(categoryValueNum <= high)
+				{
+					//risk is high(3)
+					risk += 3;
+				}
+				else if(categoryValueNum > high)
+				{
+					//Not Allowed, Automatically No Go
+					risk += 15;
+				}
+			}
+			if(riskModel.getCategory() == "Gust Increment" && riskModel.getSubcategory() == "departure")
+			{
+				tempThreshold = getThresholdByGroupName("vfr", "Gust Increment", "departure");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				high = Integer.parseInt(tempThreshold.getHigh());
+				if(categoryValueNum <= low)
+				{
+					//risk is low (0)
+				}
+				else if(categoryValueNum <= med)
+				{
+					//risk is med(1)
+					risk++;
+				}
+				else if(categoryValueNum <= high)
+				{
+					//risk is high(3)
+					risk += 3;
+				}
+				else if(categoryValueNum > high)
+				{
+					//Not Allowed, Automatically No Go
+					risk += 15;
+				}
+			}
+			if(riskModel.getCategory() == "Gust Increment" && riskModel.getSubcategory() == "destination")
+			{
+				tempThreshold = getThresholdByGroupName("vfr", "Gust Increment", "destination");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				high = Integer.parseInt(tempThreshold.getHigh());
+				if(categoryValueNum <= low)
+				{
+					//risk is low (0)
+				}
+				else if(categoryValueNum <= med)
+				{
+					//risk is med(1)
+					risk++;
+				}
+				else if(categoryValueNum <= high)
+				{
+					//risk is high(3)
+					risk += 3;
+				}
+				else if(categoryValueNum > high)
+				{
+					//Not Allowed, Automatically No Go
+					risk += 15;
+				}
+			}
+			if(riskModel.getCategory() == "Gust Increment" && riskModel.getSubcategory() == "alternate")
+			{
+				tempThreshold = getThresholdByGroupName("vfr", "Gust Increment", "alternate");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				high = Integer.parseInt(tempThreshold.getHigh());
+				if(categoryValueNum <= low)
+				{
+					//risk is low (0)
+				}
+				else if(categoryValueNum <= med)
+				{
+					//risk is med(1)
+					risk++;
+				}
+				else if(categoryValueNum <= high)
+				{
+					//risk is high(3)
+					risk += 3;
+				}
+				else if(categoryValueNum > high)
+				{
+					//Not Allowed, Automatically No Go
+					risk += 15;
+				}
+			}
+			if(riskModel.getCategory() == "Crosswind" && riskModel.getSubcategory() == "departure")
+			{
+				tempThreshold = getThresholdByGroupName("vfr", "Crosswind", "departure");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				high = Integer.parseInt(tempThreshold.getHigh());
+				if(categoryValueNum <= low)
+				{
+					//risk is low (0)
+				}
+				else if(categoryValueNum <= med)
+				{
+					//risk is med(1)
+					risk++;
+				}
+				else if(categoryValueNum <= high)
+				{
+					//risk is high(3)
+					risk += 3;
+				}
+				else if(categoryValueNum > high)
+				{
+					//Not Allowed, Automatically No Go
+					risk += 15;
+				}
+			}
+			if(riskModel.getCategory() == "Crosswind" && riskModel.getSubcategory() == "destination")
+			{
+				tempThreshold = getThresholdByGroupName("vfr", "Crosswind", "destination");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				high = Integer.parseInt(tempThreshold.getHigh());
+				if(categoryValueNum <= low)
+				{
+					//risk is low (0)
+				}
+				else if(categoryValueNum <= med)
+				{
+					//risk is med(1)
+					risk++;
+				}
+				else if(categoryValueNum <= high)
+				{
+					//risk is high(3)
+					risk += 3;
+				}
+				else if(categoryValueNum > high)
+				{
+					//Not Allowed, Automatically No Go
+					risk += 15;
+				}
+			}
+			if(riskModel.getCategory() == "Crosswind" && riskModel.getSubcategory() == "alternate")
+			{
+				tempThreshold = getThresholdByGroupName("vfr", "Crosswind", "alternate");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				high = Integer.parseInt(tempThreshold.getHigh());
+				if(categoryValueNum <= low)
+				{
+					//risk is low (0)
+				}
+				else if(categoryValueNum <= med)
+				{
+					//risk is med(1)
+					risk++;
+				}
+				else if(categoryValueNum <= high)
+				{
+					//risk is high(3)
+					risk += 3;
+				}
+				else if(categoryValueNum > high)
+				{
+					//Not Allowed, Automatically No Go
+					risk += 15;
 				}
 			}
 		}
-		if(subcategory == "Enroute")
+		if(riskModel.getSubcategory() == "Enroute")
 		{
-			if(category != "VFR Checkpoints")
+			if(riskModel.getCategory() != "VFR Checkpoints")
 			{
 				int categoryValueNum;
 				categoryValueNum = Integer.parseInt(categoryValue);
 			
 			}
-			if(category == "Ceiling")
+			if(riskModel.getCategory() == "Ceiling")
 			{
-				if(categoryValueNum >= 4000)
+				tempThreshold = getThresholdByGroupName("vfr", "Ceiling", "enroute");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				high = Integer.parseInt(tempThreshold.getHigh());
+				if(categoryValueNum >= low)
 				{
 					//risk is low (0)
 				}
-				else if(categoryValueNum >= 3500 && categoryValueNum <= 3999)
+				else if(categoryValueNum >= med)
 				{
 					//risk is med(1)
 					risk++;
 				}
-				else if(categoryValueNum >= 3000 && categoryValueNum <= 3499)
+				else if(categoryValueNum >= high)
+				{
+					//risk is high(3)
+					risk += 3;
+				}
+				else if(categoryValueNum < high)
+				{
+					//Not Allowed, Automatically No Go
+					risk += 15;
+				}
+			}
+			if(riskModel.getCategory() == "Visibility")
+			{
+				tempThreshold = getThresholdByGroupName("vfr", "Visibility", "enroute");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				high = Integer.parseInt(tempThreshold.getHigh());
+				if(categoryValueNum >= low)
+				{
+					//risk is low (0)
+				}
+				else if(categoryValueNum == med)
+				{
+					//risk is med(1)
+					risk++;
+				}
+				else if(categoryValueNum == high)
+				{
+					//risk is high(3)
+					risk += 3;
+				}
+				else if(categoryValueNum < high)
+				{
+					//Not Allowed, Automatically No Go
+					risk += 15;
+				}
+			}
+			if(riskModel.getCategory() == "VFR Checkpoints")
+			{
+				tempThreshold = getThresholdByGroupName("vfr", "VFR Checkpoints", "enroute");
+				if(riskModel.getCategoryValue() == tempThreshold.getLow())
+				{
+					//risk is low (0)
+				}
+				else if(riskModel.getCategoryValue() == tempThreshold.getMed())
+				{
+					//risk is med(1)
+					risk++;
+				}
+				else if(riskModel.getCategoryValue() == tempThreshold.getHigh())
 				{
 					//risk is high(3)
 					risk += 3;
 				}
 			}
-			if(category == "Visibility")
+			if(riskModel.getCategory() == "Time Enroute")
 			{
-				if(categoryValueNum >= 7)
+				tempThreshold = getThresholdByGroupName("vfr", "Time Enroute", "enroute");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				if(categoryValueNum < low)
 				{
 					//risk is low (0)
 				}
-				else if(categoryValueNum == 6)
+				else if(categoryValueNum >= low && categoryValueNum <= med)
 				{
 					//risk is med(1)
 					risk++;
 				}
-				else if(categoryValueNum == 5)
+				else if(categoryValueNum > med)
 				{
 					//risk is high(3)
 					risk += 3;
 				}
 			}
-			if(category == "VFR Checkpoints")
+			if(riskModel.getCategory() == "Fuel at Alternate")
 			{
-				if(categoryValue == "Multiple")
+				tempThreshold = getThresholdByGroupName("vfr", "Fuel at Alternate", "enroute");
+				low = Integer.parseInt(tempThreshold.getLow());
+				med = Integer.parseInt(tempThreshold.getMed());
+				high = Integer.parseInt(tempThreshold.getHigh());
+				if(categoryValueNum > low)
 				{
 					//risk is low (0)
 				}
-				else if(categoryValue == "Moderate")
+				else if(categoryValueNum >= med && categoryValueNum <= low)
 				{
 					//risk is med(1)
 					risk++;
 				}
-				else if(categoryValue == "Few to none")
+				else if(categoryValueNum >= high && categoryValueNum < med)
 				{
 					//risk is high(3)
 					risk += 3;
 				}
-			}
-			if(category == "Time enroute")
-			{
-				if(categoryValueNum < 60)
+				else
 				{
-					//risk is low (0)
-				}
-				else if(categoryValueNum >= 60 && categoryValueNum <= 120)
-				{
-					//risk is med(1)
-					risk++;
-				}
-				else if(categoryValueNum >= 120)
-				{
-					//risk is high(3)
-					risk += 3;
-				}
-			}
-			if(category == "Fuel at Alternate")
-			{
-				if(categoryValueNum > 60)
-				{
-					//risk is low (0)
-				}
-				else if(categoryValueNum >= 46 && categoryValueNum <= 60)
-				{
-					//risk is med(1)
-					risk++;
-				}
-				else if(categoryValueNum >= 30 && categoryValueNum <= 45)
-				{
-					//risk is high(3)
-					risk += 3;
+					//Auto no go
+					risk += 15;
 				}
 			}
 		}
@@ -378,235 +796,311 @@ public class VFRRiskService {
 	}
 
 	//Calculate Human Factors 
-	public int VFRRiskCalcHF(String category, String categoryValue)
+	public int VFRRiskCalcHF(VFRRiskModel riskModel)
 	{
 		int risk = 0;
-		if(category == "Time of Flight")
+		AdminTable tempThreshold;
+		int low, med, high;
+		if(riskModel.getCategory() == "Time of Flight")
 		{
-			if(categoryValue == "Day")
+			tempThreshold = getThresholdByGroupName("vfr", "Time of Flight", "physiology");
+			if(riskModel.getCategoryValue() == tempThreshold.getLow())
 			{
 				//risk is low (0)
 			}
-			else if(categoryValue = "Dusk")
+			else if(riskModel.getCategoryValue() == tempThreshold.getMed())
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValue = "Night")
+			else if(riskModel.getCategoryValue() == tempThreshold.getHigh())
 			{
 				//risk is high(3)
 				risk += 3;
 			}
 		}
-		if(category == "Flight Duty Period began")
+		if(riskModel.getCategory() == "Flight Duty Period Began")
 		{
+			tempThreshold = getThresholdByGroupName("vfr", "Flight Duty Period Began", "physiology");
+			low = Integer.parseInt(tempThreshold.getLow());
+			med = Integer.parseInt(tempThreshold.getMed());
+			high = Integer.parseInt(tempThreshold.getHigh());
 			int categoryValueNum;
 			categoryValueNum = Integer.parseInt(categoryValue);
-			if(categoryValueNum < 9)
+			if(categoryValueNum < low)
 			{
 				//risk is low (0)
 			}
-			else if(categoryValueNum < 12 && categoryValueNum >= 9)
+			else if(categoryValueNum < med)
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValueNum <= 11 && categoryValueNum >= 13)
+			else if(categoryValueNum > med && categoryValueNum < high)
 			{
 				//risk is high(3)
 				risk += 3;
 			}
+			else if(categoryValueNum > high)
+			{
+				//risk is not allowed, no go
+				risk += 10;
+			}
 		}
-		if(category == "Previous flights that day")
+		if(riskModel.getCategory() == "Previous Flights that Day")
 		{
-			if(categoryValue != "None")
+			tempThreshold = getThresholdByGroupName("vfr", "Previous Flights that Day", "physiology");
+			med = Integer.parseInt(tempThreshold.getMed());
+			high = Integer.parseInt(tempThreshold.getHigh());
+			if(riskModel.getCategoryValue() != "None")
 			{
 				int categoryValueNum;
-				categoryValueNum = Integer.parseInt(categoryValue);
+				categoryValueNum = Integer.parseInt(riskModel.getCategoryValue());
 			}
-			if(categoryValue == "None")
+			if(riskModel.getCategoryValue() == tempThreshold.getLow())
 			{
 				//risk is low (0)
 			}
-			if(categoryValueNum == 1)
+			if(categoryValueNum == med)
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValueNum == 2)
+			else if(categoryValueNum == high)
 			{
 				//risk is high(3)
 				risk += 3;
 			}
 		}
-		if(category == "Type of Syllabus Flight")
+		if(riskModel.getCategory() == "Type of Syllabus Flight")
 		{
-			if(categoryValue == "Normal")
+			tempThreshold = getThresholdByGroupName("vfr", "Type of Syllabus Flight", "physiology");
+			if(riskModel.getCategoryValue() == tempThreshold.getLow())
 			{
 				//risk is low(0)
 			}
-			else if(categoryValue == "Stage Check")
+			else if(riskModel.getCategoryValue() == tempThreshold.getMed())
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValue == "FAA Check")
+			else if(riskModel.getCategoryValue() == tempThreshold.getHigh())
 			{
 				//risk is high(3)
 				risk += 3;
 			}
 		}
-		if(category == "Outside Temperatures")
+		if(category == "Outside Temperatures High")
 		{
+			tempThreshold = getThresholdByGroupName("vfr", "Outside Temperatures High", "physiology");
+			low = Integer.parseInt(tempThreshold.getLow());
+			med = Integer.parseInt(tempThreshold.getMed());
+			high = Integer.parseInt(tempThreshold.getHigh());
 			int categoryValueNum;
-			categoryValueNum = Integer.parseInt(categoryValue);
-			if(categoryValueNum >= 55 && categoryValueNum <= 75)
+			categoryValueNum = Integer.parseInt(riskModel.getCategoryValue());
+			if(categoryValueNum <= low)
 			{
 				//risk is low (0)
 			}
-			else if((categoryValueNum >= 76 && categoryValueNum <= 89) || 
-			(categoryValueNum >= 30 && categoryValueNum <= 54))
+			else if(categoryValueNum <= med)
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValueNum >= 90 || (categoryValueNum >= 10 && 
-			categoryValueNum <= 29))
+			else if(categoryValueNum >= high)
 			{
 				//risk is high(3)
 				risk += 3;
+			}
+		}
+		if(riskModel.getCategory() == "Outside Temperatures Low")
+		{
+			tempThreshold = getThresholdByGroupName("vfr", "Outside Temperatures Low", "physiology");
+			low = Integer.parseInt(tempThreshold.getLow());
+			med = Integer.parseInt(tempThreshold.getMed());
+			high = Integer.parseInt(tempThreshold.getHigh());
+			int categoryValueNum;
+			categoryValueNum = Integer.parseInt(riskModel.getCategoryValue());
+			if(categoryValueNum >= low)
+			{
+				//risk is low (0)
+			}
+			else if(categoryValueNum >= med)
+			{
+				//risk is med(1)
+				risk++;
+			}
+			else if(categoryValueNum >= high)
+			{
+				//risk is high(3)
+				risk += 3;
+			}
+			else if(categoryValueNum < high)
+			{
+				//risk is too high
+				risk += 15;
 			}
 		}
 		return risk;
 	}
 
-	public int VFRRiskCalcHFSolo(String category, String categoryValue)
+	//Calculate SoloFactors
+	public int VFRRiskCalcHFSolo(VFRRiskModel riskModel)
 	{
+		AdminTable tempThreshold;
 		int risk = 0;
-		if(category == "Flight Location")
+		int low, med, high;
+		if(riskModel.getCategory() == "Flight Location")
 		{
-			if(categoryValue == "Local Area")
+			tempThreshold = getThresholdByGroupName("vfr", "Flight Location", "soloFactors");
+			if(riskModel.getCategoryValue() == tempThreshold.getLow())
 			{
 				//risk is low (0)
 			}
-			else if(categoryValue = "Aux Field")
+			else if(riskModel.getCategoryValue() == tempThreshold.getMed())
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValue = "Cross Cntry")
+			else if(riskModel.getCategoryValue() == tempThreshold.getHigh())
 			{
 				//risk is high(3)
 				risk += 3;
 			}
 		}
-		if(category == "Gnd Reference Maneuvers")
+		if(riskModel.getCategory() == "Gnd Reference Manuevers")
 		{
-			if(categoryValue == "None")
+			tempThreshold = getThresholdByGroupName("vfr", "Gnd Reference Manuevers", "soloFactors");
+			low = Integer.parseInt(tempThreshold.getLow());
+			med = Integer.parseInt(tempThreshold.getMed());
+			high = Integer.parseInt(tempThreshold.getHigh());
+			int categoryValueNum;
+			categoryValueNum = Integer.parseInt(riskModel.getCategoryValue());
+			if(categoryValueNum == low)
 			{
 				//risk is low (0)
 			}
-			else if(categoryValue = "One")
+			else if(categoryValueNum == med)
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else //risk is 2+
+			else if(categoryValueNum == high) //risk is 2+
 			{
 				//risk is high(3)
 				risk += 3;
 			}
 		}
-		if(category == "Experience in Airplane Type")
+		if(riskModel.getCategory() == "Experience in Airplane Type")
 		{
 			int categoryValueNum;
 			categoryValueNum = Integer.parseInt(categoryValue);
-			if(categoryValueNum > 15)
+			tempThreshold = getThresholdByGroupName("vfr", "Experience in Airplane Type", "soloFactors");
+			low = Integer.parseInt(tempThreshold.getLow());
+			med = Integer.parseInt(tempThreshold.getMed());
+			high = Integer.parseInt(tempThreshold.getHigh());
+			if(categoryValueNum > low)
 			{
 				//risk is low (0)
 			}
-			else if(categoryValueNum >= 5 && categoryValueNum <= 10)
+			else if(categoryValueNum >= high && categoryValueNum <= med)
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValueNum < 5)
+			else if(categoryValueNum < high)
 			{
 				//risk is high(3)
 				risk += 3;
 			}
 		}
-		if(category == "Last dual landing(Private)")
+		if(riskModel.getCategory() == "Last Dual Landing (Private)")
 		{
 			int categoryValueNum;
 			categoryValueNum = Integer.parseInt(categoryValue);
-			if(categoryValueNum < 4)
+			tempThreshold = getThresholdByGroupName("vfr", "Last Dual Landing (Private)", "soloFactors");
+			low = Integer.parseInt(tempThreshold.getLow());
+			med = Integer.parseInt(tempThreshold.getMed());
+			high = Integer.parseInt(tempThreshold.getHigh());
+			if(categoryValueNum < low)
 			{
 				//risk is low (0)
 			}
-			else if(categoryValueNum >= 5 && categoryValueNum <= 9)
+			else if(categoryValueNum > low && categoryValueNum <= med)
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValueNum >= 10 && categoryValueNum <= 14)
+			else if(categoryValueNum > med && categoryValueNum <= high)
 			{
 				//risk is high(3)
 				risk += 3;
 			}
 		}
-		if(category == "Last dual landing(Comm)")
+		if(riskModel.getCategory() == "Last Dual Landing (Comm)")
 		{
 			int categoryValueNum;
 			categoryValueNum = Integer.parseInt(categoryValue);
-			if(categoryValueNum < 14)
+			tempThreshold = getThresholdByGroupName("vfr", "Last Dual Landing (Comm)", "soloFactors");
+			low = Integer.parseInt(tempThreshold.getLow());
+			med = Integer.parseInt(tempThreshold.getMed());
+			high = Integer.parseInt(tempThreshold.getHigh());
+			if(categoryValueNum < low)
 			{
 				//risk is low (0)
 			}
-			else if(categoryValueNum >= 14 && categoryValueNum <= 28)
+			else if(categoryValueNum >= low && categoryValueNum <= med)
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValueNum >= 29 && categoryValueNum <= 45)
+			else if(categoryValueNum > med && categoryValueNum <= high)
 			{
 				//risk is high(3)
 				risk += 3;
 			}
 		}
-		if(category == "Last dual stalls(Private)")
+		if(riskModel.getCategory() == "Last Dual Stalls (Private)")
 		{
 			int categoryValueNum;
 			categoryValueNum = Integer.parseInt(categoryValue);
-			if(categoryValueNum < 4)
+			tempThreshold = getThresholdByGroupName("vfr", "Last Dual Stalls (Private)", "soloFactors");
+			low = Integer.parseInt(tempThreshold.getLow());
+			med = Integer.parseInt(tempThreshold.getMed());
+			high = Integer.parseInt(tempThreshold.getHigh());
+			if(categoryValueNum < low)
 			{
 				//risk is low (0)
 			}
-			else if(categoryValueNum >= 5 && categoryValueNum <= 9)
+			else if(categoryValueNum > low && categoryValueNum <= med)
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValueNum >= 10 && categoryValueNum <= 14)
+			else if(categoryValueNum > med && categoryValueNum <= high)
 			{
 				//risk is high(3)
 				risk += 3;
 			}
 		}
-		if(category == "Last dual stalls(Comm)")
+		if(riskModel.getCategory() == "Last Dual Stalls (Comm)")
 		{
 			int categoryValueNum;
 			categoryValueNum = Integer.parseInt(categoryValue);
-			if(categoryValueNum < 14)
+			tempThreshold = getThresholdByGroupName("vfr", "Last Dual Stalls (Comm)", "soloFactors");
+			low = Integer.parseInt(tempThreshold.getLow());
+			med = Integer.parseInt(tempThreshold.getMed());
+			high = Integer.parseInt(tempThreshold.getHigh());
+			if(categoryValueNum < low)
 			{
 				//risk is low (0)
 			}
-			else if(categoryValueNum >= 14 && categoryValueNum <= 28)
+			else if(categoryValueNum >= low && categoryValueNum <= med)
 			{
 				//risk is med(1)
 				risk++;
 			}
-			else if(categoryValueNum >= 29 && categoryValueNum <= 45)
+			else if(categoryValueNum > med && categoryValueNum <= high)
 			{
 				//risk is high(3)
 				risk += 3;

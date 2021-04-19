@@ -14,13 +14,13 @@ public class IFRRiskModel
 //Defining id as primary key
 @Id
 @Column
-private String mainCategory;
+private String mainCategory; //e.g. IFR Local or IFR Cross Country Departure
 @Column
-private String category;
+private String category; //e.g. Ceiling (Day)
 @Column
-private String categoryValue;
+private String categoryValue; //e.g. 1000+, Precision, 4+ SM
 @Column
-private int risk;
+private int risk; // e.g. 0-12 Okay, 13-14 Caution, 15+ No Go
 public String getMainCategory()
 {
     return mainCategory;

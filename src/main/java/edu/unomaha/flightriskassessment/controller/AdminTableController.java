@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;  
 import org.springframework.web.bind.annotation.PutMapping;  
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.unomaha.flightriskassessment.models.AdminTable;
@@ -24,34 +26,37 @@ public class AdminTableController
 	AdminTableService adminThresholds_Service;
 	
 	
-	@PostMapping("/adminThresholds/save")
+	@RequestMapping(value = "/adminThresholds/save")
 	private int saveThreshold(@RequestBody AdminTable adminThresholds) throws SQLException {
 	    adminThresholds_Service.save(adminThresholds);
 	    return adminThresholds.getAdminThresholdId();
 	}
 
-	@GetMapping("/adminThresholds/getAll")
+	@RequestMapping(value = "/adminThresholds/getAll")
+	@ResponseBody
 	private ArrayList<AdminTable> getAllThresholds() { 
 		return adminThresholds_Service.getAllThresholds(); 
 	}
 	
-	@GetMapping("/adminThresholds/getById")
+	@RequestMapping(value = "/adminThresholds/getById")
+	@ResponseBody
 	private AdminTable getAdminThresholds(@RequestParam int adminThresholdId) {
 		return adminThresholds_Service.getThresholdsById(adminThresholdId);
 	}
 	
-	@GetMapping("/adminThresholds/getByGroupNameCategory")
+	@RequestMapping(value = "/adminThresholds/getByGroupNameCategory")
+	@ResponseBody
 	private AdminTable getAdminThresholds(@RequestParam String group, @RequestParam String category, @RequestParam String name) {
 		return adminThresholds_Service.getThresholdByGroupNameCategory(group, name, category);
 	}
 	
-	@PutMapping("/adminThresholds/updateById")
+	@RequestMapping(value = "/adminThresholds/updateById")
 	private AdminTable update(@RequestBody AdminTable adminThresholds, @RequestParam int id) {
 	    adminThresholds_Service.updateById(adminThresholds, id);
 	    return adminThresholds;
 	}
 	
-	@PutMapping("/adminThresholds/updateByIdLow")
+	@RequestMapping(value = "/adminThresholds/updateByIdLow")
 	private AdminTable updateLow(@RequestParam String val, @RequestParam int id) {
 		AdminTable toUpdate = adminThresholds_Service.getThresholdsById(id);
 		toUpdate.setLow(val);
@@ -59,7 +64,7 @@ public class AdminTableController
 	    return toUpdate;
 	}
 	
-	@PutMapping("/adminThresholds/updateByIdMed")
+	@RequestMapping(value = "/adminThresholds/updateByIdMed")
 	private AdminTable updateMed(@RequestParam String val, @RequestParam int id) {
 		AdminTable toUpdate = adminThresholds_Service.getThresholdsById(id);
 		toUpdate.setMed(val);
@@ -67,7 +72,7 @@ public class AdminTableController
 	    return toUpdate;
 	}
 	
-	@PutMapping("/adminThresholds/updateByIdHigh")
+	@RequestMapping(value = "/adminThresholds/updateByIdHigh")
 	private AdminTable updateHigh(@RequestParam String val, @RequestParam int id) {
 		AdminTable toUpdate = adminThresholds_Service.getThresholdsById(id);
 		toUpdate.setHigh(val);
@@ -75,13 +80,13 @@ public class AdminTableController
 	    return toUpdate;
 	}
 	
-	@PutMapping("/adminThresholds/updateByGroupNameCategory")
+	@RequestMapping(value = "/adminThresholds/updateByGroupNameCategory")
 	private AdminTable updateGNC(@RequestBody AdminTable toUpdate, @RequestParam String group, @RequestParam String name, @RequestParam String category) {
 	    adminThresholds_Service.updateByGroupNameCategory(toUpdate, group, name, category);
 	    return toUpdate;
 	}
 	
-	@PutMapping("/adminThresholds/updateByGroupNameCategoryLow")
+	@RequestMapping(value = "/adminThresholds/updateByGroupNameCategoryLow")
 	private AdminTable updateGNCLow(@RequestParam String val, @RequestParam String group, @RequestParam String name, @RequestParam String category) {
 	    AdminTable toUpdate = adminThresholds_Service.getThresholdByGroupNameCategory(group, name, category);
 	    toUpdate.setLow(val);
@@ -89,7 +94,7 @@ public class AdminTableController
 	    return toUpdate;
 	}
 	
-	@PutMapping("/adminThresholds/updateByGroupNameCategoryMed")
+	@RequestMapping(value = "/adminThresholds/updateByGroupNameCategoryMed")
 	private AdminTable updateGNCMed(@RequestParam String val, @RequestParam String group, @RequestParam String name, @RequestParam String category) {
 		AdminTable toUpdate = adminThresholds_Service.getThresholdByGroupNameCategory(group, name, category);
 	    toUpdate.setMed(val);
@@ -97,7 +102,7 @@ public class AdminTableController
 	    return toUpdate;
 	}
 	
-	@PutMapping("/adminThresholds/updateByGroupNameCategoryHigh")
+	@RequestMapping(value = "/adminThresholds/updateByGroupNameCategoryHigh")
 	private AdminTable updateGNCHigh(@RequestParam String val, @RequestParam String group, @RequestParam String name, @RequestParam String category) {
 		AdminTable toUpdate = adminThresholds_Service.getThresholdByGroupNameCategory(group, name, category);
 	    toUpdate.setHigh(val);
@@ -105,7 +110,7 @@ public class AdminTableController
 	    return toUpdate;
 	}
 	
-	@DeleteMapping("/adminThresholds/deleteById")
+	@RequestMapping(value = "/adminThresholds/deleteById")
 	private void deleteThreshold(@RequestParam int id) {
 	    adminThresholds_Service.deleteById(id);
 	}

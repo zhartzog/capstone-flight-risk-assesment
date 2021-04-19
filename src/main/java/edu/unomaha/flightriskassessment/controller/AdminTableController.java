@@ -40,6 +40,11 @@ public class AdminTableController
 		return adminThresholds_Service.getThresholdsById(adminThresholdId);
 	}
 	
+	@GetMapping("/adminThresholds/getByGroupNameCategory")
+	private AdminTable getAdminThresholds(@RequestParam String group, @RequestParam String category, @RequestParam String name) {
+		return adminThresholds_Service.getThresholdByGroupNameCategory(group, name, category);
+	}
+	
 	@PutMapping("/adminThresholds/updateById")
 	private AdminTable update(@RequestBody AdminTable adminThresholds, @RequestParam int id) {
 	    adminThresholds_Service.updateById(adminThresholds, id);
@@ -67,6 +72,36 @@ public class AdminTableController
 		AdminTable toUpdate = adminThresholds_Service.getThresholdsById(id);
 		toUpdate.setHigh(val);
 	    adminThresholds_Service.updateById(toUpdate, id);
+	    return toUpdate;
+	}
+	
+	@PutMapping("/adminThresholds/updateByGroupNameCategory")
+	private AdminTable updateGNC(@RequestBody AdminTable toUpdate, @RequestParam String group, @RequestParam String name, @RequestParam String category) {
+	    adminThresholds_Service.updateByGroupNameCategory(toUpdate, group, name, category);
+	    return toUpdate;
+	}
+	
+	@PutMapping("/adminThresholds/updateByGroupNameCategoryLow")
+	private AdminTable updateGNCLow(@RequestParam String val, @RequestParam String group, @RequestParam String name, @RequestParam String category) {
+	    AdminTable toUpdate = adminThresholds_Service.getThresholdByGroupNameCategory(group, name, category);
+	    toUpdate.setLow(val);
+		adminThresholds_Service.updateByGroupNameCategory(toUpdate, group, name, category);
+	    return toUpdate;
+	}
+	
+	@PutMapping("/adminThresholds/updateByGroupNameCategoryMed")
+	private AdminTable updateGNCMed(@RequestParam String val, @RequestParam String group, @RequestParam String name, @RequestParam String category) {
+		AdminTable toUpdate = adminThresholds_Service.getThresholdByGroupNameCategory(group, name, category);
+	    toUpdate.setMed(val);
+		adminThresholds_Service.updateByGroupNameCategory(toUpdate, group, name, category);
+	    return toUpdate;
+	}
+	
+	@PutMapping("/adminThresholds/updateByGroupNameCategoryHigh")
+	private AdminTable updateGNCHigh(@RequestParam String val, @RequestParam String group, @RequestParam String name, @RequestParam String category) {
+		AdminTable toUpdate = adminThresholds_Service.getThresholdByGroupNameCategory(group, name, category);
+	    toUpdate.setHigh(val);
+		adminThresholds_Service.updateByGroupNameCategory(toUpdate, group, name, category);
 	    return toUpdate;
 	}
 	

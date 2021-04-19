@@ -22,34 +22,31 @@ public class AdminTableController
 	@Autowired
 	AdminTableService adminThresholds_Service;
 	
-	/**
-	 * mapping to get all thresholds from the admin threshold table
-	 * @return - A list of all admin thresholds
-	 */
-	@GetMapping("/adminThresholds")
-	private ArrayList<AdminTable> getAllThresholds() { 
-		return adminThresholds_Service.getAllThresholds(); 
-	}
 	
-	@GetMapping("/adminThresholds/{adminThresholdId}")
-	private AdminTable getAdminThresholds(@PathVariable("adminThresholdId") int adminThresholdId) {
-		return adminThresholds_Service.getThresholdsById(adminThresholdId);
-	}
-	    //create a delete mapping that deletes by ID.
-	@DeleteMapping("/adminThresholds/{adminThresholdId}")
-	private void deleteThreshold(@PathVariable("adminThresoldId") int adminThresholdId) {
-	    adminThresholds_Service.deleteById(adminThresholdId);
-	}
-	    //create a post mapping that post the admin threshold into the database
-	@PostMapping("/adminThresholds")
+	@PostMapping("/adminThresholds/save")
 	private int saveThreshold(@RequestBody AdminTable adminThresholds) throws SQLException {
 	    adminThresholds_Service.save(adminThresholds);
 	    return adminThresholds.getAdminThresholdId();
 	}
-	    //create a put mapping for udpating the threshold
-	@PutMapping("/adminThresholds/{adminThresholdId}")
-	private AdminTable update(@RequestBody AdminTable adminThresholds, @RequestBody int id) {
+
+	@GetMapping("/adminThresholds/getAll")
+	private ArrayList<AdminTable> getAllThresholds() { 
+		return adminThresholds_Service.getAllThresholds(); 
+	}
+	
+	@GetMapping("/adminThresholds/getById/{adminThresholdId}")
+	private AdminTable getAdminThresholds(@PathVariable("adminThresholdId") int adminThresholdId) {
+		return adminThresholds_Service.getThresholdsById(adminThresholdId);
+	}
+	
+	@PutMapping("/adminThresholds/updateById/{adminThresholdId}")
+	private AdminTable update(@RequestBody AdminTable adminThresholds, @PathVariable int id) {
 	    adminThresholds_Service.updateById(adminThresholds, id);
 	    return adminThresholds;
+	}
+	
+	@DeleteMapping("/adminThresholds/deleteById/{adminThresholdId}")
+	private void deleteThreshold(@PathVariable("adminThresoldId") int adminThresholdId) {
+	    adminThresholds_Service.deleteById(adminThresholdId);
 	}
 }

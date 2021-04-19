@@ -31,7 +31,7 @@ public class AdminTableServiceSteps {
 
 	@Then("all of the admin thresholds are returned")
 	public void all_of_the_admin_thresholds_are_returned() {
-		assertEquals(61, list.size());
+		assertEquals(63, list.size());
 	}
 	
 	@Then("the first element is correct")

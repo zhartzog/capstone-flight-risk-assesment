@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;  
 import org.springframework.web.bind.annotation.PostMapping;  
 import org.springframework.web.bind.annotation.PutMapping;  
-import org.springframework.web.bind.annotation.RequestBody;  
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.unomaha.flightriskassessment.models.AdminTable;
@@ -34,19 +35,43 @@ public class AdminTableController
 		return adminThresholds_Service.getAllThresholds(); 
 	}
 	
-	@GetMapping("/adminThresholds/getById/{adminThresholdId}")
-	private AdminTable getAdminThresholds(@PathVariable("adminThresholdId") int adminThresholdId) {
+	@GetMapping("/adminThresholds/getById")
+	private AdminTable getAdminThresholds(@RequestParam int adminThresholdId) {
 		return adminThresholds_Service.getThresholdsById(adminThresholdId);
 	}
 	
-	@PutMapping("/adminThresholds/updateById/{adminThresholdId}")
-	private AdminTable update(@RequestBody AdminTable adminThresholds, @PathVariable int id) {
+	@PutMapping("/adminThresholds/updateById")
+	private AdminTable update(@RequestBody AdminTable adminThresholds, @RequestParam int id) {
 	    adminThresholds_Service.updateById(adminThresholds, id);
 	    return adminThresholds;
 	}
 	
-	@DeleteMapping("/adminThresholds/deleteById/{adminThresholdId}")
-	private void deleteThreshold(@PathVariable("adminThresoldId") int adminThresholdId) {
-	    adminThresholds_Service.deleteById(adminThresholdId);
+	@PutMapping("/adminThresholds/updateByIdLow")
+	private AdminTable updateLow(@RequestParam String val, @RequestParam int id) {
+		AdminTable toUpdate = adminThresholds_Service.getThresholdsById(id);
+		toUpdate.setLow(val);
+	    adminThresholds_Service.updateById(toUpdate, id);
+	    return toUpdate;
+	}
+	
+	@PutMapping("/adminThresholds/updateByIdMed")
+	private AdminTable updateMed(@RequestParam String val, @RequestParam int id) {
+		AdminTable toUpdate = adminThresholds_Service.getThresholdsById(id);
+		toUpdate.setMed(val);
+	    adminThresholds_Service.updateById(toUpdate, id);
+	    return toUpdate;
+	}
+	
+	@PutMapping("/adminThresholds/updateByIdHigh")
+	private AdminTable updateHigh(@RequestParam String val, @RequestParam int id) {
+		AdminTable toUpdate = adminThresholds_Service.getThresholdsById(id);
+		toUpdate.setHigh(val);
+	    adminThresholds_Service.updateById(toUpdate, id);
+	    return toUpdate;
+	}
+	
+	@DeleteMapping("/adminThresholds/deleteById")
+	private void deleteThreshold(@RequestParam int id) {
+	    adminThresholds_Service.deleteById(id);
 	}
 }

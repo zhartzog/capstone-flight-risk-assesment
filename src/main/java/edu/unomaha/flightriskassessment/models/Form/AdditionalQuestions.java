@@ -21,6 +21,8 @@ public class AdditionalQuestions
 
     private List<Metar> destinationMetar = new ArrayList<>();
 
+    private Metar alternateMetar;
+
     private List<AirSigmet> airSigmetList;
 
     private List<Pirep> pireps;
@@ -120,6 +122,16 @@ public class AdditionalQuestions
 
     public void addDestinationMetar(Metar metar){
         this.destinationMetar.add(metar);
+    }
+
+    public Metar getAlternateMetar()
+    {
+        return alternateMetar;
+    }
+
+    public void setAlternateMetar(Metar alternateMetar)
+    {
+        this.alternateMetar = alternateMetar;
     }
 
     @Override

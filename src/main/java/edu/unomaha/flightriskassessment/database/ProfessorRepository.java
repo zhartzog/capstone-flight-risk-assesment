@@ -29,7 +29,7 @@ public class ProfessorRepository {
 		try {
 			initialize();
 			statement.execute("INSERT INTO professorInfo (LastName, FirstName, Username, Password) "
-					+ "VALUES = ('" + toSave.getLastName() + "', '" + toSave.getFirstName() + 
+					+ "VALUES ('" + toSave.getLastName() + "', '" + toSave.getFirstName() + 
 					"', '" + toSave.getUserName() + "', '" + toSave.getPassword() + "')");
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -78,7 +78,7 @@ public class ProfessorRepository {
 		try {
 			initialize();
 			ResultSet rs = statement.executeQuery("SELECT * FROM professorInfo WHERE LastName = '" 
-			+ lastname + "', FirstName = '" + firstname + "'");
+			+ lastname + "' AND FirstName = '" + firstname + "'");
 			return mapToSingleProfessor(rs);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -111,7 +111,7 @@ public class ProfessorRepository {
 	public void updateById(int id, Professor toSet) {
 		try {
 			initialize();
-			statement.execute("UPDATE professorInfo SET ID = '" + toSet.getId() + "', LastName = '" 
+			statement.execute("UPDATE professorInfo SET LastName = '" 
 					+ toSet.getLastName() + "', FirstName = '" + toSet.getFirstName() + "', Username = '"
 					+ toSet.getUserName() + "', Password = '" + toSet.getPassword() + "' WHERE ID = " + id);
 			connection.close();
@@ -128,7 +128,7 @@ public class ProfessorRepository {
 	public void updateByUsername(String username, Professor toSet) {
 		try {
 			initialize();
-			statement.execute("UPDATE professorInfo SET ID = '" + toSet.getId() + "', LastName = '" 
+			statement.execute("UPDATE professorInfo LastName = '" 
 					+ toSet.getLastName() + "', FirstName = '" + toSet.getFirstName() + "', Username = '"
 					+ toSet.getUserName() + "', Password = '" + toSet.getPassword() + "' WHERE Username = '" 
 					+ username + "'");
@@ -147,7 +147,7 @@ public class ProfessorRepository {
 	public void updateByFirstnameLastname(String firstname, String lastname, Professor toSet) {
 		try {
 			initialize();
-			statement.execute("UPDATE professorInfo SET ID = '" + toSet.getId() + "', LastName = '" 
+			statement.execute("UPDATE professorInfo SET LastName = '" 
 					+ toSet.getLastName() + "', FirstName = '" + toSet.getFirstName() + "', Username = '"
 					+ toSet.getUserName() + "', Password = '" + toSet.getPassword() + "' WHERE LastName = '" 
 					+ lastname + "' AND FirstName = '" + firstname + "'");

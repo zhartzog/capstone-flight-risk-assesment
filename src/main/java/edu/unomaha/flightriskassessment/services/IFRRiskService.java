@@ -1,761 +1,304 @@
 package edu.unomaha.flightriskassessment.services;
 
 
+import edu.unomaha.flightriskassessment.models.Form.RiskResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import edu.unomaha.flightriskassessment.models.Form.IFRRiskModel;
 import edu.unomaha.flightriskassessment.models.AdminTable;
 
 @Service
-public class IFRRiskService {
+public class IFRRiskService
+{
+	@Autowired
+	private AdminTableService adminTableService;
 
-	//Calculate Risk for IFR Categories
+	private IFRRiskModel riskModel;
+
+	/*This variable will keep track of the low, medium, and high risk for each threshold. Avoids having so many local variables.*/
+	private int low;
+	private int med;
+	private int high;
+
+	private RiskResponse response;
+
+	//Calculate Risk for VFR Categories
 	//UPDATE VALUES WITH getThresholdByGroupNameCategory(String group, String name, String category)
-	//usage: group = IFR/VFR, name = ceilingDay, CeilingNight, etc. category = departure, etc.
-	public int IFRRiskCalc(IFRRiskModel riskModel)
+	public RiskResponse IFRRiskCalc(IFRRiskModel riskModel)
 	{
-		int totalRiskLocalorCC = 0;
-		int totalRiskEWF = 0;
-		int totalRiskDest = 0;
-		int totalRiskPrimAlt = 0;
-		int totalRiskHumanFactors = 0;
-		if(riskModel.getMainCategory() == "IFR local" || riskModel.getMainCategory() == "IFR Cross Country Departure")
-		{
-			totalRiskLocalorCC += IFRRiskCalcLocalorCC(riskModel);
-			return totalRiskLocalorCC;
-		}
-		if(riskModel.getMainCategory() == "Enroute Weather / Fuel")
-		{
-			totalRiskEWF += IFRRiskCalcEWF(riskModel);
-			return totalRiskEWF;
-		}
-		if(riskModel.getMainCategory() == "IFR:Destination")
-		{
-			totalRiskDest += IFRRiskCalcDest(riskModel);
-			return totalRiskDest;
-		}
-		if(riskModel.getMainCategory() == "IFR:Primary Alternate")
-		{
-			totalRiskPrimAlt += IFRRiskCalcLocalorCC(riskModel);
-			return totalRiskPrimAlt;
-		}
-		if(riskModel.getMainCategory() == "Phsiology/Psychology")
-		{
-			totalRiskHumanFactors += IFRRiskCalcHF(riskModel);
-			return totalRiskHumanFactors;
-		}
+	    this.riskModel = riskModel;
+		response = new RiskResponse();
+
+		set_human_factor_risk();
+
+		IFRRiskCalc_departure(); //Departure risk will always be calculated.
+
+		if ( riskModel.isLocal() )
+			return response;
+		else
+			return IFRRiskCalc_XC();
 	}
 
-	//Calculate IFR Local or IFR Cross Country
-	public int IFRRiskCalcLocalorCC(IFRRiskModel riskModel)
+
+	/*Sets risk level given a threshold from database*/
+	private void setRiskLevels(AdminTable input)
 	{
-		AdminTable tempThreshold;
-		int low, med, high;
-		int risk = 0;
-		int categoryValueNum;
-		if(riskModel.getCategory() != "Best IAP Available")
+		low = Integer.parseInt(input.getLow());
+		med = Integer.parseInt(input.getMed());
+		high = Integer.parseInt(input.getHigh());
+	}
+
+	//Compares input risk to database threshold. This method assumes that the larger number is safer. So visibility
+	//of 6 miles has a lower risk score than visibility of 3 miles.
+	private int compareRiskToLimit_GreaterThan(int risk)
+	{
+		if ( risk >= low )
 		{
-			categoryValueNum = Integer.parseInt(riskModel.getCategoryValue());
+			//risk is low (0)
+			return 0;
 		}
-		if(riskModel.getCategory() == "Ceiling (Day)")
+		else if ( risk >= med )
 		{
-			tempThreshold = getThresholdByGroupName("ifr", "Ceiling (Day)", "departure");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(categoryValueNum >= low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum >= med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum >= high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else if(categoryValueNum < high)
-			{
-				//Not Allowed, Automatically No Go
-				risk += 15;
-			}
+			//risk is med(1)
+			return 1;
 		}
-		if(riskModel.getCategory() == "Ceiling (Night)")
+		else if ( risk >= high )
 		{
-			tempThreshold = getThresholdByGroupName("ifr", "Ceiling (Night)", "departure");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(categoryValueNum >= low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum >= med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum >= high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else if(categoryValueNum < high)
-			{
-				//Not Allowed, Automatically No Go
-				risk += 15;
-			}
+			//risk is high(3)
+			return 3;
+		}
+		else if ( risk < high )
+		{
+			//Not Allowed, Automatically No Go
+			return 15;
+		}
+		//this should not happen;
+		System.out.println("ERROR: No statement connected in compareRiskToLimit(risk = " + risk + ")");
+		return -1;
+	}
+
+	/*Compares input risk to database threshold. Method assumes that a smaller number is safer. E.X 3 knots of wind
+       is safer than 10 knots of wind.
+     */
+	private int compareRiskToLimit_LessThan(int risk)
+	{
+
+		if ( risk <= low )
+		{
+			//risk is low (0)
+			return 0;
+		}
+		else if ( risk <= med )
+		{
+			//risk is med(1)
+			return 1;
+		}
+		else if ( risk <= high )
+		{
+			//risk is high(3)
+			return 3;
+		}
+		else if ( risk > high )
+		{
+			//Not Allowed, Automatically No Go
+			return 15;
+		}
+		//this should not happen;
+		System.out.println("ERROR: No statement connected in compareRiskToLimit(risk = " + risk + ")");
+		return -1;
+	}
+
+
+	private int compareStringRiskLevel(String risk, AdminTable threshold)
+	{
+		if ( risk.equals(threshold.getHigh()) )
+			return 3;
+		else if ( risk.equals(threshold.getMed()) )
+			return 1;
+		else
+			return 0;
+	}
+
+	private void set_human_factor_risk()
+	{
+		AdminTable tempThreshold = adminTableService.getThresholdByGroupNameCategory("ifr", "Time of Flight", "physiology");
+
+		//Set time of flight risk
+		response.setTime_of_flight_risk(compareStringRiskLevel(riskModel.getTime_of_day(), tempThreshold));
+
+		//set risk associated with flight duty periods
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Flight Duty Period Began", "physiology"));
+		response.setFlight_duty_risk(compareRiskToLimit_LessThan(riskModel.getFlight_duty_period()));
+
+		//Set Previous flights risk
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Previous Flights that Day", "physiology"));
+		response.setPrevious_flight_risk(compareRiskToLimit_LessThan(riskModel.getPrevious_flights()));
+
+		//Set Syllabus flight type risk
+		tempThreshold = adminTableService.getThresholdByGroupNameCategory("ifr", "Type of Syllabus Flight", "physiology");
+		response.setType_of_flight_risk(compareStringRiskLevel(riskModel.getType_of_flight(), tempThreshold));
+
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Outside Temperatures Low", "physiology"));
+		//Temperature is above the highest low temperature risk.
+		if ( riskModel.getTemperature() > low )
+		{
+			//check the high temperature risk
+			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Outside Temperatures High", "physiology"));
+			if ( riskModel.getTemperature() < low )//If colder than low risk category, there is no temperature risk
+				response.setTemperature_risk(0);
+			else if ( riskModel.getTemperature() < med ) //medium risk
+				response.setTemperature_risk(1);
+			else if ( riskModel.getTemperature() < high ) //high risk
+				response.setTemperature_risk(3);
+			else //no go
+				response.setTemperature_risk(15);
 
 		}
-		if(riskModel.getCategory() == "Visibility")
+		else //Colder than low temp. some increase in risk will occur.
 		{
-			tempThreshold = getThresholdByGroupName("ifr", "Visibility", "departure");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(categoryValueNum >= low)
+			if ( riskModel.getTemperature() < med )
 			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum == med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum == high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else if(categoryValueNum < high)
-			{
-				//Not Allowed, Automatically No Go
-				risk += 15;
-			}
-
-		}
-		if(riskModel.getCategory() == "Best IAP Available")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Best IAP Available", "departure");
-			if(riskModel.getCategoryValue() == tempThreshold.getLow())
-			{
-				//risk is low(0)
-			}
-			else if(riskModel.getCategoryValue() == tempThreshold.getMed())
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(riskModel.getCategoryValue() == tempThreshold.getHigh())
-			{
-				//risk is high(3)
-				risk += 3;
+				if ( riskModel.getTemperature() < high )
+					response.setTemperature_risk(15);
+				else
+					response.setTemperature_risk(3);
 			}
 			else
-			{
-				System.out.print("Given Value did not match threshold table value");
-			}
+				response.setTemperature_risk(1);
 		}
-		if(riskModel.getCategory() == "Total Wind")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Total Wind", "departure");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(categoryValueNum <= low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum <= med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum <= high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else if(categoryValueNum > high)
-			{
-				//Not Allowed, Automatically No Go
-				risk += 15;
-			}
-		}
-		if(riskModel.getCategory() == "Gust Increment")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Gust Increment", "departure");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(categoryValueNum <= low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum <= med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum <= high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else if(categoryValueNum > high)
-			{
-				//Not Allowed, Automatically No Go
-				risk += 15;
-			}
-		}
-		if(riskModel.getCategory() == "Crosswind")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Crosswind", "departure");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(categoryValueNum <= low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum <= med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum <= high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else if(categoryValueNum > high)
-			{
-				//Not Allowed, Automatically No Go
-				risk += 15;
-			}
-		}
-		return risk;
+
+
 	}
 
-	//Calcualte Enroute Weather/Fuel Risk
-	public int IFRRiskCalcEWF(IFRRiskModel riskModel)
-	{
-		AdminTable tempThreshold;
-		int low, med, high;
-		int risk = 0;
-		int categoryValueNum;
-		categoryValueNum = Integer.parseInt(categoryValue);
-		if(riskModel.getCategory() == "Ceilings (Day)")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Ceilings (Day)", "enroute");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(categoryValueNum >= low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum >= med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum >= high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else if(categoryValueNum < high)
-			{
-				//Not Allowed, Automatically No Go
-				risk += 15;
-			}
-		}
-		if(riskModel.getCategory() == "Ceilings (Night)")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Ceilings (Night)", "enroute");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(categoryValueNum >= low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum >= med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum >= high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else if(categoryValueNum < high)
-			{
-				//Not Allowed, Automatically No Go
-				risk += 15;
-			}
-		}
-		if(riskModel.getCategory() == "Visibility")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Visibility", "enroute");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(categoryValueNum >= low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum == med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum == high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else if(categoryValueNum < high)
-			{
-				//Not Allowed, Automatically No Go
-				risk += 15;
-			}
 
-		}
-		if(riskModel.getCategory() == "Time Enroute")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Time Enroute", "enroute");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			if(categoryValueNum < low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum <= med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum > med)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-		}
-		if(riskModel.getCategory() == "Thunderstorms")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Thunderstorms", "enroute");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			if(categoryValueNum <= low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum <= med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum > med)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-		}
-		if(riskModel.getCategory() == "Fuel at Alternate")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Fuel at Alternate", "enroute");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(categoryValueNum < low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum >= med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum >= high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-		}
-		if(riskModel.getCategory() == "Alternate Airfields")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Alternate Airfields", "enroute");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(categoryValueNum >= low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum == med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum == high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else
-			{	//Auto No Go
-				risk += 15;
-			}
-		}
-		return risk;
+	//Calculate departure airport risk or local IFR flight risk
+	private void IFRRiskCalc_departure()
+	{
+
+		//Select which limit we will compare against.
+		if ( !riskModel.isNight() )
+			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Ceiling (Day Dual)", "localPattern"));
+		else if ( !riskModel.isNight() )
+			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Ceiling (Day Solo)", "localPattern"));
+
+		//Set departure risk
+		this.response.setDeparture_ceiling_risk(compareRiskToLimit_GreaterThan(riskModel.getDeparture_ceilings()));
+
+		//Set departure visibility risk
+		if ( !riskModel.isNight() )
+			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Visibility (Day)", "localPattern"));
+		else
+			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Visibility (Night)", "localPattern"));
+
+		this.response.setDeparture_vis_risk(compareRiskToLimit_GreaterThan(riskModel.getDeparture_vis()));
+
+		//Set departure IAP type risk
+		AdminTable tempThreshold = adminTableService.getThresholdByGroupNameCategory("ifr", "Best IAP Available", "departure");
+		this.response.setDeparture_iap_risk(compareStringRiskLevel(riskModel.getDeparture_iap(),tempThreshold));
+
+		//Set departure wind risk
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Total Wind", "localPattern"));
+		this.response.setDeparture_wind_risk(compareRiskToLimit_LessThan(riskModel.getDeparture_winds()));
+
+		//Set departure wind gust risk
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Gust Increment", "localPattern"));
+		this.response.setDeparture_gust_risk(compareRiskToLimit_LessThan(riskModel.getDeparture_gusts()));
+
+		//Set departure crosswind risk
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Crosswind", "localPattern"));
+		this.response.setDeparture_crosswind_risk(compareRiskToLimit_LessThan(riskModel.getDeparture_crosswind()));
+
 	}
 
-	//Calculate IFR: Destination
-	public int IFRRiskCalcDest(IFRRiskModel riskModel)
+
+	//Set risk for VFR cross countries or flights to auxillary fields.
+	private RiskResponse IFRRiskCalc_XC()
 	{
-		AdminTable tempThreshold;
-		int low, med, high;
-		int risk = 0;
-		int categoryValueNum;
-		if(riskModel.getCategory() != "Best IAP Available")
-		{
-			categoryValueNum = Integer.parseInt(riskModel.getCategoryValue());
-		}
-		if(riskModel.getCategory() == "Ceiling (Day)")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Ceiling (Day)", "destination");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(categoryValueNum >= low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum >= med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum >= high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else if(categoryValueNum < high)
-			{
-				//Not Allowed, Automatically No Go
-				risk += 15;
-			}
-		}
-		if(riskModel.getCategory() == "Ceiling (Night)")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Ceiling (Night)", "destination");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(categoryValueNum >= low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum >= med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum >= high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else if(categoryValueNum < high)
-			{
-				//Not Allowed, Automatically No Go
-				risk += 15;
-			}
 
-		}
-		if(riskModel.getCategory() == "Visibility")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Visibility", "destination");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(categoryValueNum >= low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum == med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum == high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else if(categoryValueNum < high)
-			{
-				//Not Allowed, Automatically No Go
-				risk += 15;
-			}
+		/*----Set Enroute Risk----*/
 
-		}
-		if(riskModel.getCategory() == "Best IAP Available")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Best IAP Available", "destination");
-			if(riskModel.getCategoryValue() == tempThreshold.getLow())
-			{
-				//risk is low(0)
-			}
-			else if(riskModel.getCategoryValue() == tempThreshold.getMed())
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(riskModel.getCategoryValue() == tempThreshold.getHigh())
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else
-			{
-				System.out.print("Given Value did not match threshold table value");
-			}
-		}
-		if(riskModel.getCategory() == "Total Wind")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Total Wind", "destination");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(categoryValueNum <= low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum <= med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum <= high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else if(categoryValueNum > high)
-			{
-				//Not Allowed, Automatically No Go
-				risk += 15;
-			}
-		}
-		if(riskModel.getCategory() == "Gust Increment")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Gust Increment", "destination");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(categoryValueNum <= low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum <= med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum <= high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else if(categoryValueNum > high)
-			{
-				//Not Allowed, Automatically No Go
-				risk += 15;
-			}
-		}
-		if(riskModel.getCategory() == "Crosswind")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Crosswind", "destination");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(categoryValueNum <= low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum <= med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum <= high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else if(categoryValueNum > high)
-			{
-				//Not Allowed, Automatically No Go
-				risk += 15;
-			}
-		}
-		return risk;
-	}
+		//Set enroute ceiling risk
+		if(riskModel.isNight())
+			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Ceilings (Night)", "enroute"));
+		else
+			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Ceilings (Day)", "enroute"));
 
-	//Calculate Student Human Factors Risk
-	public int IFRRiskCalcHF(IFRRiskModel riskModel)
-	{
-		AdminTable tempThreshold;
-		int low, med, high;
-		int risk = 0;
-		if(riskModel.getCategory() == "Time of Flight")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Time of Flight", "physiology");
-			if(riskModel.getCategoryValue() == tempThreshold.getLow())
-			{
-				//risk is low (0)
-			}
-			else if(riskModel.getCategoryValue() == tempThreshold.getMed())
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(riskModel.getCategoryValue() == tempThreshold.getHigh())
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-		}
-		if(riskModel.getCategory() == "Flight Duty Period Began")
-		{
-			int categoryValueNum;
-			categoryValueNum = Integer.parseInt(riskModel.getCategoryValue());
-			tempThreshold = getThresholdByGroupName("ifr", "Flight Duty Period Began", "physiology");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(categoryValueNum < low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum <= med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum <= high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else if(categoryValueNum > high)
-			{
-				//no go
-				risk += 15;
-			}
-		}
-		if(riskModel.getCategory() == "Previous Flights That Day")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Previous Flights That Day", "physiology");
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			if(riskModel.getCategoryValue() != "None")
-			{
-				int categoryValueNum;
-				categoryValueNum = Integer.parseInt(riskModel.getCategoryValue());
-			}
-			if(riskModel.getCategoryValue() == tempThreshold.getLow())
-			{
-				//risk is low (0)
-			}
-			if(categoryValueNum == med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum == high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-		}
-		if(riskModel.getCategory() == "Type of Syllabus Flight")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Type of Syllabus Flight", "physiology");
-			if(riskModel.getCategoryValue() == tempThreshold.getLow())
-			{
-				//risk is low(0)
-			}
-			else if(riskModel.getCategoryValue() == tempThreshold.getMed())
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(riskModel.getCategoryValue() == tempThreshold.getHigh())
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-		}
-		if(riskModel.getCategory() == "Outside Temperatures High")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Outside Temperatures High", "physiology");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			int categoryValueNum;
-			categoryValueNum = Integer.parseInt(riskModel.getCategoryValue());
-			if(categoryValueNum <= low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum <= med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum >= high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-		}
-		if(riskModel.getCategory() == "Outside Temperatures Low")
-		{
-			tempThreshold = getThresholdByGroupName("ifr", "Outside Temperatures Low", "physiology");
-			low = Integer.parseInt(tempThreshold.getLow());
-			med = Integer.parseInt(tempThreshold.getMed());
-			high = Integer.parseInt(tempThreshold.getHigh());
-			int categoryValueNum;
-			categoryValueNum = Integer.parseInt(riskModel.getCategoryValue());
-			if(categoryValueNum >= low)
-			{
-				//risk is low (0)
-			}
-			else if(categoryValueNum >= med)
-			{
-				//risk is med(1)
-				risk++;
-			}
-			else if(categoryValueNum >= high)
-			{
-				//risk is high(3)
-				risk += 3;
-			}
-			else if(categoryValueNum < high)
-			{
-				//risk is too high
-				risk += 15;
-			}
-		}
-		return risk;
+		this.response.setEnroute_ceiling_risk(compareRiskToLimit_GreaterThan(riskModel.getEnroute_ceilings()));
+
+		//Set enroute visibility risk
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Visibility", "enroute"));
+		this.response.setEnroute_vis_risk(compareRiskToLimit_GreaterThan(riskModel.getEnroute_vis()));
+
+
+		//set time enroute risk
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Time Enroute", "enroute"));
+		this.response.setTime_enroute_risk(compareRiskToLimit_LessThan(riskModel.getTimeEnroute()));
+
+		//Set thunderstorm risk
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr","Thunderstorms", "enroute"));
+		this.response.setThunderstorm_risk(compareRiskToLimit_LessThan(riskModel.getThunderstorm_risk()));
+
+		//set fuel at alternate risk
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Fuel at Alternate", "enroute"));
+		this.response.setFuel_at_alternate_risk(compareRiskToLimit_GreaterThan(riskModel.getFuelAtAlternate()));
+
+		/*----Set Destination Risk----*/
+
+		//Set destination ceiling risk
+		if(riskModel.isNight())
+			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Ceilings (Night)", "destination"));
+		else
+			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Ceilings (Day)", "destination"));
+
+		this.response.setDestination_ceiling_risk(compareRiskToLimit_GreaterThan(riskModel.getDestination_ceilings()));
+
+
+		//Set destination visibility risk
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Visibility", "destination"));
+		this.response.setDestination_vis_risk(compareRiskToLimit_GreaterThan(riskModel.getDestination_vis()));
+
+		//Set destination IAP type risk
+		AdminTable tempThreshold = adminTableService.getThresholdByGroupNameCategory("ifr", "Best IAP Available", "destination");
+		this.response.setDestination_iap_risk(compareStringRiskLevel(riskModel.getDeparture_iap(),tempThreshold));
+
+		//Set Departure wind risk
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Total Wind", "destination"));
+		this.response.setDestination_wind_risk(compareRiskToLimit_LessThan(riskModel.getDestination_winds()));
+
+		//Set Departure wind gust risk
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Gust Increment", "destination"));
+		this.response.setDestination_gust_risk(compareRiskToLimit_LessThan(riskModel.getDestination_gusts()));
+
+		//Set Departure crosswind risk
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Crosswind", "destination"));
+		this.response.setDestination_crosswind_risk(compareRiskToLimit_LessThan(riskModel.getDestination_crosswind()));
+
+		/*----Set Alternate Risk----*/
+		//Set departure ceiling risk
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Ceiling", "alternate"));
+		this.response.setAlternate_ceiling_risk(compareRiskToLimit_GreaterThan(riskModel.getAlternate_ceilings()));
+
+		//Set alternate visibility risk
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Visibility", "alternate"));
+		this.response.setAlternate_vis_risk(compareRiskToLimit_GreaterThan(riskModel.getAlternate_vis()));
+
+		//Set destination IAP type risk
+		 tempThreshold = adminTableService.getThresholdByGroupNameCategory("ifr", "Best IAP Available", "alternate");
+		this.response.setAlternate_iap_risk(compareStringRiskLevel(riskModel.getAlternate_iap(),tempThreshold));
+
+		//Set Departure wind risk
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Total Wind", "alternate"));
+		this.response.setAlternate_wind_risk(compareRiskToLimit_LessThan(riskModel.getAlternate_winds()));
+
+		//Set Departure wind gust risk
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Gust Increment", "alternate"));
+		this.response.setAlternate_gust_risk(compareRiskToLimit_LessThan(riskModel.getAlternate_gusts()));
+
+		//Set Departure crosswind risk
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Crosswind", "alternate"));
+		this.response.setAlternate_crosswind_risk(compareRiskToLimit_LessThan(riskModel.getAlternate_crosswind()));
+
+		return response;
 	}
 }

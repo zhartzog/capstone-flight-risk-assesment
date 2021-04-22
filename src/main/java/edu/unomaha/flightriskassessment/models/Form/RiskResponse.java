@@ -4,6 +4,7 @@ public class RiskResponse
 {
     private int departure_ceiling_risk;
     private int departure_vis_risk;
+    private int departure_iap_risk;
     private int departure_wind_risk;
     private int departure_gust_risk;
     private int departure_crosswind_risk;
@@ -11,17 +12,20 @@ public class RiskResponse
     private int enroute_ceiling_risk;
     private int enroute_vis_risk;
     private int vfr_checkpoint_risk;
+    private int thunderstorm_risk;
     private int time_enroute_risk;
     private int fuel_at_alternate_risk;
 
     private int destination_ceiling_risk;
     private int destination_vis_risk;
+    private int destination_iap_risk;
     private int destination_wind_risk;
     private int destination_gust_risk;
     private int destination_crosswind_risk;
 
     private int alternate_ceiling_risk;
     private int alternate_vis_risk;
+    private int alternate_iap_risk;
     private int alternate_wind_risk;
     private int alternate_gust_risk;
     private int alternate_crosswind_risk;
@@ -188,6 +192,26 @@ public class RiskResponse
         this.dual_stall_risk = dual_stall_risk;
     }
 
+    public void setDeparture_iap_risk(int departure_iap_risk)
+    {
+        this.departure_iap_risk = departure_iap_risk;
+    }
+
+    public void setThunderstorm_risk(int thunderstorm_risk)
+    {
+        this.thunderstorm_risk = thunderstorm_risk;
+    }
+
+    public void setDestination_iap_risk(int destination_iap_risk)
+    {
+        this.destination_iap_risk = destination_iap_risk;
+    }
+
+    public void setAlternate_iap_risk(int alternate_iap_risk)
+    {
+        this.alternate_iap_risk = alternate_iap_risk;
+    }
+
     public int getDeparture_ceiling_risk()
     {
         return departure_ceiling_risk;
@@ -336,5 +360,25 @@ public class RiskResponse
     public int getDual_stall_risk()
     {
         return dual_stall_risk;
+    }
+
+    public int getDeparture_iap_risk()
+    {
+        return departure_iap_risk;
+    }
+
+    public int getThunderstorm_risk()
+    {
+        return thunderstorm_risk;
+    }
+
+    public int getDestination_iap_risk()
+    {
+        return destination_iap_risk;
+    }
+
+    public int getAlternate_iap_risk()
+    {
+        return alternate_iap_risk;
     }
 }

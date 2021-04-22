@@ -26,7 +26,7 @@ public class VFRRiskService
     //UPDATE VALUES WITH getThresholdByGroupNameCategory(String group, String name, String category)
     public RiskResponse VFRRiskCalc(VFRRiskModel riskModel)
     {
-        //TODO: Some of the risk in the opposite direction. compare risk level function is not going to work for stuff like gusts. Must make new method.
+        this.riskModel = riskModel;
         response = new RiskResponse();
 
         set_human_factor_risk();

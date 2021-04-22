@@ -1,16 +1,10 @@
 package edu.unomaha.flightriskassessment.services;
 
-import java.util.ArrayList;
-import java.util.List;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import edu.unomaha.flightriskassessment.models.IFRRiskModel;
-import edu.unomaha.flightriskassessment.database.AdminTableRepository;
-import edu.unomaha.flightriskassessment.models.AdminTable; 
-import edu.unomaha.flightriskassessment.services.AdminTableService;
+import edu.unomaha.flightriskassessment.models.Form.IFRRiskModel;
+import edu.unomaha.flightriskassessment.models.AdminTable;
 
 @Service
 public class IFRRiskService {
@@ -162,7 +156,7 @@ public class IFRRiskService {
 			}
 			else
 			{
-				System.out.print("Given Value did not match threshold table value");	
+				System.out.print("Given Value did not match threshold table value");
 			}
 		}
 		if(riskModel.getCategory() == "Total Wind")
@@ -532,7 +526,7 @@ public class IFRRiskService {
 			}
 			else
 			{
-				System.out.print("Given Value did not match threshold table value");	
+				System.out.print("Given Value did not match threshold table value");
 			}
 		}
 		if(riskModel.getCategory() == "Total Wind")

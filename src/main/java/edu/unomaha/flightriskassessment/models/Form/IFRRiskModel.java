@@ -1,4 +1,4 @@
-package edu.unomaha.flightriskassessment.models;
+package edu.unomaha.flightriskassessment.models.Form;
 import java.util.Locale.Category;
 
 import javax.persistence.Column;

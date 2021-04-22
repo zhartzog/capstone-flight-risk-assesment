@@ -16,7 +16,9 @@ public class VFRRiskService
     private VFRRiskModel riskModel;
 
     /*This variable will keep track of the low, medium, and high risk for each threshold. Avoids having so many local variables.*/
-    private int[] riskLevel;
+    private int low;
+    private int med;
+    private int high;
 
     private RiskResponse response;
 
@@ -42,29 +44,31 @@ public class VFRRiskService
     /*Sets risk level given a threshold from database*/
     private void setRiskLevels(AdminTable input)
     {
-        riskLevel[0] = Integer.parseInt(input.getLow());
-        riskLevel[1] = Integer.parseInt(input.getMed());
-        riskLevel[2] = Integer.parseInt(input.getHigh());
+        low = Integer.parseInt(input.getLow());
+        med = Integer.parseInt(input.getMed());
+        high = Integer.parseInt(input.getHigh());
     }
 
-    private int compareRiskToLimit(int risk)
+    //Compares input risk to database threshold. This method assumes that the larger number is safer. So visibility
+    //of 6 miles has a lower risk score than visibility of 3 miles.
+    private int compareRiskToLimit_GreaterThan(int risk)
     {
-        if ( risk >= riskLevel[0] )
+        if ( risk >= low )
         {
             //risk is low (0)
             return 0;
         }
-        else if ( risk >= riskLevel[1] )
+        else if ( risk >= med )
         {
             //risk is med(1)
             return 1;
         }
-        else if ( risk >= riskLevel[2] )
+        else if ( risk >= high )
         {
             //risk is high(3)
             return 3;
         }
-        else if ( risk < riskLevel[2] )
+        else if ( risk < high )
         {
             //Not Allowed, Automatically No Go
             return 15;
@@ -73,6 +77,38 @@ public class VFRRiskService
         System.out.println("ERROR: No statement connected in compareRiskToLimit(risk = " + risk + ")");
         return -1;
     }
+
+    /*Compares input risk to database threshold. Method assumes that a smaller number is safer. E.X 3 knots of wind
+       is safer than 10 knots of wind.
+     */
+    private int compareRiskToLimit_LessThan(int risk)
+    {
+
+        if ( risk <= low )
+        {
+            //risk is low (0)
+            return 0;
+        }
+        else if ( risk <= med )
+        {
+            //risk is med(1)
+            return 1;
+        }
+        else if ( risk <= high )
+        {
+            //risk is high(3)
+            return 3;
+        }
+        else if ( risk > high )
+        {
+            //Not Allowed, Automatically No Go
+            return 15;
+        }
+        //this should not happen;
+        System.out.println("ERROR: No statement connected in compareRiskToLimit(risk = " + risk + ")");
+        return -1;
+    }
+
 
     private int compareStringRiskLevel(String risk, AdminTable threshold)
     {
@@ -105,15 +141,15 @@ public class VFRRiskService
 
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Outside Temperatures Low", "physiology"));
         //Temperature is above the highest low temperature risk.
-        if(riskModel.getTemperature() > riskLevel[1])
+        if(riskModel.getTemperature() > low)
         {
             //check the high temperature risk
             setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Outside Temperatures High", "physiology"));
-            if(riskModel.getTemperature() < riskLevel[1])//If colder than low risk category, there is no temperature risk
+            if(riskModel.getTemperature() < low)//If colder than low risk category, there is no temperature risk
                 response.setTemperature_risk(0);
-            else if( riskModel.getTemperature() < riskLevel[2]) //medium risk
+            else if( riskModel.getTemperature() < med) //medium risk
                 response.setTemperature_risk(1);
-            else if( riskModel.getTemperature() < riskLevel[3]) //high risk
+            else if( riskModel.getTemperature() < high) //high risk
                 response.setTemperature_risk(3);
             else //no go
                 response.setTemperature_risk(15);
@@ -121,9 +157,9 @@ public class VFRRiskService
         }
         else //Colder than low temp. some increase in risk will occur.
         {
-            if(riskModel.getTemperature() < riskLevel[2])
+            if(riskModel.getTemperature() < med)
             {
-                if(riskModel.getTemperature() < riskLevel[3])
+                if(riskModel.getTemperature() < high)
                     response.setTemperature_risk(15);
                 else
                     response.setTemperature_risk(3);
@@ -148,7 +184,7 @@ public class VFRRiskService
             setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Ceiling (Night Dual)", "localPattern"));
         //TODO: What about Solo night risk level?
         //Set departure risk
-        this.response.setDeparture_ceiling_risk(compareRiskToLimit(riskModel.getDeparture_ceilings()));
+        this.response.setDeparture_ceiling_risk(compareRiskToLimit_GreaterThan(riskModel.getDeparture_ceilings()));
 
         //Set departure visibility risk
         if ( !riskModel.isNight() )
@@ -156,19 +192,19 @@ public class VFRRiskService
         else
             setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Visibility (Night)", "localPattern"));
 
-        this.response.setDeparture_vis_risk(compareRiskToLimit(riskModel.getDeparture_vis()));
+        this.response.setDeparture_vis_risk(compareRiskToLimit_GreaterThan(riskModel.getDeparture_vis()));
 
         //Set departure wind risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Total Wind", "localPattern"));
-        this.response.setDeparture_wind_risk(compareRiskToLimit(riskModel.getDeparture_winds()));
+        this.response.setDeparture_wind_risk(compareRiskToLimit_LessThan(riskModel.getDeparture_winds()));
 
         //Set departure wind gust risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Gust Increment", "localPattern"));
-        this.response.setDeparture_gust_risk(compareRiskToLimit(riskModel.getDeparture_winds()));
+        this.response.setDeparture_gust_risk(compareRiskToLimit_LessThan(riskModel.getDeparture_winds()));
 
         //Set departure crosswind risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Crosswind", "localPattern"));
-        this.response.setDeparture_crosswind_risk(compareRiskToLimit(riskModel.getDeparture_winds()));
+        this.response.setDeparture_crosswind_risk(compareRiskToLimit_LessThan(riskModel.getDeparture_winds()));
 
         return response;
     }
@@ -181,87 +217,87 @@ public class VFRRiskService
 
         //Set departure ceiling risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Ceiling", "departure"));
-        this.response.setDeparture_ceiling_risk(compareRiskToLimit(riskModel.getDeparture_ceilings()));
+        this.response.setDeparture_ceiling_risk(compareRiskToLimit_GreaterThan(riskModel.getDeparture_ceilings()));
 
         //Set departure visibility risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Visibility", "departure"));
-        this.response.setDeparture_vis_risk(compareRiskToLimit(riskModel.getDeparture_vis()));
+        this.response.setDeparture_vis_risk(compareRiskToLimit_GreaterThan(riskModel.getDeparture_vis()));
 
         //Set Departure wind risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Total Wind", "departure"));
-        this.response.setDeparture_wind_risk(compareRiskToLimit(riskModel.getDeparture_winds()));
+        this.response.setDeparture_wind_risk(compareRiskToLimit_LessThan(riskModel.getDeparture_winds()));
 
         //Set Departure wind gust risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Gust Increment", "departure"));
-        this.response.setDeparture_gust_risk(compareRiskToLimit(riskModel.getDeparture_gusts()));
+        this.response.setDeparture_gust_risk(compareRiskToLimit_LessThan(riskModel.getDeparture_gusts()));
 
         //Set Departure crosswind risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Crosswind", "departure"));
-        this.response.setDeparture_crosswind_risk(compareRiskToLimit(riskModel.getDeparture_crosswind()));
+        this.response.setDeparture_crosswind_risk(compareRiskToLimit_LessThan(riskModel.getDeparture_crosswind()));
 
         /*----Set Enroute Risk----*/
 
         //Set enroute ceiling risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Ceiling", "enroute"));
-        this.response.setEnroute_ceiling_risk(compareRiskToLimit(riskModel.getEnroute_ceilings()));
+        this.response.setEnroute_ceiling_risk(compareRiskToLimit_GreaterThan(riskModel.getEnroute_ceilings()));
 
         //Set enroute visibility risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Visibility", "enroute"));
-        this.response.setEnroute_vis_risk(compareRiskToLimit(riskModel.getEnroute_vis()));
+        this.response.setEnroute_vis_risk(compareRiskToLimit_GreaterThan(riskModel.getEnroute_vis()));
 
         //set VFR checkpoint risks
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "VFR Checkpoints", "enroute"));
-        this.response.setVfr_checkpoint_risk(compareRiskToLimit(riskModel.getVfrCheckpoints()));
+        this.response.setVfr_checkpoint_risk(compareRiskToLimit_GreaterThan(riskModel.getVfrCheckpoints()));
 
         //set time enroute risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Time Enroute", "enroute"));
-        this.response.setTime_enroute_risk(compareRiskToLimit(riskModel.getTimeEnroute()));
+        this.response.setTime_enroute_risk(compareRiskToLimit_LessThan(riskModel.getTimeEnroute()));
 
         //set fuel at alternate risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Fuel at Alternate", "enroute"));
-        this.response.setFuel_at_alternate_risk(compareRiskToLimit(riskModel.getFuelAtAlternate()));
+        this.response.setFuel_at_alternate_risk(compareRiskToLimit_GreaterThan(riskModel.getFuelAtAlternate()));
 
         /*----Set Destination Risk----*/
         //Set departure ceiling risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Ceiling", "destination"));
-        this.response.setDestination_ceiling_risk(compareRiskToLimit(riskModel.getDestination_ceilings()));
+        this.response.setDestination_ceiling_risk(compareRiskToLimit_GreaterThan(riskModel.getDestination_ceilings()));
 
         //Set destination visibility risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Visibility", "destination"));
-        this.response.setDestination_vis_risk(compareRiskToLimit(riskModel.getDestination_vis()));
+        this.response.setDestination_vis_risk(compareRiskToLimit_GreaterThan(riskModel.getDestination_vis()));
 
         //Set Departure wind risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Total Wind", "destination"));
-        this.response.setDestination_wind_risk(compareRiskToLimit(riskModel.getDestination_winds()));
+        this.response.setDestination_wind_risk(compareRiskToLimit_LessThan(riskModel.getDestination_winds()));
 
         //Set Departure wind gust risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Gust Increment", "destination"));
-        this.response.setDestination_gust_risk(compareRiskToLimit(riskModel.getDestination_gusts()));
+        this.response.setDestination_gust_risk(compareRiskToLimit_LessThan(riskModel.getDestination_gusts()));
 
         //Set Departure crosswind risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Crosswind", "destination"));
-        this.response.setDestination_crosswind_risk(compareRiskToLimit(riskModel.getDestination_crosswind()));
+        this.response.setDestination_crosswind_risk(compareRiskToLimit_LessThan(riskModel.getDestination_crosswind()));
 
         /*----Set Alternate Risk----*/
         //Set departure ceiling risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Ceiling", "alternate"));
-        this.response.setAlternate_ceiling_risk(compareRiskToLimit(riskModel.getAlternate_ceilings()));
+        this.response.setAlternate_ceiling_risk(compareRiskToLimit_GreaterThan(riskModel.getAlternate_ceilings()));
 
         //Set alternate visibility risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Visibility", "alternate"));
-        this.response.setAlternate_vis_risk(compareRiskToLimit(riskModel.getAlternate_vis()));
+        this.response.setAlternate_vis_risk(compareRiskToLimit_GreaterThan(riskModel.getAlternate_vis()));
 
         //Set Departure wind risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Total Wind", "alternate"));
-        this.response.setAlternate_wind_risk(compareRiskToLimit(riskModel.getAlternate_winds()));
+        this.response.setAlternate_wind_risk(compareRiskToLimit_LessThan(riskModel.getAlternate_winds()));
 
         //Set Departure wind gust risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Gust Increment", "alternate"));
-        this.response.setAlternate_gust_risk(compareRiskToLimit(riskModel.getAlternate_gusts()));
+        this.response.setAlternate_gust_risk(compareRiskToLimit_LessThan(riskModel.getAlternate_gusts()));
 
         //Set Departure crosswind risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Crosswind", "alternate"));
-        this.response.setAlternate_crosswind_risk(compareRiskToLimit(riskModel.getAlternate_crosswind()));
+        this.response.setAlternate_crosswind_risk(compareRiskToLimit_LessThan(riskModel.getAlternate_crosswind()));
 
         return response;
     }

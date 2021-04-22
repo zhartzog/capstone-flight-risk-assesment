@@ -112,9 +112,9 @@ public class VFRRiskService
 
     private int compareStringRiskLevel(String risk, AdminTable threshold)
     {
-        if(risk.equals(threshold.getHigh()))
+        if ( risk.equals(threshold.getHigh()) )
             return 3;
-        else if(risk.equals(threshold.getMed()))
+        else if ( risk.equals(threshold.getMed()) )
             return 1;
         else
             return 0;
@@ -124,32 +124,32 @@ public class VFRRiskService
     {
         AdminTable tempThreshold = adminTableService.getThresholdByGroupNameCategory("vfr", "Time of Flight", "physiology");
 
-       //Set time of flight risk
-        response.setTime_of_flight_risk(compareStringRiskLevel(riskModel.getType_of_flight(), tempThreshold));
+        //Set time of flight risk
+        response.setTime_of_flight_risk(compareStringRiskLevel(riskModel.getTime_of_day(), tempThreshold));
 
-        //set risk associated with flight duty perios
-       setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Flight Duty Period Began", "physiology"));
-       response.setFlight_duty_risk(compareRiskToLimit(riskModel.getFlight_duty_period()));
+        //set risk associated with flight duty periods
+        setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Flight Duty Period Began", "physiology"));
+        response.setFlight_duty_risk(compareRiskToLimit_LessThan(riskModel.getFlight_duty_period()));
 
-       //Set Previous flights risk
-       setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Previous Flights that Day", "physiology"));
-       response.setPrevious_flight_risk(compareRiskToLimit(riskModel.getPrevious_flights()));
+        //Set Previous flights risk
+        setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Previous Flights that Day", "physiology"));
+        response.setPrevious_flight_risk(compareRiskToLimit_LessThan(riskModel.getPrevious_flights()));
 
-       //Set Syllabus flight type risk
+        //Set Syllabus flight type risk
         tempThreshold = adminTableService.getThresholdByGroupNameCategory("vfr", "Type of Syllabus Flight", "physiology");
         response.setType_of_flight_risk(compareStringRiskLevel(riskModel.getType_of_flight(), tempThreshold));
 
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Outside Temperatures Low", "physiology"));
         //Temperature is above the highest low temperature risk.
-        if(riskModel.getTemperature() > low)
+        if ( riskModel.getTemperature() > low )
         {
             //check the high temperature risk
             setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Outside Temperatures High", "physiology"));
-            if(riskModel.getTemperature() < low)//If colder than low risk category, there is no temperature risk
+            if ( riskModel.getTemperature() < low )//If colder than low risk category, there is no temperature risk
                 response.setTemperature_risk(0);
-            else if( riskModel.getTemperature() < med) //medium risk
+            else if ( riskModel.getTemperature() < med ) //medium risk
                 response.setTemperature_risk(1);
-            else if( riskModel.getTemperature() < high) //high risk
+            else if ( riskModel.getTemperature() < high ) //high risk
                 response.setTemperature_risk(3);
             else //no go
                 response.setTemperature_risk(15);
@@ -157,9 +157,9 @@ public class VFRRiskService
         }
         else //Colder than low temp. some increase in risk will occur.
         {
-            if(riskModel.getTemperature() < med)
+            if ( riskModel.getTemperature() < med )
             {
-                if(riskModel.getTemperature() < high)
+                if ( riskModel.getTemperature() < high )
                     response.setTemperature_risk(15);
                 else
                     response.setTemperature_risk(3);
@@ -167,6 +167,41 @@ public class VFRRiskService
             else
                 response.setTemperature_risk(1);
         }
+
+
+    }
+
+
+    private void set_solo_risk()
+    {
+
+        //Set Flight Location risk
+        AdminTable tempThreshold = adminTableService.getThresholdByGroupNameCategory("vfr", "Flight Location", "soloFactors");
+        this.response.setFlight_location_risk(compareStringRiskLevel(riskModel.getFlight_location(), tempThreshold));
+
+       //Set risk associated with Ground Reference Maneuvers
+        setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Gnd Reference Manuevers", "soloFactors"));
+        this.response.setGround_ref_maneuver_risk(compareRiskToLimit_LessThan(riskModel.getGround_ref_maneuvers()));
+
+        //Set Experience in airplane risk
+        setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Experience in Airplane Type", "soloFactors"));
+        this.response.setExperience_in_airplane_risk(compareRiskToLimit_GreaterThan(riskModel.getExperience_in_airplane()));
+
+        //Set risk associated with the last dual landing
+        if(riskModel.isIs_commercial())
+            setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Last Dual Landing (Comm)", "soloFactors"));
+        else
+            setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Last Dual Landing (Private)", "soloFactors"));
+
+        this.response.setDual_landing_risk(riskModel.getLast_dual_landing());
+
+        //Set last dual stall risk
+        if(riskModel.isIs_commercial())
+            setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Last Dual Stalls (Comm)", "soloFactors"));
+        else
+            setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Last Dual Stalls (Private)", "soloFactors"));
+
+        this.response.setDual_stall_risk(riskModel.getLast_dual_stall());
 
 
     }
@@ -300,170 +335,5 @@ public class VFRRiskService
         this.response.setAlternate_crosswind_risk(compareRiskToLimit_LessThan(riskModel.getAlternate_crosswind()));
 
         return response;
-    }
-
-    //Calculate SoloFactors
-    public int VFRRiskCalcHFSolo(VFRRiskModel riskModel)
-    {
-        AdminTable tempThreshold;
-        int risk = 0;
-        int low, med, high;
-        if ( riskModel.getCategory() == "Flight Location" )
-        {
-            tempThreshold = adminTableService.getThresholdByGroupNameCategory("vfr", "Flight Location", "soloFactors");
-            if ( riskModel.getCategoryValue() == tempThreshold.getLow() )
-            {
-                //risk is low (0)
-            }
-            else if ( riskModel.getCategoryValue() == tempThreshold.getMed() )
-            {
-                //risk is med(1)
-                risk++;
-            }
-            else if ( riskModel.getCategoryValue() == tempThreshold.getHigh() )
-            {
-                //risk is high(3)
-                risk += 3;
-            }
-        }
-        if ( riskModel.getCategory() == "Gnd Reference Manuevers" )
-        {
-            tempThreshold = adminTableService.getThresholdByGroupNameCategory("vfr", "Gnd Reference Manuevers", "soloFactors");
-            low = Integer.parseInt(tempThreshold.getLow());
-            med = Integer.parseInt(tempThreshold.getMed());
-            high = Integer.parseInt(tempThreshold.getHigh());
-            int categoryValueNum;
-            categoryValueNum = Integer.parseInt(riskModel.getCategoryValue());
-            if ( categoryValueNum == low )
-            {
-                //risk is low (0)
-            }
-            else if ( categoryValueNum == med )
-            {
-                //risk is med(1)
-                risk++;
-            }
-            else if ( categoryValueNum == high ) //risk is 2+
-            {
-                //risk is high(3)
-                risk += 3;
-            }
-        }
-        if ( riskModel.getCategory() == "Experience in Airplane Type" )
-        {
-            int categoryValueNum;
-            categoryValueNum = Integer.parseInt(categoryValue);
-            tempThreshold = adminTableService.getThresholdByGroupNameCategory("vfr", "Experience in Airplane Type", "soloFactors");
-            low = Integer.parseInt(tempThreshold.getLow());
-            med = Integer.parseInt(tempThreshold.getMed());
-            high = Integer.parseInt(tempThreshold.getHigh());
-            if ( categoryValueNum > low )
-            {
-                //risk is low (0)
-            }
-            else if ( categoryValueNum >= high && categoryValueNum <= med )
-            {
-                //risk is med(1)
-                risk++;
-            }
-            else if ( categoryValueNum < high )
-            {
-                //risk is high(3)
-                risk += 3;
-            }
-        }
-        if ( riskModel.getCategory() == "Last Dual Landing (Private)" )
-        {
-            int categoryValueNum;
-            categoryValueNum = Integer.parseInt(categoryValue);
-            tempThreshold = adminTableService.getThresholdByGroupNameCategory("vfr", "Last Dual Landing (Private)", "soloFactors");
-            low = Integer.parseInt(tempThreshold.getLow());
-            med = Integer.parseInt(tempThreshold.getMed());
-            high = Integer.parseInt(tempThreshold.getHigh());
-            if ( categoryValueNum < low )
-            {
-                //risk is low (0)
-            }
-            else if ( categoryValueNum > low && categoryValueNum <= med )
-            {
-                //risk is med(1)
-                risk++;
-            }
-            else if ( categoryValueNum > med && categoryValueNum <= high )
-            {
-                //risk is high(3)
-                risk += 3;
-            }
-        }
-        if ( riskModel.getCategory() == "Last Dual Landing (Comm)" )
-        {
-            int categoryValueNum;
-            categoryValueNum = Integer.parseInt(categoryValue);
-            tempThreshold = adminTableService.getThresholdByGroupNameCategory("vfr", "Last Dual Landing (Comm)", "soloFactors");
-            low = Integer.parseInt(tempThreshold.getLow());
-            med = Integer.parseInt(tempThreshold.getMed());
-            high = Integer.parseInt(tempThreshold.getHigh());
-            if ( categoryValueNum < low )
-            {
-                //risk is low (0)
-            }
-            else if ( categoryValueNum >= low && categoryValueNum <= med )
-            {
-                //risk is med(1)
-                risk++;
-            }
-            else if ( categoryValueNum > med && categoryValueNum <= high )
-            {
-                //risk is high(3)
-                risk += 3;
-            }
-        }
-        if ( riskModel.getCategory() == "Last Dual Stalls (Private)" )
-        {
-            int categoryValueNum;
-            categoryValueNum = Integer.parseInt(categoryValue);
-            tempThreshold = adminTableService.getThresholdByGroupNameCategory("vfr", "Last Dual Stalls (Private)", "soloFactors");
-            low = Integer.parseInt(tempThreshold.getLow());
-            med = Integer.parseInt(tempThreshold.getMed());
-            high = Integer.parseInt(tempThreshold.getHigh());
-            if ( categoryValueNum < low )
-            {
-                //risk is low (0)
-            }
-            else if ( categoryValueNum > low && categoryValueNum <= med )
-            {
-                //risk is med(1)
-                risk++;
-            }
-            else if ( categoryValueNum > med && categoryValueNum <= high )
-            {
-                //risk is high(3)
-                risk += 3;
-            }
-        }
-        if ( riskModel.getCategory() == "Last Dual Stalls (Comm)" )
-        {
-            int categoryValueNum;
-            categoryValueNum = Integer.parseInt(categoryValue);
-            tempThreshold = adminTableService.getThresholdByGroupNameCategory("vfr", "Last Dual Stalls (Comm)", "soloFactors");
-            low = Integer.parseInt(tempThreshold.getLow());
-            med = Integer.parseInt(tempThreshold.getMed());
-            high = Integer.parseInt(tempThreshold.getHigh());
-            if ( categoryValueNum < low )
-            {
-                //risk is low (0)
-            }
-            else if ( categoryValueNum >= low && categoryValueNum <= med )
-            {
-                //risk is med(1)
-                risk++;
-            }
-            else if ( categoryValueNum > med && categoryValueNum <= high )
-            {
-                //risk is high(3)
-                risk += 3;
-            }
-        }
-        return risk;
     }
 }

@@ -16,6 +16,8 @@ public class AdditionalQuestions
     private int headwind_gust;
     private int crosswind_gust;
     private String primaryRunway;
+    private double departure_lat;
+    private double departure_long;
 
     private Metar metar;
 
@@ -132,6 +134,26 @@ public class AdditionalQuestions
     public void setAlternateMetar(Metar alternateMetar)
     {
         this.alternateMetar = alternateMetar;
+    }
+
+    public double getDeparture_lat()
+    {
+        return departure_lat;
+    }
+
+    public void setDeparture_lat(double departure_lat)
+    {
+        this.departure_lat = departure_lat;
+    }
+
+    public double getDeparture_long()
+    {
+        return departure_long;
+    }
+
+    public void setDeparture_long(double departure_long)
+    {
+        this.departure_long = departure_long;
     }
 
     @Override

@@ -55,15 +55,19 @@ public class FormServices
         metar = awcServices.getMetarData(input.getDeparture_airport());
         airportInfo = faaServices.getAirportInfo(input.getDeparture_airport());
 
+        additionalQuestions.setDeparture_lat(airportInfo.getLatitudeDD());
+        additionalQuestions.setDeparture_long(airportInfo.getLongitudeDD());
         calculateWindComponent();
         getAirSigmet();
-        getDestinationMetars(input.getFlight_category(), input.getFlight_type(), input.getXc_destination());
+        if(!input.getFlight_type().equals("pattern"))
+            getDestinationMetars(input.getFlight_category(), input.getFlight_type(), input.getXc_destination());
 
 
         // System.out.println("LatLong: "+airportInfo.getLatLongAsString());
         additionalQuestions.setPireps(awcServices.getPireps(20, airportInfo.getLatLongAsString()));
         additionalQuestions.setMetar(metar);
-        additionalQuestions.setAlternateMetar(awcServices.getMetarData(input.getXc_alternate()));
+        if(!input.getFlight_type().equals("pattern"))
+            additionalQuestions.setAlternateMetar(awcServices.getMetarData(input.getXc_alternate()));
 
 
         return additionalQuestions;

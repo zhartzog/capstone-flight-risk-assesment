@@ -1,9 +1,8 @@
-package com.example.tests;
+package edu.unomaha.flightriskassessment.JUnit;
 
-import com.thoughtworks.selenium.Selenium;
+import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.WebDriver;
-import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,12 +1,6 @@
 package edu.unomaha.flightriskassessment.controller;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;  
-import org.springframework.web.bind.annotation.GetMapping;  
-import org.springframework.web.bind.annotation.PathVariable;  
-import org.springframework.web.bind.annotation.PostMapping;  
-import org.springframework.web.bind.annotation.PutMapping;  
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,7 +21,7 @@ public class AdminTableController
 	
 	
 	@RequestMapping(value = "/adminThresholds/save")
-	private int saveThreshold(@RequestBody AdminTable adminThresholds) throws SQLException {
+	private int saveThreshold(@RequestBody AdminTable adminThresholds) {
 	    adminThresholds_Service.save(adminThresholds);
 	    return adminThresholds.getAdminThresholdId();
 	}

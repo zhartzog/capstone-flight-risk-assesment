@@ -25,6 +25,20 @@ public class CS_AdminPanel_Testing {
   }
 
   @Test
+  public void testLogin() throws Exception {
+    driver.get("http://localhost:3000/");
+    driver.findElement(By.xpath("//button[@type='button']")).click();
+    driver.findElement(By.xpath("//input[@value='']")).click();
+    driver.findElement(By.xpath("//input[@value='test@test.com']")).clear();
+    driver.findElement(By.xpath("//input[@value='test@test.com']")).sendKeys("test@test.com");
+    driver.findElement(By.xpath("//input[@value='test']")).clear();
+    driver.findElement(By.xpath("//input[@value='test']")).sendKeys("test");
+    driver.findElement(By.xpath("//div[@id='root']/div/div/div/div[3]/button")).click();
+    driver.findElement(By.xpath("//button[@type='button']")).click();
+    driver.findElement(By.xpath("//button[@type='button']")).click();
+  }
+
+  @Test
   public void testOpenPanels() throws Exception {
     driver.get("http://localhost:3000/AdminPanel/SearchStudent");
     driver.findElement(By.xpath("(//button[@type='button'])[3]")).click();

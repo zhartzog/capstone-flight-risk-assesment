@@ -35,6 +35,12 @@ public class BasicFormInput
     @JsonProperty("xcDestination")
     private String xc_destination;
 
+    @JsonProperty("xcAlternate")
+    private String xc_alternate;
+
+    @JsonProperty("xcFlightRules")
+    private String xc_flight_rules;
+
     public String getDeparture_date_time()
     {
         return departure_date_time;
@@ -133,5 +139,25 @@ public class BasicFormInput
     public void setXc_destination(String xc_destination)
     {
         this.xc_destination = xc_destination;
+    }
+
+    public String getXc_alternate()
+    {
+        return xc_alternate;
+    }
+
+    public void setXc_alternate(String xc_alternate)
+    {
+        this.xc_alternate = xc_alternate;
+    }
+
+    public String getXc_flight_rules()
+    {
+        return xc_flight_rules;
+    }
+
+    public void setXc_flight_rules(String xc_flight_rules)
+    {
+        this.xc_flight_rules = xc_flight_rules;
     }
 }

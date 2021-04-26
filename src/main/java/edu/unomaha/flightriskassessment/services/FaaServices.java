@@ -10,6 +10,7 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,6 +92,11 @@ public class FaaServices
             for(int i = 0; i < data.length(); i++)
             {
                 attributes = data.getJSONObject(i).getJSONObject("attributes");
+                System.out.println("attributes: "+attributes.toString());
+
+                //Remove heliports from runway info. Their designator will be something like 'H1'
+                if(!attributes.getString("DESIGNATOR").contains("/"))
+                    continue;
                 Runway temp = new Runway(attributes.getString("DESIGNATOR"),attributes.getInt("LENGTH"), attributes.getInt("WIDTH"));
                 airport.addRunway(temp);
             }

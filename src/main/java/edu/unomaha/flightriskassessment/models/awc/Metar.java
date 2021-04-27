@@ -7,6 +7,9 @@ import edu.unomaha.flightriskassessment.models.awc.components.SkyCondition;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * This class is used to unmarshall METAR data received from the Aviation Weather Center. The schema for the XML file can
@@ -42,7 +45,7 @@ public class Metar
 
     private String flightCategory;
 
-    private SkyCondition skyCoverage;
+    private List<SkyCondition> skyCoverage = new ArrayList<>();
 
     //Code for current weather. Legend can be found at https://aviationweather.gov/docs/metar/wxSymbols_anno2.pdf
     private String presentWeather;
@@ -70,7 +73,6 @@ public class Metar
         this.windGust = windGust;
         this.visibility = visibility;
         this.flightCategory = flightCategory;
-        this.skyCoverage = new SkyCondition(skyCoverage, cloudBases);
     }
 
     public Integer getId() { return id; }
@@ -144,7 +146,7 @@ public class Metar
 
     public float getVisibility() { return visibility; }
 
-    @XmlElement(name = "visibility_statue_mi")
+    @XmlElement(name = "visibility_statute_mi")
     public void setVisibility(float visibility) {
     	logger.debug("Setting visibility to " + visibility);
         this.visibility = visibility;
@@ -158,15 +160,15 @@ public class Metar
         this.flightCategory = flightCategory;
     }
 
-    public SkyCondition getSkyCoverage()
+    public List<SkyCondition> getSkyCoverage()
     {
         return skyCoverage;
     }
 
     @XmlElement(name = "sky_condition")
-    public void setSkyCoverage(SkyCondition cloudCoveragePair)
+    public void setSkyCoverage(List<SkyCondition> skyCoverage)
     {
-        this.skyCoverage = cloudCoveragePair;
+        this.skyCoverage = skyCoverage;
     }
 
     public float getPrecipitation()

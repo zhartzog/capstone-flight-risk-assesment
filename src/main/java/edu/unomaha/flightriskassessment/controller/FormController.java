@@ -1,11 +1,9 @@
 
 package edu.unomaha.flightriskassessment.controller;
 
-import edu.unomaha.flightriskassessment.models.Form.AdditionalQuestions;
-import edu.unomaha.flightriskassessment.models.Form.BasicFormInput;
-import edu.unomaha.flightriskassessment.models.Form.RiskResponse;
-import edu.unomaha.flightriskassessment.models.Form.VFRRiskModel;
+import edu.unomaha.flightriskassessment.models.Form.*;
 import edu.unomaha.flightriskassessment.services.FormServices;
+import edu.unomaha.flightriskassessment.services.IFRRiskService;
 import edu.unomaha.flightriskassessment.services.VFRRiskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,6 +20,9 @@ public class FormController
     @Autowired
     VFRRiskService vfrRiskService;
 
+    @Autowired
+    IFRRiskService ifrRiskService;
+
     @PostMapping( value="/basicFormInfo", produces = "application/json")
     public @ResponseBody
     AdditionalQuestions basicFormInput(@RequestBody BasicFormInput input)
@@ -29,10 +30,18 @@ public class FormController
         return formServices.getDynamicQuestions(input);
     }
 
-    @PostMapping( value = "/vfrRiskCalculation", produces = "application/json")
+    @PostMapping( value = "/VFRRiskCalculation", consumes = "application/json", produces = "application/json")
     public @ResponseBody
     RiskResponse VFRRiskCalculation(@RequestBody VFRRiskModel vfrRiskModel)
     {
+        System.out.println("Beginning VFRRiskCalculation...");
         return vfrRiskService.VFRRiskCalc(vfrRiskModel);
+    }
+
+    @PostMapping( value = "/IFRRiskCalculation", consumes = "application/json", produces = "application/json")
+    public @ResponseBody
+    RiskResponse IFRRiskCalculation(@RequestBody IFRRiskModel ifrRiskModel)
+    {
+        return ifrRiskService.IFRRiskCalc(ifrRiskModel);
     }
 }

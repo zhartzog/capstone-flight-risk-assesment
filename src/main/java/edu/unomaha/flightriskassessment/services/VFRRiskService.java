@@ -281,8 +281,8 @@ public class VFRRiskService
         this.response.setEnroute_vis_risk(compareRiskToLimit_GreaterThan(riskModel.getEnroute_vis()));
 
         //set VFR checkpoint risks
-        setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "VFR Checkpoints", "enroute"));
-        this.response.setVfr_checkpoint_risk(compareRiskToLimit_GreaterThan(riskModel.getVfrCheckpoints()));
+        AdminTable tempThreshold = adminTableService.getThresholdByGroupNameCategory("vfr", "VFR Checkpoints", "enroute");
+        this.response.setVfr_checkpoint_risk(compareStringRiskLevel(riskModel.getVfrCheckpoints(), tempThreshold));
 
         //set time enroute risk
         setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Time Enroute", "enroute"));
@@ -315,23 +315,23 @@ public class VFRRiskService
 
         /*----Set Alternate Risk----*/
         //Set departure ceiling risk
-        setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Ceiling", "alternate"));
+        setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Ceiling", "destination"));
         this.response.setAlternate_ceiling_risk(compareRiskToLimit_GreaterThan(riskModel.getAlternate_ceilings()));
 
         //Set alternate visibility risk
-        setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Visibility", "alternate"));
+        setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Visibility", "destination"));
         this.response.setAlternate_vis_risk(compareRiskToLimit_GreaterThan(riskModel.getAlternate_vis()));
 
         //Set Departure wind risk
-        setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Total Wind", "alternate"));
+        setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Total Wind", "destination"));
         this.response.setAlternate_wind_risk(compareRiskToLimit_LessThan(riskModel.getAlternate_winds()));
 
         //Set Departure wind gust risk
-        setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Gust Increment", "alternate"));
+        setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Gust Increment", "destination"));
         this.response.setAlternate_gust_risk(compareRiskToLimit_LessThan(riskModel.getAlternate_gusts()));
 
         //Set Departure crosswind risk
-        setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Crosswind", "alternate"));
+        setRiskLevels(adminTableService.getThresholdByGroupNameCategory("vfr", "Crosswind", "destination"));
         this.response.setAlternate_crosswind_risk(compareRiskToLimit_LessThan(riskModel.getAlternate_crosswind()));
 
         return response;

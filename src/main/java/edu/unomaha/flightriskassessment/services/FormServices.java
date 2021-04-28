@@ -66,7 +66,7 @@ public class FormServices
         // System.out.println("LatLong: "+airportInfo.getLatLongAsString());
         additionalQuestions.setPireps(awcServices.getPireps(20, airportInfo.getLatLongAsString()));
         additionalQuestions.setMetar(metar);
-        if(!input.getFlight_type().equals("pattern"))
+        if(input.getFlight_type().equals("cross_country"))
             additionalQuestions.setAlternateMetar(awcServices.getMetarData(input.getXc_alternate()));
 
 

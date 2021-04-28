@@ -178,19 +178,15 @@ public class IFRRiskService
 
 		//Select which limit we will compare against.
 		if ( !riskModel.isNight() )
-			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Ceiling (Day Dual)", "localPattern"));
+			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Ceiling (Night)", "departure"));
 		else if ( !riskModel.isNight() )
-			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Ceiling (Day Solo)", "localPattern"));
+			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Ceiling (Day)", "departure"));
 
 		//Set departure risk
 		this.response.setDeparture_ceiling_risk(compareRiskToLimit_GreaterThan(riskModel.getDeparture_ceilings()));
 
 		//Set departure visibility risk
-		if ( !riskModel.isNight() )
-			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Visibility (Day)", "localPattern"));
-		else
-			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Visibility (Night)", "localPattern"));
-
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Visibility", "departure"));
 		this.response.setDeparture_vis_risk(compareRiskToLimit_GreaterThan(riskModel.getDeparture_vis()));
 
 		//Set departure IAP type risk
@@ -198,15 +194,15 @@ public class IFRRiskService
 		this.response.setDeparture_iap_risk(compareStringRiskLevel(riskModel.getDeparture_iap(),tempThreshold));
 
 		//Set departure wind risk
-		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Total Wind", "localPattern"));
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Total Wind", "departure"));
 		this.response.setDeparture_wind_risk(compareRiskToLimit_LessThan(riskModel.getDeparture_winds()));
 
 		//Set departure wind gust risk
-		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Gust Increment", "localPattern"));
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Gust Increment", "departure"));
 		this.response.setDeparture_gust_risk(compareRiskToLimit_LessThan(riskModel.getDeparture_gusts()));
 
 		//Set departure crosswind risk
-		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Crosswind", "localPattern"));
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Crosswind", "departure"));
 		this.response.setDeparture_crosswind_risk(compareRiskToLimit_LessThan(riskModel.getDeparture_crosswind()));
 
 	}
@@ -247,9 +243,9 @@ public class IFRRiskService
 
 		//Set destination ceiling risk
 		if(riskModel.isNight())
-			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Ceilings (Night)", "destination"));
+			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Ceiling (Night)", "destination"));
 		else
-			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Ceilings (Day)", "destination"));
+			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Ceiling (Day)", "destination"));
 
 		this.response.setDestination_ceiling_risk(compareRiskToLimit_GreaterThan(riskModel.getDestination_ceilings()));
 
@@ -276,27 +272,30 @@ public class IFRRiskService
 
 		/*----Set Alternate Risk----*/
 		//Set departure ceiling risk
-		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Ceiling", "alternate"));
+		if(riskModel.isNight())
+			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Ceiling (Night)", "destination"));
+		else
+			setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Ceiling (Day)", "destination"));
 		this.response.setAlternate_ceiling_risk(compareRiskToLimit_GreaterThan(riskModel.getAlternate_ceilings()));
 
 		//Set alternate visibility risk
-		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Visibility", "alternate"));
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Visibility", "destination"));
 		this.response.setAlternate_vis_risk(compareRiskToLimit_GreaterThan(riskModel.getAlternate_vis()));
 
 		//Set destination IAP type risk
-		 tempThreshold = adminTableService.getThresholdByGroupNameCategory("ifr", "Best IAP Available", "alternate");
+		 tempThreshold = adminTableService.getThresholdByGroupNameCategory("ifr", "Best IAP Available", "destination");
 		this.response.setAlternate_iap_risk(compareStringRiskLevel(riskModel.getAlternate_iap(),tempThreshold));
 
 		//Set Departure wind risk
-		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Total Wind", "alternate"));
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Total Wind", "destination"));
 		this.response.setAlternate_wind_risk(compareRiskToLimit_LessThan(riskModel.getAlternate_winds()));
 
 		//Set Departure wind gust risk
-		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Gust Increment", "alternate"));
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Gust Increment", "destination"));
 		this.response.setAlternate_gust_risk(compareRiskToLimit_LessThan(riskModel.getAlternate_gusts()));
 
 		//Set Departure crosswind risk
-		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Crosswind", "alternate"));
+		setRiskLevels(adminTableService.getThresholdByGroupNameCategory("ifr", "Crosswind", "destination"));
 		this.response.setAlternate_crosswind_risk(compareRiskToLimit_LessThan(riskModel.getAlternate_crosswind()));
 
 		return response;

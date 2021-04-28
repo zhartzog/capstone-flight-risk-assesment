@@ -55,7 +55,7 @@ public class IFRRiskModel
     @JsonProperty("destination_gusts")
     private int destination_gusts;
 
-    @JsonProperty("departure_crosswind")
+    @JsonProperty("destination_crosswind")
     private int destination_crosswind;
 
     @JsonProperty("alternate_vis")

@@ -69,8 +69,8 @@ public class AWCServices
             airportID = "K" + airportID;
         try
         {
-            String URL = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&mostrecent=true&hoursBeforeNow=1&stationString=" + airportID;
-            logger.debug("URL: "+URL);
+            String URL = "https://aviationweather.gov/adds/dataserver_current/httpparam?dataSource=metars&requestType=retrieve&format=xml&mostRecent=true&hoursBeforeNow=1&stationString=" + airportID;
+            logger.info("URL: "+URL);
             Document doc = getDocument(URL);
 
             Node data = doc.getElementsByTagName("data").item(0);

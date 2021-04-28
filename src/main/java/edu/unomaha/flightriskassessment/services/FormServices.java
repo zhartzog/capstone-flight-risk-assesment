@@ -121,7 +121,6 @@ public class FormServices
                 int angleB = Integer.parseInt(headings[1]) * 10;
                 int angle_a = Math.abs(angleA - this.metar.getWindDirection());
                 int angle_b = Math.abs(Integer.parseInt(headings[1]) * 10 - this.metar.getWindDirection());
-                ;
 
                 //Since 360 degrees is equal to 0 degrees, we have to figure out which way is the smallest.
                 if ( angleA == 360 )
